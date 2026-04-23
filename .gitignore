@@ -43,4 +43,4 @@ Thumbs.db
 **/webapp/WEB-INF/lib/*.jar 
 
 # Mybatis
-/src/main/resources/mybatis-config.xml
+src/main/resources/mybatis-config.xml

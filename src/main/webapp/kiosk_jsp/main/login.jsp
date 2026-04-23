@@ -32,9 +32,9 @@
             <select class="form-select" id="branchSelect" name="branchCode">
                 <option value="">지점을 선택하세요</option>
                 <c:forEach var="branch" items="${branchList}">
-                    <option value="${branch.branchCode}"
-                        <c:if test="${branch.branchCode == selectedBranchCode}">selected</c:if>>
-                        ${branch.name} (${branch.branchCode})
+                    <option value="${branch.branch_code}"
+                        <c:if test="${branch.branch_code == selectedBranchCode}">selected</c:if>>
+                        ${branch.name} (${branch.branch_code})
                     </option>
                 </c:forEach>
             </select>

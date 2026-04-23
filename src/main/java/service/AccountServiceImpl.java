@@ -2,21 +2,21 @@ package service;
 
 import java.util.Map;
 
-import dao.AccountDAO;
+import dao.AccountDao;
 import dao.AccountDaoImpl;
-import dto.AccountDTO;
+import dto.AccountDto;
 
 public class AccountServiceImpl implements AccountService {
 	
-	private AccountDAO accountDao;
+	private AccountDao accountDao;
 	
 	public AccountServiceImpl() {
 		accountDao = new AccountDaoImpl();
 	}
 	
 	@Override
-	public AccountDTO login(String loginId, String password, int kiosk_id) {
-		return accountDao.loginKiosk(loginId, password, kiosk_id);
+	public AccountDto login(String login_id, String password, int kiosk_id) throws Exception{
+		return accountDao.loginKiosk(login_id, password, kiosk_id);
 	}
 
 }

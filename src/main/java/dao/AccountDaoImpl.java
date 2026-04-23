@@ -5,14 +5,14 @@ import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 
-import dto.AccountDTO;
+import dto.AccountDto;
 import util.MyBatisSqlSessionFactory;
 
-public class AccountDaoImpl implements AccountDAO {
+public class AccountDaoImpl implements AccountDao {
 
 	@Override
-	public AccountDTO loginKiosk(String login_id, String password, int kiosk_id) {
-		AccountDTO account = null;
+	public AccountDto loginKiosk(String login_id, String password, int kiosk_id) throws Exception{
+		AccountDto account = null;
 		 Map<String, Object> authData = new HashMap<>();
 		 try (SqlSession sqlSession = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession()) {
 			 authData.put("login_id", login_id);

@@ -1,16 +1,16 @@
 package dto;
 
-public class KioskDTO {
+public class KioskDto {
 	private Integer kiosk_id;
 	private int branch_code;
 	private String status;
 	
 	
-	public KioskDTO() {
+	public KioskDto() {
 		super();
 	}
 	
-	public KioskDTO(Integer kiosk_id, int branch_code, String status) {
+	public KioskDto(Integer kiosk_id, int branch_code, String status) {
 		super();
 		this.kiosk_id = kiosk_id;
 		this.branch_code = branch_code;

@@ -1,14 +1,14 @@
 package dto;
 
-public class BranchDTO {
+public class BranchDto {
 	private Integer branch_code;
 	private String name;
 	private String status;
 	
-	public BranchDTO() {
+	public BranchDto() {
 		super();
 	}
-	public BranchDTO(Integer branch_code, String name, String status) {
+	public BranchDto(Integer branch_code, String name, String status) {
 		super();
 		this.branch_code = branch_code;
 		this.name = name;

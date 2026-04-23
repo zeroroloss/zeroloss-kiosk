@@ -1,6 +1,6 @@
 package dto;
 
-public class AccountDTO {
+public class AccountDto {
 	private Integer account_id;
 	private Integer branch_code;
 	private String login_id;
@@ -8,10 +8,10 @@ public class AccountDTO {
 	private String  branchName;
 	private Integer kiosk_id;
 	
-	public AccountDTO() {
+	public AccountDto() {
 		super();
 	}
-	public AccountDTO(Integer account_id, Integer branch_code, String login_id, String password, String branchName,
+	public AccountDto(Integer account_id, Integer branch_code, String login_id, String password, String branchName,
 			Integer kiosk_id) {
 		super();
 		this.account_id = account_id;

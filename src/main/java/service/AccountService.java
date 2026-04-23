@@ -2,8 +2,8 @@ package service;
 
 import java.util.Map;
 
-import dto.AccountDTO;
+import dto.AccountDto;
 
 public interface AccountService {
-	AccountDTO login(String login_id, String password, int kioskId);
+	AccountDto login(String login_id, String password, int kioskId) throws Exception;
 }

@@ -16,3 +16,10 @@ window.addEventListener('DOMContentLoaded', function () {
   bindImageFallback('takeOutImg', 'takeOutFallback', 'flex');
   bindImageFallback('adImg', 'adFallback', 'block');
 });
+
+function closePopup() {
+    document.getElementById('welcomePopup').style.display = 'none';
+}
+
+// 5초 후 자동으로 닫기
+setTimeout(closePopup, 5000);

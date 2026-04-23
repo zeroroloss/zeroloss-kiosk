@@ -14,7 +14,7 @@ public class MainCategoryDaoImpl implements MainCategoryDao {
 		SqlSession sqlSession = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession();
 		List<MainCategoryDto> mainList = null;
 		try {
-			mainList = sqlSession.selectList("mapper.mainCategory.selectMainCategoryList");
+			mainList = sqlSession.selectList("mapper.kiosk1.selectMainCategoryList");
 		} catch(Exception e) {
 			throw e;
 		} finally {

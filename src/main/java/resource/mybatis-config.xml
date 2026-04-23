@@ -8,8 +8,8 @@
       <typeAlias type="dto.MainCategoryDto" alias="mainCategory"/>
       <typeAlias type="dto.SubCategoryDto" alias="SubCategory"/>
       <typeAlias type="dto.AccountDto" alias="account"/>
-       <typeAlias type="dto.BranchDto"  alias="branch"/>
-         <typeAlias type="dto.KioskDto"   alias="kiosk"/>
+      <typeAlias type="dto.BranchDto"  alias="branch"/>
+      <typeAlias type="dto.KioskDto"   alias="kiosk"/>
       
    </typeAliases>
 

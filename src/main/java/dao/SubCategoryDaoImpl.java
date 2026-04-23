@@ -15,7 +15,7 @@ public class SubCategoryDaoImpl implements SubCategoryDao {
 		SqlSession sqlSession = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession();
 		List<SubCategoryDto> subList = null;
 		try {
-			subList = sqlSession.selectList("mapper.subCategory.selectSubCategoryList");
+			subList = sqlSession.selectList("mapper.kiosk1.selectSubCategoryList");
 		} catch(Exception e) {
 			throw e;
 		} finally {

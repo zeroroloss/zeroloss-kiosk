@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
 
-import dto.MainCategoryDto;
 import dto.RecipeDto;
 import util.MyBatisSqlSessionFactory;
 
@@ -15,7 +14,7 @@ public class RecipeDaoImpl implements RecipeDao {
 		SqlSession sqlSession = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession();
 		List<RecipeDto> recipeList = null;
 		try {
-			recipeList = sqlSession.selectList("mapper.recipe.selectRecipeList");
+			recipeList = sqlSession.selectList("mapper.kiosk1.selectRecipeList");
 		} catch(Exception e) {
 			throw e;
 		} finally {

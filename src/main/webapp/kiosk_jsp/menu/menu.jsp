@@ -3,6 +3,7 @@
 <%
     String contextPath = request.getContextPath();
 %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -13,6 +14,7 @@
   <link rel="stylesheet" href="<%=contextPath%>/kiosk_css/common.css" />
   <link rel="stylesheet" href="<%=contextPath%>/kiosk_css/menu.css?v=5" />
 </head>
+
 <body>
   <div class="app">
     <header class="top-header">
@@ -51,6 +53,44 @@
     </section>
   </div>
 
+  <script>
+    const recipeList = [
+    <c:forEach var="r" items="${recipeList}" varStatus="s">
+      {
+        recipeCode: "${r.recipeCode}",
+        categoryId: ${r.categoryId},
+        subCategoryCode: "${r.subCategoryCode}",
+        name: "${r.name}",
+        price: ${r.price},
+        imgUrl: "${r.imgUrl}"
+      }<c:if test="${!s.last}">,</c:if>
+    </c:forEach>
+    ];
+
+    const mainCategoryList = [
+    <c:forEach var="m" items="${mainCategoryList}" varStatus="s">
+      {
+        categoryId: ${m.categoryId},
+        name: "${m.name}"
+      }<c:if test="${!s.last}">,</c:if>
+    </c:forEach>
+    ];
+
+    const subCategoryList = [
+    <c:forEach var="s" items="${subCategoryList}" varStatus="st">
+      {
+        subCategoryCode: "${s.subCategoryCode}",
+        categoryId: ${s.categoryId},
+        name: "${s.name}"
+      }<c:if test="${!st.last}">,</c:if>
+    </c:forEach>
+    ];
+
+    console.log("recipeList", recipeList);
+    console.log("mainCategoryList", mainCategoryList);
+    console.log("subCategoryList", subCategoryList);
+  </script>
+
   <script src="<%=contextPath%>/kiosk_js/menu.js"></script>
 
   <script>
@@ -75,6 +115,7 @@
 
       location.href = '<%=contextPath%>/kiosk_jsp/menu/order_confirm.jsp';
     });
+    
   </script>
 </body>
 </html>

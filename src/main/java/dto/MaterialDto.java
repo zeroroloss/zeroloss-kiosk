@@ -1,6 +1,7 @@
 package dto;
 
 public class MaterialDto {
+
 	private String materialCode;
 	private Integer materialGroupId;
 	private String materialName;

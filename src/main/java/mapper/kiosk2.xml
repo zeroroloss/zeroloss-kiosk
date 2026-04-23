@@ -9,10 +9,13 @@
             a.branch_code, 
             a.role_id,
             a.login_id,
-            b.name AS branch_name,   k.kiosk_id
+            b.name AS branchName,
+            k.kiosk_id,
+            e.name AS name
         FROM account a
         JOIN kiosk k ON a.branch_code = k.branch_code
         JOIN branch b ON a.branch_code = b.branch_code
+        JOIN employee e ON a.emp_no = e.emp_no
         WHERE a.login_id = #{login_id}
           AND a.password = #{password}
           AND k.kiosk_id = #{kiosk_id}

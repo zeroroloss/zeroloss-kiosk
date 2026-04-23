@@ -8,11 +8,15 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import com.google.gson.Gson;
 
+import dto.AccountDto;
 import dto.BranchDto;
 import dto.KioskDto;
+import service.AccountService;
+import service.AccountServiceImpl;
 import service.BranchService;
 import service.BranchServiceImpl;
 import service.KioskService;
@@ -39,7 +43,7 @@ public class LoginController extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String branchCode = request.getParameter("branchCode");
 
-		if (branchCode == null) {
+		if (branchCode == null || branchCode.isBlank()) {
 		    try {
 		        BranchService branchService = new BranchServiceImpl();
 		        List<BranchDto> branchList = branchService.selectBranchList();
@@ -70,8 +74,58 @@ public class LoginController extends HttpServlet {
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
-	}
+		request.setCharacterEncoding("UTF-8");
 
+		String loginId = request.getParameter("loginId");
+		String password = request.getParameter("password");
+		String kioskParam = request.getParameter("kiosk_id");
+
+		try {
+		    if (kioskParam == null || kioskParam.isBlank()) {
+		        request.setAttribute("errorMsg", "키오스크를 선택해주세요.");
+		        BranchService branchService = new BranchServiceImpl();
+		        request.setAttribute("branchList", branchService.selectBranchList());
+		        request.getRequestDispatcher("/kiosk_jsp/main/login.jsp")
+		               .forward(request, response);
+		        return;
+		    }
+
+		    int kioskId = Integer.parseInt(kioskParam);
+
+		    AccountService accountService = new AccountServiceImpl();
+		    AccountDto account = accountService.login(loginId, password, kioskId);
+
+		    if (account == null) {
+		        request.setAttribute("errorMsg", "아이디, 비밀번호 또는 키오스크를 확인해주세요.");
+		        BranchService branchService = new BranchServiceImpl();
+		        request.setAttribute("branchList", branchService.selectBranchList());
+		        request.getRequestDispatcher("/kiosk_jsp/main/login.jsp")
+		               .forward(request, response);
+		        return;
+		    }
+
+		    // 로그인 성공 → 세션 저장
+		    HttpSession session = request.getSession();
+		    session.setAttribute("accountId", account.getAccount_id());
+		    session.setAttribute("branch_code", account.getBranch_code());
+		    session.setAttribute("branchName", account.getBranchName());
+		    session.setAttribute("kiosk_id", account.getKiosk_id());
+		    session.setAttribute("empName", account.getName());
+		   
+		    response.sendRedirect(request.getContextPath() + "/kiosk/start");
+
+		} catch (Exception e) {
+		    e.printStackTrace();
+		    request.setAttribute("errorMsg", "오류가 발생했습니다. 다시 시도해주세요.");
+		    try {
+		        BranchService branchService = new BranchServiceImpl();
+		        request.setAttribute("branchList", branchService.selectBranchList());
+		    } catch (Exception ex) {
+		        ex.printStackTrace();
+		    }
+		    request.getRequestDispatcher("/kiosk_jsp/main/login.jsp")
+		           .forward(request, response);
+		}
+	}
 }
+

@@ -13,7 +13,7 @@ public class KioskDaoImpl implements KioskDao {
 	public List<KioskDto> selectKioskList(int branchCode) throws Exception {
 		List<KioskDto> kioskList = null;
 		try (SqlSession sqlSession = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession()) {
-			kioskList = sqlSession.selectList("mapper.kiosk.getKioskList", branchCode);
+			kioskList = sqlSession.selectList("mapper.kiosk2.getKioskList", branchCode);
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

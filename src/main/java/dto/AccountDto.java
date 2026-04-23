@@ -7,6 +7,7 @@ public class AccountDto {
 	private String password;
 	private String  branchName;
 	private Integer kiosk_id;
+	private String name;
 	
 	public AccountDto() {
 		super();
@@ -58,10 +59,19 @@ public class AccountDto {
 	public void setKiosk_id(Integer kiosk_id) {
 		this.kiosk_id = kiosk_id;
 	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
 	
 	@Override
 	public String toString() {
-		return "AccountDTO [account_id=" + account_id + ", branch_code=" + branch_code + ", login_id=" + login_id
-				+ ", password=" + password + ", branchName=" + branchName + ", kiosk_id=" + kiosk_id + "]";
+		return "AccountDto [account_id=" + account_id + ", branch_code=" + branch_code + ", login_id=" + login_id
+				+ ", password=" + password + ", branchName=" + branchName + ", kiosk_id=" + kiosk_id + ", name=" + name
+				+ "]";
 	}
+	
+
 }

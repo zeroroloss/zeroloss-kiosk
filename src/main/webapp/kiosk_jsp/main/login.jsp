@@ -42,9 +42,9 @@
 
         <div class="form-group">
             <label class="form-label" for="kioskSelect">키오스크 선택</label>
-            <select class="form-select" id="kioskSelect" name="kioskId" disabled>
-                <option value="">지점을 먼저 선택하세요</option>
-            </select>
+           <select class="form-select" id="kioskSelect" name="kiosk_id" disabled>
+    			<option value="">지점을 먼저 선택하세요</option>
+		   </select>
         </div>
 
         <div class="form-group">
@@ -85,6 +85,7 @@
 <script>
 const contextPath = "${contextPath}";
 
+
 // 지점 선택 시 키오스크 목록 AJAX 조회
 document.getElementById('branchSelect').addEventListener('change', function () {
     const branchCode = this.value;
@@ -102,13 +103,13 @@ document.getElementById('branchSelect').addEventListener('change', function () {
     infoText.textContent = this.options[this.selectedIndex].text;
 
     // AJAX로 키오스크 목록 조회
-    fetch(`${contextPath}/kiosk/login?branchCode=${branchCode}`)
+    fetch(contextPath + "/kiosk/login?branchCode=" + branchCode)
         .then(res => res.json())
         .then(kiosks => {
             kioskSelect.innerHTML = '<option value="">키오스크를 선택하세요</option>';
             kiosks.forEach(k => {
                 kioskSelect.innerHTML +=
-                    `<option value="${k.kioskId}">${k.kioskId}번 키오스크</option>`;
+                	'<option value="' + k.kiosk_id + '">' + k.kiosk_id + '번 키오스크</option>';
             });
             kioskSelect.disabled = false;
             updateConfirmBtn();

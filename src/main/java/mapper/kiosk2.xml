@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
+	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.kiosk2">
+	<select id="loginKiosk" parameterType="map" resultType="account">
+        SELECT 
+            a.account_id, 
+            a.emp_no,
+            a.branch_code, 
+            a.role_id,
+            a.login_id,
+            b.name AS branch_name,   k.kiosk_id
+        FROM account a
+        JOIN kiosk k ON a.branch_code = k.branch_code
+        JOIN branch b ON a.branch_code = b.branch_code
+        WHERE a.login_id = #{login_id}
+          AND a.password = #{password}
+          AND k.kiosk_id = #{kiosk_id}
+          AND a.role_id = 2
+          AND a.status = 'ACTIVE'
+       	  AND b.status = 'ACTIVE'
+          AND k.status = 'NORMAL'
+    </select>
+    
+    <select id="getBranchList" resultType="branch">
+    SELECT
+        branch_code,
+        name
+    FROM branch
+    WHERE status = 'ACTIVE'
+    ORDER BY branch_code ASC
+	</select>
+	
+	<select id="getKioskList" parameterType="int" resultType="kiosk">
+        SELECT
+            kiosk_id,
+            branch_code,
+            status
+        FROM kiosk
+        WHERE branch_code = #{branchCode}
+          AND status = 'NORMAL'
+        ORDER BY kiosk_id ASC
+    </select>
+	
+</mapper>

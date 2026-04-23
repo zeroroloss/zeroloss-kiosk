@@ -487,7 +487,7 @@ window.goNext = function(contextPath) {
     basePrice: Number(selectedMenu.price || 0),
     extraPrice: getExtraPrice(),
     totalPrice: Number(selectedMenu.price || 0) + getExtraPrice(),
-    quantity: 1
+    qty: 1
   };
 
   sessionStorage.setItem(OPTION_EDIT_MODE_KEY, 'true');

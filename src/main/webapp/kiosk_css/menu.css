@@ -217,7 +217,9 @@
   background: var(--white);
   padding: 18px 24px 0;
   overflow: hidden;
-  flex: 0 0 auto;
+
+  display: flex;
+  flex-direction: column;
 }
 
 .cart-empty {
@@ -243,11 +245,13 @@
 
 .cart-filled {
   min-height: 360px;
-  display: none;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 .cart-list {
-  max-height: 265px;
+  flex: 1;
   overflow-y: auto;
   padding-right: 6px;
   display: flex;
@@ -366,13 +370,14 @@
    CART SUMMARY
 ========================= */
 .cart-summary {
-  margin-top: 12px;
+  margin-top: auto;
   padding: 16px 4px 0;
   border-top: 2px solid #d9d9d9;
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
+  background: #fff;
 }
 
 .cart-total {

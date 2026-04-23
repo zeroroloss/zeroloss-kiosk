@@ -16,190 +16,281 @@ const rightArrow = document.getElementById("rightArrow");
 const headerHighlight = document.getElementById("headerHighlight");
 
 function formatPrice(value) {
-  return `${Number(value || 0).toLocaleString()}원`;
+	return `${Number(value || 0).toLocaleString()}원`;
 }
 
 function initCurrentSubCategory() {
-  const subs = subCategoryList.filter(s => Number(s.categoryId) === Number(currentMainId));
-  currentSubCode = subs.length ? String(subs[0].subCategoryCode) : null;
+	const subs = subCategoryList.filter(s => Number(s.categoryId) === Number(currentMainId));
+	currentSubCode = subs.length ? String(subs[0].subCategoryCode) : null;
 }
 
 // ================== 메뉴 탭 ==================
 function createMainTabs() {
-  mainTabs.innerHTML = mainCategoryList.map(cat => `
+	mainTabs.innerHTML = mainCategoryList.map(cat => `
     <button class="tab ${Number(cat.categoryId) === currentMainId ? "active" : ""}"
             data-id="${cat.categoryId}">
       ${cat.name}
     </button>
   `).join("");
 
-  mainTabs.querySelectorAll("[data-id]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      currentMainId = Number(btn.dataset.id);
-      initCurrentSubCategory();
-      render();
-    });
-  });
+	mainTabs.querySelectorAll("[data-id]").forEach(btn => {
+		btn.addEventListener("click", () => {
+			currentMainId = Number(btn.dataset.id);
+			initCurrentSubCategory();
+			render();
+		});
+	});
 }
 
 function createSubTabs() {
-  const subs = subCategoryList.filter(s => Number(s.categoryId) === currentMainId);
+	const subs = subCategoryList.filter(s => Number(s.categoryId) === currentMainId);
 
-  subTabs.innerHTML = subs.map(sub => `
+	subTabs.innerHTML = subs.map(sub => `
     <button class="tab sub ${String(sub.subCategoryCode) === currentSubCode ? "active" : ""}"
             data-sub="${sub.subCategoryCode}">
       ${sub.name}
     </button>
   `).join("");
 
-  subTabs.querySelectorAll("[data-sub]").forEach(btn => {
-    btn.addEventListener("click", () => {
-      currentSubCode = String(btn.dataset.sub);
-      createSubTabs();
-      renderMenus();
-    });
-  });
+	subTabs.querySelectorAll("[data-sub]").forEach(btn => {
+		btn.addEventListener("click", () => {
+			currentSubCode = String(btn.dataset.sub);
+			createSubTabs();
+			renderMenus();
+		});
+	});
 }
 
 // ================== 메뉴 출력 ==================
 function renderMenus() {
-	  console.log("currentMainId", currentMainId);
-  console.log("currentSubCode", currentSubCode);
-  console.log("recipeList before filter", recipeList);
-  const currentMain = mainCategoryList.find(c => Number(c.categoryId) === currentMainId);
-  headerHighlight.textContent = currentMain ? currentMain.name : "";
+	console.log("currentMainId", currentMainId);
+	console.log("currentSubCode", currentSubCode);
+	console.log("recipeList before filter", recipeList);
+	const currentMain = mainCategoryList.find(c => Number(c.categoryId) === currentMainId);
+	headerHighlight.textContent = currentMain ? currentMain.name : "";
 
-  let filtered = recipeList.filter(r => Number(r.categoryId) === currentMainId);
+	let filtered = recipeList.filter(r => Number(r.categoryId) === currentMainId);
 
-  const selectedSub = subCategoryList.find(s => String(s.subCategoryCode) === currentSubCode);
+	const selectedSub = subCategoryList.find(s => String(s.subCategoryCode) === currentSubCode);
 
-  if (selectedSub && selectedSub.name !== "전체") {
-    filtered = filtered.filter(r => String(r.subCategoryCode) === currentSubCode);
-  }
+	if (selectedSub && selectedSub.name !== "전체") {
+		filtered = filtered.filter(r => String(r.subCategoryCode) === currentSubCode);
+	}
 
-  menuGrid.innerHTML = filtered.map(item => `
-    <article class="menu-card"
-             data-name="${item.name}"
-             data-price="${item.price}"
-             data-category="${item.categoryId}">
-      <div class="menu-thumb">
-        ${item.imgUrl ? `<img src="${item.imgUrl}">` : `<div>이미지</div>`}
-      </div>
-      <div class="menu-name">${item.name}</div>
-      <div class="menu-price">${formatPrice(item.price)}</div>
-    </article>
+	menuGrid.innerHTML = filtered.map(item => `
+  	  <article class="menu-card"
+     	        data-name="${item.name}"
+        	     data-price="${item.price}"
+            	 data-category="${item.categoryId}">
+	      <div class="menu-thumb">
+    		    ${item.imgUrl ? `<img src="${item.imgUrl}">` : `<div>이미지</div>`}
+      	</div>
+      	<div class="menu-name">${item.name}</div>
+      	<div class="menu-price">${formatPrice(item.price)}</div>
+    	</article>
   `).join("");
 
-  menuGrid.querySelectorAll(".menu-card").forEach(card => {
-    card.addEventListener("click", () => {
-      handleMenuClick(
-        card.dataset.name,
-        Number(card.dataset.price),
-        Number(card.dataset.category)
-      );
-    });
-  });
+	menuGrid.querySelectorAll(".menu-card").forEach(card => {
+		card.addEventListener("click", () => {
+			handleMenuClick(
+				card.dataset.name,
+				Number(card.dataset.price),
+				Number(card.dataset.category)
+			);
+		});
+	});
 }
 
 // ================== 메뉴 클릭 ==================
 function resolveMenuType(categoryId) {
-  if (categoryId === 1) return "sandwich";
-  if (categoryId === 2) return "salad";
-  if (categoryId === 3) return "side";
-  if (categoryId === 4) return "drink_soup";
-  return "";
+	if (categoryId === 1) return "sandwich";
+	if (categoryId === 2) return "salad";
+	if (categoryId === 3) return "side";
+	if (categoryId === 4) return "drink_soup";
+	return "";
 }
 
 function handleMenuClick(name, price, categoryId) {
-  const type = resolveMenuType(categoryId);
+	const type = resolveMenuType(categoryId);
 
-  if (type === "sandwich" || type === "salad") {
-    window.goOptionPage(type, name, price);
-    return;
-  }
+	if (type === "sandwich" || type === "salad") {
+		window.goOptionPage(type, name, price);
+		return;
+	}
 
-  addCartItem({
-    id: Date.now(),
-    menu: name,
-    menuType: type,
-    quantity: 1,
-    basePrice: price,
-    totalPrice: price
-  });
+	addCartItem({
+		id: Date.now(),
+		menu: name,
+		menuType: type,
+		qty: 1,
+		price: price,
+		totalPrice: price
+	});
 }
 
 // ================== 장바구니 ==================
 function getCart() {
-  return JSON.parse(sessionStorage.getItem(cartStorageKey) || "[]");
+	return JSON.parse(sessionStorage.getItem(cartStorageKey) || "[]");
 }
 
 function saveCart(cart) {
-  sessionStorage.setItem(cartStorageKey, JSON.stringify(cart));
+	sessionStorage.setItem(cartStorageKey, JSON.stringify(cart));
 }
 
 function addCartItem(item) {
-  const cart = getCart();
-  cart.push(item);
-  saveCart(cart);
-  console.log("현재 cart =", cart);
-  
-  renderCart();
+	const cart = getCart();
+	cart.push(item);
+	saveCart(cart);
+	renderCart();
 }
 
-function handleMenuClick(name, price, categoryId) {
-  const type = resolveMenuType(categoryId);
+function removeItem(id) {
+	let cart = getCart();
+	cart = cart.filter(item => item.id != id);
+	saveCart(cart);
+	renderCart();
+}
 
-  if (type === "sandwich" || type === "salad") {
-    window.goOptionPage(type, name, price);
-    return;
-  }
+function increaseQty(id) {
+	const cart = getCart();
+	const item = cart.find(item => item.id == id);
+	if (!item) return;
 
-  addCartItem({
-    id: Date.now().toString(),
-    menu: name,
-    price: price,
-    quantity: 1
-  });
+	item.qty += 1;
+	saveCart(cart);
+	renderCart();
+}
+
+function decreaseQty(id) {
+	const cart = getCart();
+	const item = cart.find(item => item.id == id);
+	if (!item) return;
+
+	if (item.qty > 1) {
+		item.qty -= 1;
+		saveCart(cart);
+	} else {
+		const newCart = cart.filter(item => item.id != id);
+		saveCart(newCart);
+	}
+
+	renderCart();
+}
+
+function getTotalAmount() {
+	const cart = getCart();
+
+	let total = 0;
+
+	cart.forEach(item => {
+		console.log("item:", item);
+		console.log("price:", item.price, typeof item.price);
+		console.log("qty:", item.qty, typeof item.qty);
+
+		total += Number(item.price) * Number(item.qty);
+	});
+
+	return total;
 }
 
 function renderCart() {
-  const cart = getCart();
+	const cart = getCart();
 
-  if (!cart.length) {
-    cartEmpty.style.display = "flex";
-    cartFilled.style.display = "none";
-    return;
-  }
+	if (!cart.length) {
+		cartEmpty.style.display = "flex";
+		cartFilled.style.display = "none";
+		cartList.innerHTML = "";
+		cartTotalPrice.innerText = "0원";
+		return;
+	}
 
-  cartEmpty.style.display = "none";
-  cartFilled.style.display = "block";
+	cartEmpty.style.display = "none";
+	cartFilled.style.display = "block";
 
-  cartList.innerHTML = cart.map(item => `
-    <div>${item.menu} - ${item.quantity}</div>
-  `).join("");
+	console.log("cart", cart);
+
+	cartList.innerHTML = cart.map(item => `
+    <div class="cart-item">
+      <div class="cart-tags">
+      	<div class="cart-tag-row">
+      		<div class="cart-tag">메뉴</div>
+          	<div class="cart-tag-value">${item.menu || ""}</div>
+        </div>
+        
+          ${item.bread ? `
+  <div class="cart-tag-row">
+    <div class="cart-tag">빵</div>
+    <div class="cart-tag-value">${item.bread}</div>
+  </div>` : ""}
+
+  ${item.cheese ? `
+  <div class="cart-tag-row">
+    <div class="cart-tag">치즈</div>
+    <div class="cart-tag-value">${item.cheese}</div>
+  </div>` : ""}
+
+  ${item.vegetable ? `
+  <div class="cart-tag-row">
+    <div class="cart-tag">야채</div>
+    <div class="cart-tag-value">${item.vegetable}</div>
+  </div>` : ""}
+
+  ${item.extra ? `
+  <div class="cart-tag-row">
+    <div class="cart-tag">추가재료</div>
+    <div class="cart-tag-value">${item.extra}</div>
+  </div>` : ""}
+
+  ${item.sauce ? `
+  <div class="cart-tag-row">
+    <div class="cart-tag">소스</div>
+    <div class="cart-tag-value">${item.sauce}</div>
+  </div>` : ""}
+        
+      </div>
+
+      <div class="cart-bottom">
+      <div class="cart-qty">
+        <span class="cart-qty-label">수량</span>
+        <button type="button" class="qty-btn" onclick="decreaseQty('${item.id}')">-</button>
+        <span class="qty-value">${item.qty}</span>
+        <button type="button" class="qty-btn" onclick="increaseQty('${item.id}')">+</button>
+      </div>
+
+      <div class="cart-price">
+        ${formatPrice(item.price * item.qty)}
+      </div>
+
+      <button type="button" class="cart-remove" onclick="removeItem('${item.id}')">×</button>
+    </div>
+  </div>
+`).join("");
+
+	cartTotalPrice.innerText = formatPrice(getTotalAmount());
 }
+
 // ================== 이동 ==================
 function moveSubTab(direction) {
-  const subs = subCategoryList.filter(s => Number(s.categoryId) === currentMainId);
-  const idx = subs.findIndex(s => String(s.subCategoryCode) === currentSubCode);
+	const subs = subCategoryList.filter(s => Number(s.categoryId) === currentMainId);
+	const idx = subs.findIndex(s => String(s.subCategoryCode) === currentSubCode);
 
-  if (idx === -1) return;
+	if (idx === -1) return;
 
-  let next = direction === "left"
-    ? (idx === 0 ? subs.length - 1 : idx - 1)
-    : (idx === subs.length - 1 ? 0 : idx + 1);
+	let next = direction === "left"
+		? (idx === 0 ? subs.length - 1 : idx - 1)
+		: (idx === subs.length - 1 ? 0 : idx + 1);
 
-  currentSubCode = String(subs[next].subCategoryCode);
-  createSubTabs();
-  renderMenus();
+	currentSubCode = String(subs[next].subCategoryCode);
+	createSubTabs();
+	renderMenus();
 }
 
 function render() {
-  createMainTabs();
-  createSubTabs();
-  renderMenus();
+	createMainTabs();
+	createSubTabs();
+	renderMenus();
 }
-
+console.log(getTotalAmount());
 // ================== 실행 ==================
 leftArrow.addEventListener("click", () => moveSubTab("left"));
 rightArrow.addEventListener("click", () => moveSubTab("right"));

@@ -39,9 +39,6 @@ manager.*.log
 .DS_Store
 Thumbs.db
 
-# MyBatis config (DB credentials)
-src/main/java/resource/mybatis-config.xml
-
 
 # lib
 **/webapp/WEB-INF/lib/*.jar 

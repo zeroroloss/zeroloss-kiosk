@@ -8,7 +8,6 @@ public final class DemoJsonUtil {
     private DemoJsonUtil() {
     }
 
-    
     public static String toJson(Object object) {
         return GSON.toJson(object);
     }

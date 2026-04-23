@@ -27,6 +27,7 @@
 
 	<mappers>
 		<mapper resource="mapper/kiosk1.xml"/>
+		<mapper resource="mapper/kiosk2.xml"/>
 
 	</mappers>
   

@@ -5,65 +5,65 @@ const emptyBox = document.getElementById('emptyBox');
 const totalPrice = document.getElementById('totalPrice');
 
 function getCart() {
-  try {
-    return JSON.parse(sessionStorage.getItem(CART_KEY)) || [];
-  } catch {
-    return [];
-  }
+	try {
+		return JSON.parse(sessionStorage.getItem(CART_KEY)) || [];
+	} catch {
+		return [];
+	}
 }
 
 function saveCart(cart) {
-  sessionStorage.setItem(CART_KEY, JSON.stringify(cart));
+	sessionStorage.setItem(CART_KEY, JSON.stringify(cart));
 }
 
 function formatPrice(v) {
-  return Number(v || 0).toLocaleString() + '원';
+	return Number(v || 0).toLocaleString() + '원';
 }
 
 function makeRows(item) {
-  const rows = [];
+	const rows = [];
 
-  if (item.menu) rows.push({ label: '메뉴', value: item.menu });
+	if (item.menu) rows.push({ label: '메뉴', value: item.menu });
 
-  if (item.menuType === 'sandwich' && item.bread) {
-    rows.push({ label: '빵', value: item.bread });
-  }
+	if (item.menuType === 'sandwich' && item.bread) {
+		rows.push({ label: '빵', value: item.bread });
+	}
 
-  if (item.cheese) rows.push({ label: '치즈', value: item.cheese });
-  if (item.vegetable) rows.push({ label: '야채', value: item.vegetable });
-  if (item.extra) rows.push({ label: '추가', value: item.extra });
-  if (item.sauce) rows.push({ label: '소스', value: item.sauce });
+	if (item.cheese) rows.push({ label: '치즈', value: item.cheese });
+	if (item.vegetable) rows.push({ label: '야채', value: item.vegetable });
+	if (item.extra) rows.push({ label: '추가', value: item.extra });
+	if (item.sauce) rows.push({ label: '소스', value: item.sauce });
 
-  return rows;
+	return rows;
 }
 
 function getItemTotal(item) {
-  return Number(item.totalPrice || item.basePrice || 0) * Number(item.quantity || 1);
+	return Number(item.totalPrice || item.basePrice || 0) * Number(item.qty || 1);
 }
 
 function getCartTotal(cart) {
-  return cart.reduce((sum, item) => sum + getItemTotal(item), 0);
+	return cart.reduce((sum, item) => sum + getItemTotal(item), 0);
 }
 
 function renderOrders() {
-  const cart = getCart();
+	const cart = getCart();
 
-  if (!cart.length) {
-    if (orderList) orderList.style.display = 'none';
-    if (emptyBox) emptyBox.style.display = 'flex';
-    if (totalPrice) totalPrice.textContent = '0원';
-    return;
-  }
+	if (!cart.length) {
+		if (orderList) orderList.style.display = 'none';
+		if (emptyBox) emptyBox.style.display = 'flex';
+		if (totalPrice) totalPrice.textContent = '0원';
+		return;
+	}
 
-  if (orderList) orderList.style.display = 'flex';
-  if (emptyBox) emptyBox.style.display = 'none';
+	if (orderList) orderList.style.display = 'flex';
+	if (emptyBox) emptyBox.style.display = 'none';
 
-  if (!orderList) return;
+	if (!orderList) return;
 
-  orderList.innerHTML = cart.map(item => {
-    const rows = makeRows(item);
+	orderList.innerHTML = cart.map(item => {
+		const rows = makeRows(item);
 
-    return `
+		return `
       <div class="order-item" data-cart-id="${item.id}">
         <div class="order-tags">
           ${rows.map(row => `
@@ -88,92 +88,90 @@ function renderOrders() {
         </div>
       </div>
     `;
-  }).join('');
+	}).join('');
 
-  if (totalPrice) {
-    totalPrice.textContent = formatPrice(getCartTotal(cart));
-  }
+	if (totalPrice) {
+		totalPrice.textContent = formatPrice(getCartTotal(cart));
+	}
 
-  bindEvents();
+	bindEvents();
 }
 
 function bindEvents() {
-  document.querySelectorAll('.order-item').forEach(el => {
-    const id = el.dataset.cartId;
+	document.querySelectorAll('.order-item').forEach(el => {
+		const id = el.dataset.cartId;
 
-    const minusBtn = el.querySelector('[data-action="minus"]');
-    const plusBtn = el.querySelector('[data-action="plus"]');
-    const removeBtn = el.querySelector('[data-action="remove"]');
+		const minusBtn = el.querySelector('[data-action="minus"]');
+		const plusBtn = el.querySelector('[data-action="plus"]');
+		const removeBtn = el.querySelector('[data-action="remove"]');
 
-    if (minusBtn) minusBtn.onclick = () => updateQty(id, -1);
-    if (plusBtn) plusBtn.onclick = () => updateQty(id, 1);
-    if (removeBtn) removeBtn.onclick = () => removeItem(id);
-  });
+		if (minusBtn) minusBtn.onclick = () => updateQty(id, -1);
+		if (plusBtn) plusBtn.onclick = () => updateQty(id, 1);
+		if (removeBtn) removeBtn.onclick = () => removeItem(id);
+	});
 }
 
 function updateQty(id, delta) {
-  const cart = getCart().map(item => {
-    if (String(item.id) !== String(id)) return item;
+	const cart = getCart().map(item => {
+		if (String(item.id) !== String(id)) return item;
 
-    const next = Math.max(1, Number(item.quantity || 1) + delta);
-    return { ...item, quantity: next };
-  });
+		const next = Math.max(1, Number(item.quantity || 1) + delta);
+		return { ...item, quantity: next };
+	});
 
-  saveCart(cart);
-  renderOrders();
+	saveCart(cart);
+	renderOrders();
 }
 
 function removeItem(id) {
-  const cart = getCart().filter(item => String(item.id) !== String(id));
-  saveCart(cart);
-  renderOrders();
+	const cart = getCart().filter(item => String(item.id) !== String(id));
+	saveCart(cart);
+	renderOrders();
 }
 
 window.goMenu = function(contextPath) {
-  location.href = contextPath + '/kiosk/menu';
+	location.href = contextPath + '/kiosk/menu';
 };
 
 window.goPay = function(contextPath) {
-    const cart = getCart();
+	const cart = getCart();
 
-    if (!cart.length) {
-        alert('장바구니가 비어있습니다.');
-        return;
-    }
+	if (!cart.length) {
+		alert('장바구니가 비어있습니다.');
+		return;
+	}
 
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = contextPath + '/kiosk/order';  //결제 method 서블릿으로 이동해야 함 나중에 수정해야 함
+	const form = document.createElement('form');
+	form.method = 'POST';
+	form.action = contextPath + '/kiosk/order';  //결제 method 서블릿으로 이동해야 함 나중에 수정해야 함
 
-    // 메뉴 개수
-    addInput(form, 'menuCount', cart.length);
+	// 메뉴 개수
+	addInput(form, 'menuCount', cart.length);
 
-    cart.forEach((item, i) => {
-        addInput(form, `recipeCode${i}`, item.recipeCode);
-        addInput(form, `qty${i}`, item.quantity || 1);
-        addInput(form, `unit_price${i}`, item.basePrice || 0);
-        addInput(form, `toasting${i}`, item.toasting || false);
-        addInput(form, `lineTotalAmount${i}`, getItemTotal(item));
+	cart.forEach((item, i) => {
+		addInput(form, `recipeCode${i}`, item.recipeCode);
+		addInput(form, `qty${i}`, item.qty || 1);
+		addInput(form, `unit_price${i}`, item.basePrice || 0);
+		addInput(form, `lineTotalAmount${i}`, getItemTotal(item));
 
-        // 옵션
-        const options = item.options || [];
-        addInput(form, `optionCount_${i}`, options.length);
-        options.forEach((opt, j) => {
-            addInput(form, `materialCode${i}_${j}`, opt.materialCode);
-            addInput(form, `extraPrice${i}_${j}`, opt.extraPrice || 0);
-        });
-    });
+		// 옵션
+		const materialCodes = item.materialCodes || [];
+		addInput(form, `optionCount_${i}`, materialCodes.length);
+		materialCodes.forEach((code, j) => {
+			addInput(form, `optMaterialCode_${i}_${j}`, code);
+		});
+	});
 
-    document.body.appendChild(form);
-    form.submit();
+	document.body.appendChild(form);
+	form.submit();
 }
 
 function addInput(form, name, value) {
-    const input = document.createElement('input');
-    input.type = 'hidden';
-    input.name = name;
-    input.value = value;
-    form.appendChild(input);
+	const input = document.createElement('input');
+	input.type = 'hidden';
+	input.name = name;
+	input.value = value;
+	form.appendChild(input);
 }
 
 renderOrders();

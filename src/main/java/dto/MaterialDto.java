@@ -5,19 +5,19 @@ public class MaterialDto {
 	private String materialCode;
 	private Integer materialGroupId;
 	private String materialName;
-	private Integer perice;
+	private Integer price;
 	
 	public MaterialDto() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public MaterialDto(String materialCode, Integer materialGroupId, String materialName, Integer perice) {
+	public MaterialDto(String materialCode, Integer materialGroupId, String materialName, Integer price) {
 		super();
 		this.materialCode = materialCode;
 		this.materialGroupId = materialGroupId;
 		this.materialName = materialName;
-		this.perice = perice;
+		this.price = price;
 	}
 
 	public String getMaterialCode() {
@@ -44,14 +44,12 @@ public class MaterialDto {
 		this.materialName = materialName;
 	}
 
-	public Integer getPerice() {
-		return perice;
+	public Integer getPrice() {
+		return price;
 	}
 
-	public void setPerice(Integer perice) {
-		this.perice = perice;
+	public void setPrice(Integer price) {
+		this.price = price;
 	}
-	
-	
 	
 }

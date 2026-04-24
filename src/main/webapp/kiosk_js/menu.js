@@ -60,7 +60,6 @@ function createSubTabs() {
 		});
 	});
 }
-
 // ================== 메뉴 출력 ==================
 function renderMenus() {
 	console.log("currentMainId", currentMainId);
@@ -78,10 +77,11 @@ function renderMenus() {
 	}
 
 	menuGrid.innerHTML = filtered.map(item => `
-  	  <article class="menu-card"
-     	        data-name="${item.name}"
-        	     data-price="${item.price}"
-            	 data-category="${item.categoryId}">
+  	 	 <article class="menu-card"
+  			 data-name="${item.name}"
+ 			 data-price="${item.price}"
+ 			 data-category="${item.categoryId}"
+ 			 data-recipe-code="${item.recipeCode}">
 	      <div class="menu-thumb">
     		    ${item.imgUrl ? `<img src="${item.imgUrl}">` : `<div>이미지</div>`}
       	</div>
@@ -92,11 +92,12 @@ function renderMenus() {
 
 	menuGrid.querySelectorAll(".menu-card").forEach(card => {
 		card.addEventListener("click", () => {
-			handleMenuClick(
-				card.dataset.name,
-				Number(card.dataset.price),
-				Number(card.dataset.category)
-			);
+			handleMenuClick({
+				recipeCode: card.dataset.recipeCode,
+				menuName: card.dataset.name,
+				price: Number(card.dataset.price),
+				categoryId: Number(card.dataset.category)
+			});
 		});
 	});
 }
@@ -110,16 +111,28 @@ function resolveMenuType(categoryId) {
 	return "";
 }
 
-function handleMenuClick(name, price, categoryId) {
+function handleMenuClick(menu) {
+	const categoryId = menu.categoryId;
+	const recipeCode = menu.recipeCode;
+	const name = menu.menuName;
+	const price = menu.price;
+
 	const type = resolveMenuType(categoryId);
 
 	if (type === "sandwich" || type === "salad") {
-		window.goOptionPage(type, name, price);
+		window.goOptionPage({
+			menuType: type,
+			recipeCode: recipeCode,
+			menuName: name,
+			price: price,
+			categoryId: categoryId
+		});
 		return;
 	}
 
 	addCartItem({
 		id: Date.now(),
+		recipeCode: menu.recipeCode,
 		menu: name,
 		menuType: type,
 		qty: 1,
@@ -157,6 +170,7 @@ function increaseQty(id) {
 	if (!item) return;
 
 	item.qty += 1;
+	item.totalPrice = Number(item.price) * Number(item.qty);
 	saveCart(cart);
 	renderCart();
 }
@@ -168,6 +182,7 @@ function decreaseQty(id) {
 
 	if (item.qty > 1) {
 		item.qty -= 1;
+		item.totalPrice = Number(item.price) * Number(item.qty);
 		saveCart(cart);
 	} else {
 		const newCart = cart.filter(item => item.id != id);

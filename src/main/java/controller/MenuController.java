@@ -19,13 +19,13 @@ import service.MenuSelectServiceImpl;
  * Servlet implementation class Menu
  */
 @WebServlet("/kiosk/menu")
-public class Menu extends HttpServlet {
+public class MenuController extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public Menu() {
+    public MenuController() {
         super();
         // TODO Auto-generated constructor stub
     }

@@ -91,19 +91,28 @@
     console.log("subCategoryList", subCategoryList);
   </script>
 
-  <script src="<%=contextPath%>/kiosk_js/menu.js"></script>
-
   <script>
-    window.goOptionPage = function(menuType, menuName, price) {
-      sessionStorage.setItem('selectedMenu', JSON.stringify({
-        menuType: menuType,
-        menuName: menuName,
-        price: price
-      }));
-      sessionStorage.setItem('optionEditMode', 'false');
-      sessionStorage.removeItem('pendingCartItem');
-      location.href = '<%=contextPath%>/kiosk_jsp/menu/option.jsp';
-    };
+  window.goOptionPage = function(menu) {
+	    const categoryId = menu.categoryId || menu.category_id;
+
+	    if (!categoryId) {
+	      alert("goOptionPage categoryId 없음");
+	      return;
+	    }
+
+	    sessionStorage.setItem('selectedMenu', JSON.stringify({
+	      recipeCode: menu.recipeCode,
+	      menuType: menu.menuType,
+	      menuName: menu.menuName,
+	      price: menu.price,
+	      categoryId: categoryId
+	    }));
+
+	    sessionStorage.setItem('optionEditMode', 'false');
+	    sessionStorage.removeItem('item');
+
+	    location.href = '<%=contextPath%>/kiosk/option?categoryId=' + categoryId;
+	  };
 
     document.getElementById('cartPayBtn').addEventListener('click', function() {
       const cart = JSON.parse(sessionStorage.getItem('cart') || '[]');
@@ -117,5 +126,6 @@
     });
     
   </script>
+    <script src="<%=contextPath%>/kiosk_js/menu.js"></script>
 </body>
 </html>

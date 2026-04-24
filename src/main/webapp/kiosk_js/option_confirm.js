@@ -1,4 +1,4 @@
-const pending = JSON.parse(sessionStorage.getItem('pendingCartItem') || 'null');
+const pending = JSON.parse(sessionStorage.getItem('item') || 'null');
 
 function moveToMenu() {
   const path = location.pathname;
@@ -10,7 +10,7 @@ function moveToMenu() {
 if (!pending) {
   alert('주문 정보 없음');
   moveToMenu();
-  throw new Error('pendingCartItem not found in sessionStorage');
+  throw new Error('item not found in sessionStorage');
 }
 
 let qty = pending.quantity || 1;
@@ -75,7 +75,7 @@ if (plusBtn) {
 /* 장바구니 처리 */
 function processCart() {
   let cart = JSON.parse(sessionStorage.getItem('cart') || '[]');
-
+  
   const item = { ...pending, quantity: qty };
 
   const same = cart.find(c =>
@@ -96,7 +96,7 @@ function processCart() {
   }
 
   sessionStorage.setItem('cart', JSON.stringify(cart));
-  sessionStorage.removeItem('pendingCartItem');
+  sessionStorage.removeItem('item');
 }
 
 /* 버튼 함수 */
@@ -111,7 +111,7 @@ window.goPay = function (contextPath) {
 };
 
 window.goBack = function (contextPath) {
-  sessionStorage.setItem('pendingCartItem', JSON.stringify({
+  sessionStorage.setItem('item', JSON.stringify({
     ...pending,
     quantity: qty
   }));

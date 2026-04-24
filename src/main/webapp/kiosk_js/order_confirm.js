@@ -134,14 +134,45 @@ window.goMenu = function(contextPath) {
 };
 
 window.goPay = function(contextPath) {
-  const cart = getCart();
+    const cart = getCart();
 
-  if (!cart.length) {
-    alert('장바구니가 비어있습니다.');
-    return;
-  }
+    if (!cart.length) {
+        alert('장바구니가 비어있습니다.');
+        return;
+    }
 
-  location.href = contextPath + '/kiosk_jsp/payment/pay_method.jsp';
-};
+    const form = document.createElement('form');
+    form.method = 'POST';
+    form.action = contextPath + '/kiosk/order';
+
+    // 메뉴 개수
+    addInput(form, 'menuCount', cart.length);
+
+    cart.forEach((item, i) => {
+        addInput(form, `recipeCode${i}`, item.recipeCode);
+        addInput(form, `qty${i}`, item.quantity || 1);
+        addInput(form, `unit_price${i}`, item.basePrice || 0);
+        addInput(form, `toasting${i}`, item.toasting || false);
+        addInput(form, `lineTotalAmount${i}`, getItemTotal(item));
+
+        // 옵션
+        const options = item.options || [];
+        addInput(form, `optionCount_${i}`, options.length);
+        options.forEach((opt, j) => {
+            addInput(form, `materialCode${i}_${j}`, opt.materialCode);
+            addInput(form, `extraPrice${i}_${j}`, opt.extraPrice || 0);
+        });
+    });
+
+    document.body.appendChild(form);
+    form.submit();
+
+function addInput(form, name, value) {
+    const input = document.createElement('input');
+    input.type = 'hidden';
+    input.name = name;
+    input.value = value;
+    form.appendChild(input);
+}
 
 renderOrders();

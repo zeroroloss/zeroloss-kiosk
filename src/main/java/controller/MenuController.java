@@ -12,8 +12,8 @@ import javax.servlet.http.HttpServletResponse;
 import dto.MainCategoryDto;
 import dto.RecipeDto;
 import dto.SubCategoryDto;
-import service.MenuSelectService;
-import service.MenuSelectServiceImpl;
+import service.menu.MenuSelectService;
+import service.menu.MenuSelectServiceImpl;
 
 /**
  * Servlet implementation class Menu

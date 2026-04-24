@@ -2,6 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="mapper.kiosk2">
+	<!--로그인 -->
 	<select id="loginKiosk" parameterType="map" resultType="account">
         SELECT 
             a.account_id, 
@@ -43,6 +44,36 @@
         WHERE branch_code = #{branchCode}
           AND status = 'NORMAL'
         ORDER BY kiosk_id ASC
+    </select>
+    
+    <!-- orders INSERT -->
+    <insert id="insertOrder" parameterType="orders" useGeneratedKeys="true" keyProperty="orderId">
+        INSERT INTO orders (branch_code, kiosk_id, order_type, total_amount)
+        VALUES (#{branchCode}, #{kioskId}, #{orderType}, #{totalAmount})
+    </insert>
+
+    <!-- order_menu INSERT -->
+    <insert id="insertOrderMenu" parameterType="orderMenu" useGeneratedKeys="true" keyProperty="orderMenuId">
+        INSERT INTO order_menu (order_id, recipe_code, qty, toasting, unit_price, line_total_amount)
+        VALUES (#{orderId}, #{recipeCode}, #{qty}, #{toasting}, #{unit_price}, #{lineTotalAmount})
+    </insert>
+
+    <!-- order_option INSERT -->
+    <insert id="insertOrderOption" parameterType="orderOption">
+        INSERT INTO order_option (order_menu_id, material_code, extra_price)
+        VALUES (#{orderMenuId}, #{materialCode}, #{extraPrice})
+    </insert>
+
+    <!-- 주문 완료 조회 -->
+    <select id="selectOrder" parameterType="int" resultType="orders">
+        SELECT
+            order_id        AS orderId,
+            branch_code     AS branchCode,
+            kiosk_id        AS kioskId,
+            order_type      AS orderType,
+            total_amount    AS totalAmount
+        FROM orders
+        WHERE order_id = #{orderId}
     </select>
 	
 </mapper>

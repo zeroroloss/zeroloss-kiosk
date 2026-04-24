@@ -11,8 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import dto.CategoryMaterialDto;
 import dto.MaterialDto;
-import service.OptionSelectService;
-import service.OptionSelectServiceImpl;
+import service.menu.OptionSelectService;
+import service.menu.OptionSelectServiceImpl;
 
 /**
  * Servlet implementation class OptionController

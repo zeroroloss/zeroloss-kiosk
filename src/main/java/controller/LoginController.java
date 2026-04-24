@@ -15,12 +15,12 @@ import com.google.gson.Gson;
 import dto.AccountDto;
 import dto.BranchDto;
 import dto.KioskDto;
-import service.AccountService;
-import service.AccountServiceImpl;
-import service.BranchService;
-import service.BranchServiceImpl;
-import service.KioskService;
-import service.KioskServiceImpl;
+import service.main.AccountService;
+import service.main.AccountServiceImpl;
+import service.main.BranchService;
+import service.main.BranchServiceImpl;
+import service.main.KioskService;
+import service.main.KioskServiceImpl;
 
 /**
  * Servlet implementation class LoginController
@@ -107,7 +107,7 @@ public class LoginController extends HttpServlet {
 		    // 로그인 성공 → 세션 저장
 		    HttpSession session = request.getSession();
 		    session.setAttribute("accountId", account.getAccount_id());
-		    session.setAttribute("branch_code", account.getBranch_code());
+		    session.setAttribute("branchCode", account.getBranch_code());
 		    session.setAttribute("branchName", account.getBranchName());
 		    session.setAttribute("kiosk_id", account.getKiosk_id());
 		    session.setAttribute("empName", account.getName());

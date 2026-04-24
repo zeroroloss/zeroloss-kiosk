@@ -15,8 +15,24 @@ window.addEventListener('DOMContentLoaded', function () {
   bindImageFallback('eatInImg', 'eatInFallback', 'flex');
   bindImageFallback('takeOutImg', 'takeOutFallback', 'flex');
   bindImageFallback('adImg', 'adFallback', 'block');
-});
+  
+  function resetSession() {
+    sessionStorage.removeItem("cart");
+    sessionStorage.removeItem("totalAmount");
+    sessionStorage.removeItem("Item");
+  }
+  
+  const eatInBtn = document.getElementById("eatInBtn");
+  const takeOutBtn = document.getElementById("takeOutBtn");
 
+  if (eatInBtn) {
+    eatInBtn.addEventListener("click", resetSession);
+  }
+
+  if (takeOutBtn) {
+    takeOutBtn.addEventListener("click", resetSession);
+  }
+});
 function closePopup() {
     document.getElementById('welcomePopup').style.display = 'none';
 }

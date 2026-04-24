@@ -388,7 +388,7 @@ alert(JSON.stringify(item, null, 2));
 	sessionStorage.setItem(OPTION_EDIT_MODE_KEY, 'true');
 	saveOptionState();
 	sessionStorage.setItem('item', JSON.stringify(item));
-	location.href = contextPath + '/kiosk_jsp/menu/option_confirm.jsp';
+	/*location.href = contextPath + '/kiosk_jsp/menu/option_confirm.jsp';*/
 };
 
 /* ===== 스크롤 연동 ===== */

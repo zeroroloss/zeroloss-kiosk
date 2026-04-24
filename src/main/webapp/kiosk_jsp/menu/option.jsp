@@ -75,8 +75,8 @@ document.getElementById('closeBtn').onclick = function () {
   window.goBackMenu(contextPath);
 };
 
-document.getElementById('nextBtn').onclick = function () {
-  window.goNext(contextPath);
+ document.getElementById('nextBtn').onclick = function () {
+   window.goNext(contextPath);
 };
 </script>
 

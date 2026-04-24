@@ -43,7 +43,7 @@ pageEncoding="UTF-8"%>
             </button>
         </form>
 
-        <form method="POST" action="${contextPath}/kiosk/start">
+        <form method="POST" action="${contextPath}/kiosk/start" >
             <input type="hidden" name="orderType" value="TOGO"/>
             <button type="submit" class="select-card" id="takeOutBtn">
                 <div class="select-image-box">

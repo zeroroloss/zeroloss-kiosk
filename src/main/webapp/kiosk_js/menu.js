@@ -152,7 +152,17 @@ function saveCart(cart) {
 
 function addCartItem(item) {
 	const cart = getCart();
-	cart.push(item);
+	
+	const newItem = cart.find(cartItem =>
+		cartItem.recipeCode == item.recipeCode &&
+		JSON.stringify(cartItem.options) == JSON.stringify(cartItem.options) 
+	);
+	
+	if(newItem) { 
+		newItem.qty += item.qty1 || 1;	
+	} else {
+		cart.push(item);
+	}
 	saveCart(cart);
 	renderCart();
 }

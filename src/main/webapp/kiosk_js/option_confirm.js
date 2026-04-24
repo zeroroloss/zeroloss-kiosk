@@ -9,7 +9,7 @@ function moveToMenu() {
 
 if (!pending) {
   alert('주문 정보 없음');
-  moveToMenu();
+  moveToMenu(); 
   throw new Error('item not found in sessionStorage');
 }
 
@@ -102,12 +102,12 @@ function processCart() {
 /* 버튼 함수 */
 window.addCart = function (contextPath) {
   processCart();
-  location.href = contextPath + '/kiosk_jsp/menu/menu.jsp';
+  location.href = contextPath + '/kiosk/menu';
 };
 
 window.goPay = function (contextPath) {
   processCart();
-  location.href = contextPath + '/kiosk_jsp/menu/order_confirm.jsp';
+  location.href = contextPath + '/kiosk/orderCon';
 };
 
 window.goBack = function (contextPath) {
@@ -115,7 +115,7 @@ window.goBack = function (contextPath) {
     ...pending,
     quantity: qty
   }));
-  location.href = contextPath + '/kiosk_jsp/menu/option.jsp';
+  location.href = contextPath + '/kiosk/option';
 };
 
 render();

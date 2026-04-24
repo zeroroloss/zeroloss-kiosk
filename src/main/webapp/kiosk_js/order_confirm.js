@@ -130,7 +130,7 @@ function removeItem(id) {
 }
 
 window.goMenu = function(contextPath) {
-  location.href = contextPath + '/kiosk_jsp/menu/menu.jsp';
+  location.href = contextPath + '/kiosk/menu';
 };
 
 window.goPay = function(contextPath) {
@@ -143,7 +143,7 @@ window.goPay = function(contextPath) {
 
     const form = document.createElement('form');
     form.method = 'POST';
-    form.action = contextPath + '/kiosk/order';
+    form.action = contextPath + '/kiosk/order';  //결제 method 서블릿으로 이동해야 함 나중에 수정해야 함
 
     // 메뉴 개수
     addInput(form, 'menuCount', cart.length);
@@ -166,6 +166,7 @@ window.goPay = function(contextPath) {
 
     document.body.appendChild(form);
     form.submit();
+}
 
 function addInput(form, name, value) {
     const input = document.createElement('input');

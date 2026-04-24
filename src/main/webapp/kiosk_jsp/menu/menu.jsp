@@ -122,7 +122,7 @@
         return;
       }
 
-      location.href = '<%=contextPath%>/kiosk_jsp/menu/order_confirm.jsp';
+      location.href = '<%=contextPath%>/kiosk/orderCon';
     });
     
   </script>

@@ -354,7 +354,7 @@ window.goBackMenu = function(contextPath) {
 	sessionStorage.removeItem(OPTION_EDIT_MODE_KEY);
 	sessionStorage.removeItem(OPTION_STATE_KEY);
 	sessionStorage.removeItem('item');
-	location.href = contextPath + '/kiosk_jsp/menu/menu.jsp';
+	location.href = contextPath + '/kiosk/menu';
 };
 
 window.goNext = function(contextPath) {

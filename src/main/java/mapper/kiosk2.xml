@@ -54,15 +54,17 @@
 
     <!-- order_menu INSERT -->
     <insert id="insertOrderMenu" parameterType="orderMenu" useGeneratedKeys="true" keyProperty="orderMenuId">
-        INSERT INTO order_menu (order_id, recipe_code, qty, toasting, unit_price, line_total_amount)
-        VALUES (#{orderId}, #{recipeCode}, #{qty}, #{toasting}, #{unit_price}, #{lineTotalAmount})
+        INSERT INTO order_menu (order_id, recipe_code, qty, unit_price, line_total_amount)
+        VALUES (#{orderId}, #{recipeCode}, #{qty}, #{unit_price}, #{lineTotalAmount})
     </insert>
 
     <!-- order_option INSERT -->
     <insert id="insertOrderOption" parameterType="orderOption">
-        INSERT INTO order_option (order_menu_id, material_code, extra_price)
-        VALUES (#{orderMenuId}, #{materialCode}, #{extraPrice})
-    </insert>
+    	INSERT INTO order_option (order_menu_id, material_code, extra_price)
+    	SELECT #{orderMenuId}, #{materialCode}, COALESCE(m.price, 0)
+   		FROM material m
+    	WHERE m.material_code = #{materialCode}
+	</insert>
 
     <!-- 주문 완료 조회 -->
     <select id="selectOrder" parameterType="int" resultType="orders">
@@ -75,5 +77,18 @@
         FROM orders
         WHERE order_id = #{orderId}
     </select>
+    
+    <!-- recipe 가격 조회 -->
+	<select id="selectRecipePrice" parameterType="String" resultType="int">
+    	SELECT price FROM recipe
+    	WHERE recipe_code = #{recipeCode}
+	</select>
+
+<!-- material 가격 조회 (NULL이면 0) -->
+	<select id="selectMaterialPrice" parameterType="String" resultType="int">
+    	SELECT COALESCE(price, 0)
+    	FROM material
+    	WHERE material_code = #{materialCode}
+	</select>
 	
 </mapper>

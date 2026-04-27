@@ -79,7 +79,6 @@ public class OrderController extends HttpServlet {
 				orderMenuDto.setRecipeCode(request.getParameter("recipeCode" + i));
 				orderMenuDto.setQty(Integer.parseInt(request.getParameter("qty" + i)));
 				orderMenuDto.setUnit_price(Integer.parseInt(request.getParameter("unit_price" + i)));
-				orderMenuDto.setToasting(Boolean.parseBoolean(request.getParameter("toasting" + i)));
 				orderMenuDto.setLineTotalAmount(Integer.parseInt(request.getParameter("lineTotalAmount" + i)));
 				orderMenuList.add(orderMenuDto);
 
@@ -89,7 +88,6 @@ public class OrderController extends HttpServlet {
 				for (int j = 0; j < optionCount; j++) {
 					OrderOptionDto optionDto = new OrderOptionDto();
 					optionDto.setMaterialCode(request.getParameter("materialCode" + i + "_" + j));
-					optionDto.setExtraPrice(Integer.parseInt(request.getParameter("extraPrice" + i + "_" + j)));
 					options.add(optionDto);
 				}
 				orderOptionList.add(options);

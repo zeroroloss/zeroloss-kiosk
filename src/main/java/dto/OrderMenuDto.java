@@ -7,14 +7,13 @@ public class OrderMenuDto {
 	private Integer qty;
 	private Integer unit_price;
 	private Integer lineTotalAmount;
-	private Boolean toasting;
 	
 	public OrderMenuDto() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 	public OrderMenuDto(Integer orderMenuId, Integer orderId, String recipeCode, Integer qty, Integer unit_price,
-			Integer lineTotalAmount, Boolean toasting) {
+			Integer lineTotalAmount) {
 		super();
 		this.orderMenuId = orderMenuId;
 		this.orderId = orderId;
@@ -22,7 +21,6 @@ public class OrderMenuDto {
 		this.qty = qty;
 		this.unit_price = unit_price;
 		this.lineTotalAmount = lineTotalAmount;
-		this.toasting = toasting;
 	}
 	
 	public Integer getOrderMenuId() {
@@ -60,11 +58,5 @@ public class OrderMenuDto {
 	}
 	public void setLineTotalAmount(Integer lineTotalAmount) {
 		this.lineTotalAmount = lineTotalAmount;
-	}
-	public Boolean getToasting() {
-		return toasting;
-	}
-	public void setToasting(Boolean toasting) {
-		this.toasting = toasting;
 	}
 }

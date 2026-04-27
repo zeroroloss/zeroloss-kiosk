@@ -73,5 +73,9 @@ window.goStart = function (contextPath) {
   sessionStorage.setItem('branchId', branchId);
   sessionStorage.setItem('kioskId', kioskId);
 
-  location.href = contextPath + '/kiosk_jsp/main/start.jsp';
+  location.href = contextPath + '/kiosk/start';
 };
+
+
+// 5초 후 자동으로 닫기
+setTimeout(closePopup, 5000);

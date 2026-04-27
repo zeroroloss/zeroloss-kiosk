@@ -33,9 +33,3 @@ window.addEventListener('DOMContentLoaded', function () {
     takeOutBtn.addEventListener("click", resetSession);
   }
 });
-function closePopup() {
-    document.getElementById('welcomePopup').style.display = 'none';
-}
-
-// 5초 후 자동으로 닫기
-setTimeout(closePopup, 5000);

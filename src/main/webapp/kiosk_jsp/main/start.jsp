@@ -65,16 +65,6 @@ pageEncoding="UTF-8"%>
     </div>
 </section>
 
-<!-- 로그인 팝업 -->
-<div class="popup-overlay" id="welcomePopup">
-    <div class="popup-box">
-        <p class="popup-branch">${sessionScope.branchName} · ${sessionScope.kiosk_id}번 키오스크</p>
-        <p class="popup-name">${sessionScope.empName} 매니저님</p>
-        <p class="popup-welcome">환영합니다!</p>
-        <button class="popup-btn" onclick="closePopup()">시작하기</button>
-    </div>
-</div>
-
 </div>
 
 <script src="${contextPath}/kiosk_js/start.js"></script>

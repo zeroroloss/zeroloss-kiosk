@@ -52,7 +52,7 @@ window.goBack = function(contextPath) {
     location.href = contextPath + '/kiosk_jsp/menu/order_confirm.jsp';
 };
 
-window.goNext = function() {
+/*window.goNext = function() {
     const cartData = getCart();
     const items = cartData.items || [];
 
@@ -84,7 +84,7 @@ window.goNext = function() {
         addInput(form, `materialPrice${i}_${j}`, option.price || 0);
         addInput(form, `materialGroupId${i}_${j}`, option.materialGroupId);
     });
-});
+});*/
 
     document.body.appendChild(form);
     form.submit();

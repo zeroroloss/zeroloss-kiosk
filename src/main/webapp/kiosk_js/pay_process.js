@@ -52,8 +52,8 @@ if (!cart.length) {
 
 const method = sessionStorage.getItem(PAYMENT_METHOD_KEY) || 'card';
 const meta = methodMeta[method];
-const totalAmount = getCartTotal(cart);
-const orderId = 'ZEROLOSS_' + Date.now();
+/*const totalAmount = getCartTotal(cart);
+const orderId = 'ZEROLOSS_' + Date.now();*/
 
 if (paymentAmount) paymentAmount.textContent = formatPrice(totalAmount);
 if (methodBadge)   methodBadge.textContent   = meta.label;
@@ -78,13 +78,7 @@ const payBtn = document.getElementById('payBtn');
 if (payBtn) {
     payBtn.addEventListener('click', async () => {
         try {
-            // cart 세션에 저장 (success 콜백에서 DB 저장에 필요)
-            await fetch(contextPath + '/kiosk/payment/saveCart', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ cart: cart })
-            });
-
+           
             await paymentWidget.requestPayment({
                 orderId: orderId,
                 orderName: '제로로스 키오스크 주문',

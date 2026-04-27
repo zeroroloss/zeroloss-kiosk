@@ -75,6 +75,11 @@ window.contextPath = "${contextPath}";
 
 </section>
 </div>
+<script>
+  window.contextPath = "${contextPath}";
+  window.orderId = "${sessionScope.orderId}";       <%-- 세션에서 --%>
+  window.totalAmount = ${sessionScope.totalAmount}; <%-- 세션에서 --%>
+</script>
 
 <!-- 토스 SDK -->
 <script src="https://js.tosspayments.com/v2/standard"></script>

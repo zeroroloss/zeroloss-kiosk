@@ -166,53 +166,78 @@ window.goMenu = function() {
 	location.href = contextPath + "/kiosk/menu";
 };
 
-window.goPay = function() {
-	const cart = getCart();
-	const items = cart.items || [];
+window.goPay = async function() {
+    const cart = getCart();
+    const items = cart.items || [];
 
-	if (!items.length) {
-		alert("장바구니가 비어있습니다.");
-		return;
-	}
+    if (!items.length) {
+        alert("장바구니가 비어있습니다.");
+        return;
+    }
 
-	/*const form = document.createElement("form");
-	form.method = "POST";
-	form.action = contextPath + "/kiosk/order";
+    try {
+        // ✅ FormData 빌드 (기존 주석 코드 재활용)
+        const params = new URLSearchParams();
+params.append("totalAmount", cart.totalAmount || 0);
+params.append("menuCount", items.length);
 
-	addInput(form, "orderId", cart.orderId || "");
-	addInput(form, "orderType", cart.orderType || "");
-	addInput(form, "totalAmount", cart.totalAmount || 0);
-	addInput(form, "menuCount", items.length);
+items.forEach((item, i) => {
+    params.append(`recipeCode${i}`, item.recipeCode);
+    params.append(`menuName${i}`, item.menuName);
+    params.append(`qty${i}`, item.qty || 1);
+    params.append(`unit_price${i}`, item.price || 0);
+    params.append(`lineTotalAmount${i}`, getItemTotal(item));
 
-	items.forEach((item, i) => {
-		addInput(form, `recipeCode${i}`, item.recipeCode);
-		addInput(form, `menuName${i}`, item.menuName);
-		addInput(form, `qty${i}`, item.qty || 1);
-		addInput(form, `unitPrice${i}`, item.price || 0);
-		addInput(form, `lineTotalAmount${i}`, getItemTotal(item));
+    const options = item.options || [];
+    params.append(`optionCount${i}`, options.length);
 
-		const options = item.options || [];
-		addInput(form, `optionCount_${i}`, options.length);
+    options.forEach((option, j) => {
+        params.append(`materialCode${i}_${j}`, option.materialCode);
+    });
+});
 
-		options.forEach((option, j) => {
-			addInput(form, `optMaterialCode_${i}_${j}`, option.materialCode);
-			addInput(form, `optMaterialName_${i}_${j}`, option.materialName);
-			addInput(form, `optMaterialPrice_${i}_${j}`, option.price || 0);
-			addInput(form, `optMaterialGroupId_${i}_${j}`, option.materialGroupId);
-		});
-	});*/
-	location.href = contextPath + '/kiosk/order';
+const res = await fetch(contextPath + "/kiosk/order", {
+    method: "POST",
+    headers: { "Content-Type": "application/x-www-form-urlencoded" },
+    body: params.toString()
+});
 
-	/*document.body.appendChild(form);
-	form.submit();*/
+        const data = await res.json();
+
+        if (!data.success) {
+            alert("주문 저장에 실패했습니다.");
+            return;
+        }
+
+        // ✅ 토스 결제 요청
+        const tossPayments = TossPayments("test_ck_ex6BJGQOVDEwyJne2NdarW4w2zNb");
+        const payment = tossPayments.payment({
+            customerKey: "KIOSK_" + Date.now()
+        });
+
+        await payment.requestPayment({
+            method: "CARD",
+            amount: {
+                currency: "KRW",
+                value: cart.totalAmount
+            },
+            orderId: data.orderId,
+            orderName: "제로로스 키오스크 주문",
+            successUrl: location.origin + contextPath + "/kiosk/payment/success",
+            failUrl:    location.origin + contextPath + "/kiosk/payment/fail",
+        });
+
+    } catch (e) {
+        alert("결제 중 오류가 발생했습니다: " + e.message);
+    }
 };
 
-/*function addInput(form, name, value) {
+function addInput(form, name, value) {
 	const input = document.createElement("input");
 	input.type = "hidden";
 	input.name = name;
 	input.value = value;
 	form.appendChild(input);
-}*/
+}
 
 renderOrders();

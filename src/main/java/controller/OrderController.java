@@ -12,6 +12,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.json.simple.JSONObject;
+
 import dto.OrderMenuDto;
 import dto.OrderOptionDto;
 import dto.OrdersDto;
@@ -39,8 +41,7 @@ public class OrderController extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	        throws ServletException, IOException {
-		request.getRequestDispatcher("/kiosk_jsp/payment/pay_method.jsp")
-        .forward(request, response);
+		response.sendRedirect(request.getContextPath() + "/kiosk/start");
 	}
 
 	/**
@@ -54,8 +55,10 @@ public class OrderController extends HttpServlet {
 		// 세션이 null이거나 accountid가 없을때 로그인화면으로
 		HttpSession session = request.getSession(false);
 		if (session == null || session.getAttribute("accountId") == null) {
-			response.sendRedirect(request.getContextPath() + "/kiosk/login");
-			return;
+		    response.setContentType("application/json;charset=UTF-8");
+		    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		    response.getWriter().write("{\"success\":false,\"message\":\"로그인이 필요합니다\"}");
+		    return;
 		}
 
 		try {
@@ -103,14 +106,19 @@ public class OrderController extends HttpServlet {
 			// DB 저장
 			OrderService orderService = new OrderServiceImpl();
 			orderService.insertFullOrder(ordersDto, orderMenuList, orderOptionList);
-
-			// 완료 화면으로
-			response.sendRedirect(request.getContextPath() + "/kiosk/complete");
-
+			JSONObject res = new JSONObject();
+			
+			res.put("success", true);
+			res.put("orderId",ordersDto.getOrderId());
+			res.put("totalAmount",ordersDto.getTotalAmount());
+			
+			response.setContentType("application/json;charset=UTF-8");
+			response.getWriter().write(res.toJSONString());
 		} catch (Exception e) {
-			e.printStackTrace();
-			request.setAttribute("errorMsg", "주문 처리 중 오류가 발생했습니다.");
-			request.getRequestDispatcher("/kiosk_jsp/common/error.jsp").forward(request, response);
+		    e.printStackTrace();
+		    response.setContentType("application/json;charset=UTF-8");
+		    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+		    response.getWriter().write("{\"success\":false,\"message\":\"주문 처리 중 오류가 발생했습니다\"}");
 		}
 	}
 }

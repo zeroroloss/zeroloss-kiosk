@@ -60,7 +60,7 @@ pageEncoding="UTF-8"%>
 <section class="ad-section">
     <div class="ad-title">이달의 프로모션</div>
     <div class="ad-box">
-        <img id="adImg" src="${contextPath}/images/ad_banner.png" alt="광고 배너"/>
+        <img id="adImg" src="${contextPath}/upload/images/AD.png" alt="광고 배너"/>
         <div id="adFallback" class="img-fallback ad-fallback">광고 영역</div>
     </div>
 </section>

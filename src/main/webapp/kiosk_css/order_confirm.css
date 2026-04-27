@@ -224,6 +224,103 @@
     width: 100vw;
     height: 100vh;
   }
+/* =========================
+   결제 모달
+========================= */
+#payment-modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#payment-modal-inner {
+    background: var(--white);
+    width: 900px;
+    max-height: 1600px;
+    border-radius: 32px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+}
+
+/* 모달 헤더 */
+#payment-modal-header {
+    background: var(--green);
+    color: var(--white);
+    padding: 36px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 32px 32px 0 0;
+    flex: 0 0 auto;
+}
+
+#payment-modal-header h2 {
+    margin: 0;
+    font-size: 52px;
+    font-weight: 800;
+}
+
+#payment-modal-close {
+    background: rgba(255,255,255,0.2);
+    color: var(--white);
+    border-radius: 999px;
+    width: 64px;
+    height: 64px;
+    font-size: 36px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* 위젯 영역 */
+#payment-modal-body {
+    padding: 32px 40px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+#payment-widget {
+    width: 100%;
+}
+
+#agreement {
+    width: 100%;
+    margin-top: 16px;
+}
+
+/* 모달 푸터 */
+#payment-modal-footer {
+    padding: 28px 40px;
+    border-top: 2px solid var(--line);
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 16px;
+    flex: 0 0 auto;
+}
+
+#payment-cancel-btn {
+    height: 96px;
+    border-radius: 16px;
+    border: 2px solid var(--line);
+    background: var(--white);
+    color: var(--black);
+    font-size: 34px;
+    font-weight: 700;
+}
+
+#payment-confirm-btn {
+    height: 96px;
+    border-radius: 16px;
+    background: var(--yellow);
+    color: var(--black);
+    font-size: 34px;
+    font-weight: 800;
+}
 
   .panel-title { font-size: 7vw; }
   .order-tag { font-size: 2.5vw; }

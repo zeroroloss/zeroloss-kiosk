@@ -33,7 +33,7 @@ function clearKioskSession() {
 window.goHome = function(contextPath) {
   if (timerId) clearInterval(timerId);
   clearKioskSession();
-  location.href = contextPath + '/kiosk_jsp/main/test_select.jsp';
+  location.href = contextPath + '/kiosk/start';
 };
 
 /* ===== 렌더 ===== */

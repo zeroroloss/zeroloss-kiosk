@@ -58,5 +58,6 @@
 </script>
 
 <script src="<%=contextPath%>/kiosk_js/option_confirm.js"></script>
+<script src="<%=contextPath%>/kiosk_js/timer.js"></script>
 </body>
 </html>

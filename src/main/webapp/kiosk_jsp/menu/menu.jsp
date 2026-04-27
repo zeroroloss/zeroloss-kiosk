@@ -119,5 +119,6 @@
   });
 </script>
     <script src="<%=contextPath%>/kiosk_js/menu.js"></script>
+    <script src="<%=contextPath%>/kiosk_js/timer.js"></script>
 </body>
 </html>

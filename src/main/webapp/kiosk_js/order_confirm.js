@@ -223,7 +223,7 @@ const res = await fetch(contextPath + "/kiosk/order", {
         }
 
         // ✅ 토스 결제 요청
-        const tossPayments = TossPayments("test_ck_ex6BJGQOVDEwyJne2NdarW4w2zNb");
+        const tossPayments = TossPayments("");
         const payment = tossPayments.payment({
             customerKey: "KIOSK_" + Date.now()
         });

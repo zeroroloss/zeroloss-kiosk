@@ -13,7 +13,7 @@ import org.json.simple.parser.JSONParser;
 
 public class TossPaymentServiceImpl implements TossPaymentService {
 	
-	private static final String SECRET_KEY = "test_sk_4yKeq5bgrpPPqezbYmvJrGX0lzW6";
+	private static final String SECRET_KEY = "";
 
 	@Override
 	public String confirmPayment(String paymentKey, String orderId, int amount) throws Exception {

@@ -1,4 +1,5 @@
 const cartStorageKey = "cart";
+const itemStorageKey = "item";
 
 // DB 기준 상태값
 let currentMainId = mainCategoryList.length ? Number(mainCategoryList[0].categoryId) : null;
@@ -15,6 +16,10 @@ const leftArrow = document.getElementById("leftArrow");
 const rightArrow = document.getElementById("rightArrow");
 const headerHighlight = document.getElementById("headerHighlight");
 
+function createId() {
+	return Date.now() + "_" + Math.random().toString(36).substring(2, 8);
+}
+
 function formatPrice(value) {
 	return `${Number(value || 0).toLocaleString()}원`;
 }
@@ -27,11 +32,11 @@ function initCurrentSubCategory() {
 // ================== 메뉴 탭 ==================
 function createMainTabs() {
 	mainTabs.innerHTML = mainCategoryList.map(cat => `
-    <button class="tab ${Number(cat.categoryId) === currentMainId ? "active" : ""}"
-            data-id="${cat.categoryId}">
-      ${cat.name}
-    </button>
-  `).join("");
+		<button class="tab ${Number(cat.categoryId) === currentMainId ? "active" : ""}"
+			data-id="${cat.categoryId}">
+			${cat.name}
+		</button>
+	`).join("");
 
 	mainTabs.querySelectorAll("[data-id]").forEach(btn => {
 		btn.addEventListener("click", () => {
@@ -46,11 +51,11 @@ function createSubTabs() {
 	const subs = subCategoryList.filter(s => Number(s.categoryId) === currentMainId);
 
 	subTabs.innerHTML = subs.map(sub => `
-    <button class="tab sub ${String(sub.subCategoryCode) === currentSubCode ? "active" : ""}"
-            data-sub="${sub.subCategoryCode}">
-      ${sub.name}
-    </button>
-  `).join("");
+		<button class="tab sub ${String(sub.subCategoryCode) === currentSubCode ? "active" : ""}"
+			data-sub="${sub.subCategoryCode}">
+			${sub.name}
+		</button>
+	`).join("");
 
 	subTabs.querySelectorAll("[data-sub]").forEach(btn => {
 		btn.addEventListener("click", () => {
@@ -60,11 +65,9 @@ function createSubTabs() {
 		});
 	});
 }
+
 // ================== 메뉴 출력 ==================
 function renderMenus() {
-	console.log("currentMainId", currentMainId);
-	console.log("currentSubCode", currentSubCode);
-	console.log("recipeList before filter", recipeList);
 	const currentMain = mainCategoryList.find(c => Number(c.categoryId) === currentMainId);
 	headerHighlight.textContent = currentMain ? currentMain.name : "";
 
@@ -77,18 +80,18 @@ function renderMenus() {
 	}
 
 	menuGrid.innerHTML = filtered.map(item => `
-  	 	 <article class="menu-card"
-  			 data-name="${item.name}"
- 			 data-price="${item.price}"
- 			 data-category="${item.categoryId}"
- 			 data-recipe-code="${item.recipeCode}">
-	      <div class="menu-thumb">
-    		    ${item.imgUrl ? `<img src="${item.imgUrl}">` : `<div>이미지</div>`}
-      	</div>
-      	<div class="menu-name">${item.name}</div>
-      	<div class="menu-price">${formatPrice(item.price)}</div>
-    	</article>
-  `).join("");
+		<article class="menu-card"
+			data-name="${item.name}"
+			data-price="${item.price}"
+			data-category="${item.categoryId}"
+			data-recipe-code="${item.recipeCode}">
+			<div class="menu-thumb">
+				${item.imgUrl ? `<img src="${item.imgUrl}">` : `<div>이미지</div>`}
+			</div>
+			<div class="menu-name">${item.name}</div>
+			<div class="menu-price">${formatPrice(item.price)}</div>
+		</article>
+	`).join("");
 
 	menuGrid.querySelectorAll(".menu-card").forEach(card => {
 		card.addEventListener("click", () => {
@@ -111,117 +114,147 @@ function resolveMenuType(categoryId) {
 	return "";
 }
 
+function createBaseItem(menu) {
+	const menuType = resolveMenuType(menu.categoryId);
+
+	return {
+		id: createId(),
+		recipeCode: menu.recipeCode,
+		menuName: menu.menuName,
+		menuType: menuType,
+		categoryId: menu.categoryId,
+		qty: 1,
+		price: Number(menu.price || 0),
+		totalPrice: Number(menu.price || 0),
+		options: []
+	};
+}
+
 function handleMenuClick(menu) {
-	const categoryId = menu.categoryId;
-	const recipeCode = menu.recipeCode;
-	const name = menu.menuName;
-	const price = menu.price;
+	const item = createBaseItem(menu);
 
-	const type = resolveMenuType(categoryId);
-
-	if (type === "sandwich" || type === "salad") {
-		window.goOptionPage({
-			menuType: type,
-			recipeCode: recipeCode,
-			menuName: name,
-			price: price,
-			categoryId: categoryId
-		});
+	if (item.menuType === "sandwich" || item.menuType === "salad") {
+		window.goOptionPage(item);
 		return;
 	}
 
-	addCartItem({
-		id: Date.now(),
-		recipeCode: menu.recipeCode,
-		menu: name,
-		menuType: type,
-		qty: 1,
-		price: price,
-		totalPrice: price
-	});
+	addCartItem(item);
 }
 
 // ================== 장바구니 ==================
+function createEmptyCart() {
+	return {
+		orderType: sessionStorage.getItem("orderType") || null,
+		totalAmount: 0,
+		items: []
+	};
+}
+
 function getCart() {
-	return JSON.parse(sessionStorage.getItem(cartStorageKey) || "[]");
+	return JSON.parse(sessionStorage.getItem(cartStorageKey) || "null") || createEmptyCart();
 }
 
 function saveCart(cart) {
+	cart.totalAmount = calculateTotalAmount(cart.items);
 	sessionStorage.setItem(cartStorageKey, JSON.stringify(cart));
+}
+
+function calculateTotalAmount(items = []) {
+	return items.reduce((total, item) => {
+		return total + Number(item.price || 0) * Number(item.qty || 1);
+	}, 0);
+}
+
+function isSameOptions(options1 = [], options2 = []) {
+	return JSON.stringify(options1) === JSON.stringify(options2);
 }
 
 function addCartItem(item) {
 	const cart = getCart();
-	
-	const newItem = cart.find(cartItem =>
+
+	const sameItem = cart.items.find(cartItem =>
 		cartItem.recipeCode == item.recipeCode &&
-		JSON.stringify(cartItem.options) == JSON.stringify(cartItem.options) 
+		isSameOptions(cartItem.options, item.options)
 	);
-	
-	if(newItem) { 
-		newItem.qty += item.qty1 || 1;	
+
+	if (sameItem) {
+		sameItem.qty += Number(item.qty || 1);
+		sameItem.totalPrice = Number(sameItem.price) * Number(sameItem.qty);
 	} else {
-		cart.push(item);
+		cart.items.push({
+			id: item.id || createId(),
+			recipeCode: item.recipeCode,
+			menuName: item.menuName,
+			menuType: item.menuType,
+			categoryId: item.categoryId,
+			qty: Number(item.qty || 1),
+			price: Number(item.price || 0),
+			totalPrice: Number(item.price || 0) * Number(item.qty || 1),
+			options: item.options || []
+		});
 	}
+
 	saveCart(cart);
 	renderCart();
 }
 
 function removeItem(id) {
-	let cart = getCart();
-	cart = cart.filter(item => item.id != id);
+	const cart = getCart();
+	cart.items = cart.items.filter(item => item.id != id);
+
 	saveCart(cart);
 	renderCart();
 }
 
 function increaseQty(id) {
 	const cart = getCart();
-	const item = cart.find(item => item.id == id);
+	const item = cart.items.find(item => item.id == id);
 	if (!item) return;
 
 	item.qty += 1;
 	item.totalPrice = Number(item.price) * Number(item.qty);
+
 	saveCart(cart);
 	renderCart();
 }
 
 function decreaseQty(id) {
 	const cart = getCart();
-	const item = cart.find(item => item.id == id);
+	const item = cart.items.find(item => item.id == id);
 	if (!item) return;
 
 	if (item.qty > 1) {
 		item.qty -= 1;
 		item.totalPrice = Number(item.price) * Number(item.qty);
-		saveCart(cart);
 	} else {
-		const newCart = cart.filter(item => item.id != id);
-		saveCart(newCart);
+		cart.items = cart.items.filter(item => item.id != id);
 	}
 
+	saveCart(cart);
 	renderCart();
 }
 
 function getTotalAmount() {
 	const cart = getCart();
+	return Number(cart.totalAmount || 0);
+}
 
-	let total = 0;
+function renderOptionRows(options = []) {
+	if (!options.length) return "";
 
-	cart.forEach(item => {
-		console.log("item:", item);
-		console.log("price:", item.price, typeof item.price);
-		console.log("qty:", item.qty, typeof item.qty);
-
-		total += Number(item.price) * Number(item.qty);
-	});
-
-	return total;
+	return options.map(option => `
+		<div class="cart-tag-row">
+			<div class="cart-tag">${option.groupName || option.optionGroupName || "옵션"}</div>
+			<div class="cart-tag-value">${option.materialName || option.optionName || ""}</div>
+		</div>
+	`).join("");
 }
 
 function renderCart() {
 	const cart = getCart();
+	const items = cart.items || [];
 
-	if (!cart.length) {
+	if (!items.length) {
 		cartEmpty.style.display = "flex";
 		cartFilled.style.display = "none";
 		cartList.innerHTML = "";
@@ -232,66 +265,35 @@ function renderCart() {
 	cartEmpty.style.display = "none";
 	cartFilled.style.display = "block";
 
-	console.log("cart", cart);
+	cartList.innerHTML = items.map(item => `
+		<div class="cart-item">
+			<div class="cart-tags">
+				<div class="cart-tag-row">
+					<div class="cart-tag">메뉴</div>
+					<div class="cart-tag-value">${item.menuName || ""}</div>
+				</div>
 
-	cartList.innerHTML = cart.map(item => `
-    <div class="cart-item">
-      <div class="cart-tags">
-      	<div class="cart-tag-row">
-      		<div class="cart-tag">메뉴</div>
-          	<div class="cart-tag-value">${item.menu || ""}</div>
-        </div>
-        
-          ${item.bread ? `
-  <div class="cart-tag-row">
-    <div class="cart-tag">빵</div>
-    <div class="cart-tag-value">${item.bread}</div>
-  </div>` : ""}
+				${renderOptionRows(item.options)}
+			</div>
 
-  ${item.cheese ? `
-  <div class="cart-tag-row">
-    <div class="cart-tag">치즈</div>
-    <div class="cart-tag-value">${item.cheese}</div>
-  </div>` : ""}
+			<div class="cart-bottom">
+				<div class="cart-qty">
+					<span class="cart-qty-label">수량</span>
+					<button type="button" class="qty-btn" onclick="decreaseQty('${item.id}')">-</button>
+					<span class="qty-value">${item.qty}</span>
+					<button type="button" class="qty-btn" onclick="increaseQty('${item.id}')">+</button>
+				</div>
 
-  ${item.vegetable ? `
-  <div class="cart-tag-row">
-    <div class="cart-tag">야채</div>
-    <div class="cart-tag-value">${item.vegetable}</div>
-  </div>` : ""}
+				<div class="cart-price">
+					${formatPrice(Number(item.price || 0) * Number(item.qty || 1))}
+				</div>
 
-  ${item.extra ? `
-  <div class="cart-tag-row">
-    <div class="cart-tag">추가재료</div>
-    <div class="cart-tag-value">${item.extra}</div>
-  </div>` : ""}
+				<button type="button" class="cart-remove" onclick="removeItem('${item.id}')">×</button>
+			</div>
+		</div>
+	`).join("");
 
-  ${item.sauce ? `
-  <div class="cart-tag-row">
-    <div class="cart-tag">소스</div>
-    <div class="cart-tag-value">${item.sauce}</div>
-  </div>` : ""}
-        
-      </div>
-
-      <div class="cart-bottom">
-      <div class="cart-qty">
-        <span class="cart-qty-label">수량</span>
-        <button type="button" class="qty-btn" onclick="decreaseQty('${item.id}')">-</button>
-        <span class="qty-value">${item.qty}</span>
-        <button type="button" class="qty-btn" onclick="increaseQty('${item.id}')">+</button>
-      </div>
-
-      <div class="cart-price">
-        ${formatPrice(item.price * item.qty)}
-      </div>
-
-      <button type="button" class="cart-remove" onclick="removeItem('${item.id}')">×</button>
-    </div>
-  </div>
-`).join("");
-
-	cartTotalPrice.innerText = formatPrice(getTotalAmount());
+	cartTotalPrice.innerText = formatPrice(cart.totalAmount);
 }
 
 // ================== 이동 ==================
@@ -301,7 +303,7 @@ function moveSubTab(direction) {
 
 	if (idx === -1) return;
 
-	let next = direction === "left"
+	const next = direction === "left"
 		? (idx === 0 ? subs.length - 1 : idx - 1)
 		: (idx === subs.length - 1 ? 0 : idx + 1);
 
@@ -315,7 +317,7 @@ function render() {
 	createSubTabs();
 	renderMenus();
 }
-console.log(getTotalAmount());
+
 // ================== 실행 ==================
 leftArrow.addEventListener("click", () => moveSubTab("left"));
 rightArrow.addEventListener("click", () => moveSubTab("right"));

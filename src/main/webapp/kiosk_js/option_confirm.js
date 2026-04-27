@@ -1,121 +1,174 @@
-const pending = JSON.parse(sessionStorage.getItem('item') || 'null');
+const ITEM_KEY = "item";
+const CART_KEY = "cart";
+
+let item = JSON.parse(sessionStorage.getItem(ITEM_KEY) || "null");
 
 function moveToMenu() {
-  const path = location.pathname;
-  const kioskIndex = path.indexOf('/kiosk_jsp/');
-  const basePath = kioskIndex >= 0 ? path.substring(0, kioskIndex) : '';
-  location.href = basePath + '/kiosk_jsp/menu.jsp';
+	location.href = contextPath + "/kiosk/menu";
 }
 
-if (!pending) {
-  alert('주문 정보 없음');
-  moveToMenu(); 
-  throw new Error('item not found in sessionStorage');
+if (!item) {
+	alert("주문 정보 없음");
+	moveToMenu();
+	throw new Error("item not found in sessionStorage");
 }
 
-let qty = pending.quantity || 1;
+let qty = Number(item.qty || 1);
 
-const summaryList = document.getElementById('summaryList');
-const totalPrice = document.getElementById('totalPrice');
-const qtyValue = document.getElementById('qtyValue');
+const summaryList = document.getElementById("summaryList");
+const totalPrice = document.getElementById("totalPrice");
+const qtyValue = document.getElementById("qtyValue");
 
 function format(v) {
-  return Number(v || 0).toLocaleString() + '원';
+	return Number(v || 0).toLocaleString() + "원";
+}
+
+function getItemUnitPrice(item) {
+	return Number(item.totalPrice || item.price || 0);
+}
+
+function createEmptyCart() {
+	return {
+		orderId: null,
+		orderType: sessionStorage.getItem("orderType") || null,
+		totalAmount: 0,
+		items: []
+	};
+}
+
+function calculateTotalAmount(items = []) {
+	return items.reduce((sum, item) => {
+		return sum + Number(item.totalPrice || item.price || 0) * Number(item.qty || 1);
+	}, 0);
+}
+
+function getCart() {
+	const savedCart = JSON.parse(sessionStorage.getItem(CART_KEY) || "null");
+
+	if (!savedCart) {
+		return createEmptyCart();
+	}
+
+	if (Array.isArray(savedCart)) {
+		return {
+			orderId: null,
+			orderType: sessionStorage.getItem("orderType") || null,
+			totalAmount: calculateTotalAmount(savedCart),
+			items: savedCart
+		};
+	}
+
+	if (!savedCart.items) {
+		savedCart.items = [];
+	}
+
+	return savedCart;
+}
+
+function saveCart(cart) {
+	cart.totalAmount = calculateTotalAmount(cart.items);
+	sessionStorage.setItem(CART_KEY, JSON.stringify(cart));
+}
+
+function isSameOptions(options1 = [], options2 = []) {
+	return JSON.stringify(options1) === JSON.stringify(options2);
+}
+
+function renderOptionRows(options = []) {
+	if (!options.length) {
+		return [["옵션", "-"]];
+	}
+
+	return options.map(option => [
+		option.groupName || "옵션",
+		option.materialName || "-"
+	]);
 }
 
 function render() {
-  if (!summaryList || !totalPrice || !qtyValue) return;
+	if (!summaryList || !totalPrice || !qtyValue) return;
 
-  const rows = [];
+	const rows = [];
 
-  rows.push(['메뉴', pending.menu || '-']);
+	rows.push(["메뉴", item.menuName || "-"]);
 
-  if (pending.menuType === 'sandwich') {
-    rows.push(['빵', pending.bread || '-']);
-  }
+	renderOptionRows(item.options || []).forEach(row => {
+		rows.push(row);
+	});
 
-  rows.push(['치즈', pending.cheese || '-']);
-  rows.push(['야채', pending.vegetable || '-']);
-  rows.push(['소스', pending.sauce || '-']);
-  rows.push(['추가', pending.extra || '-']);
+	summaryList.innerHTML = rows.map(row => `
+		<div class="summary-row">
+			<div class="summary-label">${row[0]}</div>
+			<div class="summary-value">${row[1] || "-"}</div>
+		</div>
+	`).join("");
 
-  summaryList.innerHTML = rows.map(r => `
-    <div class="summary-row">
-      <div class="summary-label">${r[0]}</div>
-      <div class="summary-value">${r[1] || '-'}</div>
-    </div>
-  `).join('');
+	qtyValue.textContent = qty;
 
-  qtyValue.textContent = qty;
-
-  const price = Number(pending.basePrice || 0) + Number(pending.extraPrice || 0);
-  totalPrice.textContent = format(price * qty);
+	totalPrice.textContent = format(getItemUnitPrice(item) * qty);
 }
 
 /* 수량 */
-const minusBtn = document.getElementById('minusBtn');
-const plusBtn = document.getElementById('plusBtn');
+const minusBtn = document.getElementById("minusBtn");
+const plusBtn = document.getElementById("plusBtn");
 
 if (minusBtn) {
-  minusBtn.onclick = () => {
-    if (qty > 1) {
-      qty--;
-      render();
-    }
-  };
+	minusBtn.onclick = () => {
+		if (qty > 1) {
+			qty--;
+			render();
+		}
+	};
 }
 
 if (plusBtn) {
-  plusBtn.onclick = () => {
-    qty++;
-    render();
-  };
+	plusBtn.onclick = () => {
+		qty++;
+		render();
+	};
 }
 
 /* 장바구니 처리 */
-function processCart() {
-  let cart = JSON.parse(sessionStorage.getItem('cart') || '[]');
-  
-  const item = { ...pending, quantity: qty };
+function addItemToCart() {
+	const cart = getCart();
 
-  const same = cart.find(c =>
-    c.menu === item.menu &&
-    c.menuType === item.menuType &&
-    c.bread === item.bread &&
-    c.cheese === item.cheese &&
-    c.vegetable === item.vegetable &&
-    c.sauce === item.sauce &&
-    c.extra === item.extra
-  );
+	const cartItem = {
+		...item,
+		qty: qty,
+		totalPrice: getItemUnitPrice(item)
+	};
 
-  if (same) {
-    same.quantity += qty;
-  } else {
-    item.id = Date.now();
-    cart.push(item);
-  }
+	const sameItem = cart.items.find(savedItem =>
+		savedItem.recipeCode == cartItem.recipeCode &&
+		isSameOptions(savedItem.options, cartItem.options)
+	);
 
-  sessionStorage.setItem('cart', JSON.stringify(cart));
-  sessionStorage.removeItem('item');
+	if (sameItem) {
+		sameItem.qty += qty;
+		sameItem.totalPrice = getItemUnitPrice(cartItem);
+	} else {
+		cart.items.push(cartItem);
+	}
+
+	saveCart(cart);
+	sessionStorage.removeItem(ITEM_KEY);
 }
 
 /* 버튼 함수 */
-window.addCart = function (contextPath) {
-  processCart();
-  location.href = contextPath + '/kiosk/menu';
+window.addCart = function () {
+	addItemToCart();
+	location.href = contextPath + "/kiosk/menu";
 };
 
-window.goPay = function (contextPath) {
-  processCart();
-  location.href = contextPath + '/kiosk/orderCon';
+window.goPay = function () {
+	addItemToCart();
+	location.href = contextPath + "/kiosk/orderCon";
 };
 
-window.goBack = function (contextPath) {
-  sessionStorage.setItem('item', JSON.stringify({
-    ...pending,
-    quantity: qty
-  }));
-  location.href = contextPath + '/kiosk/option';
+window.goBack = function () {
+	item.qty = qty;
+	sessionStorage.setItem(ITEM_KEY, JSON.stringify(item));
+	location.href = contextPath + "/kiosk/option?categoryId=" + item.categoryId;
 };
 
 render();

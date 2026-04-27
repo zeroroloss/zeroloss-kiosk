@@ -52,6 +52,8 @@
       </div>
     </section>
   </div>
+  
+  <script> const contextPath = "<%=contextPath%>"; </script>
 
   <script>
     const recipeList = [
@@ -92,40 +94,31 @@
   </script>
 
   <script>
-  window.goOptionPage = function(menu) {
-	    const categoryId = menu.categoryId || menu.category_id;
+  window.goOptionPage = function(item) {
+    const categoryId = item.categoryId;
 
-	    if (!categoryId) {
-	      alert("goOptionPage categoryId 없음");
-	      return;
-	    }
+    if (!categoryId) {
+      alert("categoryId 없음");
+      return;
+    }
 
-	    sessionStorage.setItem('selectedMenu', JSON.stringify({
-	      recipeCode: menu.recipeCode,
-	      menuType: menu.menuType,
-	      menuName: menu.menuName,
-	      price: menu.price,
-	      categoryId: categoryId
-	    }));
+    sessionStorage.setItem("item", JSON.stringify(item));
 
-	    sessionStorage.setItem('optionEditMode', 'false');
-	    sessionStorage.removeItem('item');
+    location.href = contextPath + "/kiosk/option?categoryId=" + categoryId;
+  };
 
-	    location.href = '<%=contextPath%>/kiosk/option?categoryId=' + categoryId;
-	  };
+  document.getElementById("cartPayBtn").addEventListener("click", function() {
+    const cart = JSON.parse(sessionStorage.getItem("cart") || "null");
 
-    document.getElementById('cartPayBtn').addEventListener('click', function() {
-      const cart = JSON.parse(sessionStorage.getItem('cart') || '[]');
+    if (!cart || !cart.items || !cart.items.length) {
+      alert("장바구니에 담긴 메뉴가 없습니다.");
+      return;
+    }
 
-      if (!cart.length) {
-        alert('장바구니에 담긴 메뉴가 없습니다.');
-        return;
-      }
-
-      location.href = '<%=contextPath%>/kiosk/orderCon';
-    });
-    
-  </script>
+    location.href = contextPath + "/kiosk/orderCon";
+  });
+</script>
+	
     <script src="<%=contextPath%>/kiosk_js/menu.js"></script>
 </body>
 </html>

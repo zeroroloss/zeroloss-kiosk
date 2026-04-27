@@ -43,42 +43,42 @@ String contextPath = request.getContextPath();
 		</section>
 	</div>
 
-	<script>
-	window.materialGroupList = [
-		  <c:forEach var="g" items="${materialGroupList}" varStatus="s">
-		  {
-			  materialGroupId: ${g.materialGroupId},
-			  groupName: "${g.groupName}",
-			  groupMin: ${g.groupMin},
-			  groupMax: ${g.groupMax}
-		  }<c:if test="${!s.last}">,</c:if>
-		  </c:forEach>
-		];
+<script>
+  const contextPath = "<%=contextPath%>";
 
-window.optionMaterialList = [
-  <c:forEach var="m" items="${materialList}" varStatus="s">
-  {
-    materialCode: "${m.materialCode}",
-    materialName: "${m.materialName}",
-    price: ${m.price == null ? 0 : m.price},
-    materialGroupId: ${m.materialGroupId}
-  }<c:if test="${!s.last}">,</c:if>
-  </c:forEach>
-];
+  window.materialGroupList = [
+    <c:forEach var="g" items="${materialGroupList}" varStatus="s">
+    {
+      materialGroupId: ${g.materialGroupId},
+      groupName: "${g.groupName}",
+      groupMin: ${g.groupMin},
+      groupMax: ${g.groupMax}
+    }<c:if test="${!s.last}">,</c:if>
+    </c:forEach>
+  ];
+
+  window.optionMaterialList = [
+    <c:forEach var="m" items="${materialList}" varStatus="s">
+    {
+      materialCode: "${m.materialCode}",
+      materialName: "${m.materialName}",
+      price: ${m.price == null ? 0 : m.price},
+      materialGroupId: ${m.materialGroupId}
+    }<c:if test="${!s.last}">,</c:if>
+    </c:forEach>
+  ];
 </script>
 
-	<script src="<%=contextPath%>/kiosk_js/option.js"></script>
-	<script>
-const contextPath = '<%=contextPath%>';
+<script src="<%=contextPath%>/kiosk_js/option.js"></script>
 
-document.getElementById('closeBtn').onclick = function () {
-  window.goBackMenu(contextPath);
-};
+<script>
+  document.getElementById("closeBtn").onclick = function () {
+    window.goBackMenu();
+  };
 
- document.getElementById('nextBtn').onclick = function () {
-   window.goNext(contextPath);
-};
+  document.getElementById("nextBtn").onclick = function () {
+    window.goNext();
+  };
 </script>
-
 </body>
 </html>

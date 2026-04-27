@@ -39,13 +39,17 @@
       </div>
 
       <div class="action-row">
-        <button type="button" class="action-btn cancel-btn" onclick="goMenu('<%=contextPath%>')">메뉴로</button>
-        <button type="button" class="action-btn confirm-btn" onclick="goPay('<%=contextPath%>')">결제하기</button>
+        <button type="button" class="action-btn cancel-btn" onclick="goMenu()">메뉴로</button>
+        <button type="button" class="action-btn confirm-btn" onclick="goPay()">결제하기</button>
       </div>
     </div>
 
   </section>
 </div>
+
+<script>
+  const contextPath = "<%=contextPath%>";
+</script>
 
 <script src="<%=contextPath%>/kiosk_js/order_confirm.js"></script>
 </body>

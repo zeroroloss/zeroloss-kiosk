@@ -20,7 +20,7 @@
   <section class="panel">
 
     <header class="panel-header">
-      <button type="button" class="close-btn" onclick="goBack('<%=contextPath%>')">×</button>
+      <button type="button" class="close-btn" onclick="goBack()">×</button>
       <div class="panel-title">옵션 확인</div>
       <div class="panel-desc">선택하신 옵션을 확인해주세요</div>
     </header>
@@ -45,13 +45,17 @@
       </div>
 
       <div class="action-bar">
-        <button type="button" class="action-btn pay-btn" onclick="addCart('<%=contextPath%>')">장바구니</button>
-        <button type="button" class="action-btn save-btn" onclick="goPay('<%=contextPath%>')">결제하기</button>
+        <button type="button" class="action-btn pay-btn" onclick="addCart()">장바구니</button>
+        <button type="button" class="action-btn save-btn" onclick="goPay()">결제하기</button>
       </div>
     </div>
 
   </section>
 </div>
+
+<script>
+  const contextPath = "<%=contextPath%>";
+</script>
 
 <script src="<%=contextPath%>/kiosk_js/option_confirm.js"></script>
 </body>

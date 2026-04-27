@@ -19,7 +19,7 @@ window.addEventListener('DOMContentLoaded', function () {
   function resetSession() {
     sessionStorage.removeItem("cart");
     sessionStorage.removeItem("totalAmount");
-    sessionStorage.removeItem("Item");
+    sessionStorage.removeItem("item");
   }
   
   const eatInBtn = document.getElementById("eatInBtn");

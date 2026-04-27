@@ -118,7 +118,6 @@
     location.href = contextPath + "/kiosk/orderCon";
   });
 </script>
-	
     <script src="<%=contextPath%>/kiosk_js/menu.js"></script>
 </body>
 </html>

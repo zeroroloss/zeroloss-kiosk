@@ -24,7 +24,7 @@ pageEncoding="UTF-8"%>
 <main class="main-content">
     <section class="logo-section">
         <div class="logo-box">
-            <img id="logoImg" src="${contextPath}/images/logo.png" alt="ZEROLOSS 로고"/>
+            <img id="logoImg" src="${contextPath}/upload/images/logo2.png" alt="ZEROLOSS 로고"/>
             <div id="logoFallback" class="img-fallback logo-fallback">ZEROLOSS</div>
         </div>
         <p class="section-desc">매장 또는 포장 주문을 선택한 뒤 주문을 진행해주세요</p>
@@ -35,7 +35,7 @@ pageEncoding="UTF-8"%>
             <input type="hidden" name="orderType" value="HERE"/>
             <button type="submit" class="select-card" id="eatInBtn">
                 <div class="select-image-box">
-                    <img id="eatInImg" src="${contextPath}/images/eat_in.png" alt="매장"/>
+                    <img id="eatInImg" src="${contextPath}/upload/images/here.png" alt="매장"/>
                     <div id="eatInFallback" class="img-fallback select-fallback">매장</div>
                 </div>
                 <div class="select-title">매장</div>
@@ -47,7 +47,7 @@ pageEncoding="UTF-8"%>
             <input type="hidden" name="orderType" value="TOGO"/>
             <button type="submit" class="select-card" id="takeOutBtn">
                 <div class="select-image-box">
-                    <img id="takeOutImg" src="${contextPath}/images/take_out.png" alt="포장"/>
+                    <img id="takeOutImg" src="${contextPath}/upload/images/togo.png" alt="포장"/>
                     <div id="takeOutFallback" class="img-fallback select-fallback">포장</div>
                 </div>
                 <div class="select-title">포장</div>

@@ -86,7 +86,7 @@ function renderMenus() {
 			data-category="${item.categoryId}"
 			data-recipe-code="${item.recipeCode}">
 			<div class="menu-thumb">
-				${item.imgUrl ? `<img src="${item.imgUrl}">` : `<div>이미지</div>`}
+				${item.imgUrl ? `<img src="/zero/${item.imgUrl}">` : `<div>이미지</div>`}
 			</div>
 			<div class="menu-name">${item.name}</div>
 			<div class="menu-price">${formatPrice(item.price)}</div>

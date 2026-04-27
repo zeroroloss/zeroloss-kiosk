@@ -1,7 +1,7 @@
 package dto;
 
 public class OrdersDto {
-	private Integer orderId;
+	private String orderId;
 	private Integer branchCode; 
 	private Integer kioskId;
 	private String orderType;
@@ -10,7 +10,7 @@ public class OrdersDto {
 	public OrdersDto() {
 		super();
 	}
-	public OrdersDto(Integer orderId, Integer branchCode, Integer kioskId, String orderType, Integer totalAmount) {
+	public OrdersDto(String orderId, Integer branchCode, Integer kioskId, String orderType, Integer totalAmount) {
 		super();
 		this.orderId = orderId;
 		this.branchCode = branchCode;
@@ -18,11 +18,10 @@ public class OrdersDto {
 		this.orderType = orderType;
 		this.totalAmount = totalAmount;
 	}
-	
-	public Integer getOrderId() {
+	public String getOrderId() {
 		return orderId;
 	}
-	public void setOrderId(Integer orderId) {
+	public void setOrderId(String orderId) {
 		this.orderId = orderId;
 	}
 	public Integer getBranchCode() {
@@ -55,5 +54,4 @@ public class OrdersDto {
 		return "OrdersDto [orderId=" + orderId + ", branchCode=" + branchCode + ", kioskId=" + kioskId + ", orderType="
 				+ orderType + ", totalAmount=" + totalAmount + "]";
 	}
-	
 }

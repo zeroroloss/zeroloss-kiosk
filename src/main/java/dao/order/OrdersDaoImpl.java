@@ -13,7 +13,7 @@ public class OrdersDaoImpl implements OrdersDao {
 	}
 
 	@Override
-	public OrdersDto selectOrder(int orderId) throws Exception {
+	public OrdersDto selectOrder(String orderId) throws Exception {
 		OrdersDto ordersDto = null;
 		try (SqlSession sqlSession = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession()) {
 			sqlSession.selectOne("mapper.kiosk2.selectOrder", orderId);

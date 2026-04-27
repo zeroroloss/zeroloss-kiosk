@@ -62,14 +62,16 @@ pageEncoding="UTF-8"%>
 
 <div class="panel-footer">
     <button type="button" class="action-btn cancel-btn"
-            onclick="goBack('${contextPath}')">이전</button>
+            onclick="goBack()">이전</button>
     <button type="button" class="action-btn confirm-btn"
-            onclick="goNext('${contextPath}')">결제 진행</button>
+            onclick="goNext()">결제 진행</button>
 </div>
 
 </section>
 </div>
-
+<script>
+const contextPath = "${contextPath}";
+</script>
 <script src="${contextPath}/kiosk_js/pay_method.js"></script>
 </body>
 </html>

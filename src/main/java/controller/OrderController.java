@@ -3,6 +3,7 @@ package controller;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -38,7 +39,8 @@ public class OrderController extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 	        throws ServletException, IOException {
-	    response.sendRedirect(request.getContextPath() + "/kiosk/start");
+		request.getRequestDispatcher("/kiosk_jsp/payment/pay_method.jsp")
+        .forward(request, response);
 	}
 
 	/**
@@ -64,6 +66,7 @@ public class OrderController extends HttpServlet {
 
 			// orders DTO 세팅
 			OrdersDto ordersDto = new OrdersDto();
+			ordersDto.setOrderId(UUID.randomUUID().toString());
 			ordersDto.setBranchCode(branchCode);
 			ordersDto.setKioskId(kioskId);
 			ordersDto.setOrderType(orderType);
@@ -83,7 +86,7 @@ public class OrderController extends HttpServlet {
 				orderMenuList.add(orderMenuDto);
 
 				// 옵션 리스트
-				int optionCount = Integer.parseInt(request.getParameter("optionCount_" + i));
+				int optionCount = Integer.parseInt(request.getParameter("optionCount" + i));
 				List<OrderOptionDto> options = new ArrayList<>();
 				for (int j = 0; j < optionCount; j++) {
 					OrderOptionDto optionDto = new OrderOptionDto();
@@ -99,10 +102,7 @@ public class OrderController extends HttpServlet {
 
 			// DB 저장
 			OrderService orderService = new OrderServiceImpl();
-			OrdersDto saved = orderService.insertFullOrder(ordersDto, orderMenuList, orderOptionList);
-
-			// 세션에 orderId 저장
-			session.setAttribute("orderId", saved.getOrderId());
+			orderService.insertFullOrder(ordersDto, orderMenuList, orderOptionList);
 
 			// 완료 화면으로
 			response.sendRedirect(request.getContextPath() + "/kiosk/complete");

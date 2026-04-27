@@ -47,9 +47,9 @@
     </select>
     
     <!-- orders INSERT -->
-    <insert id="insertOrder" parameterType="orders" useGeneratedKeys="true" keyProperty="orderId">
-        INSERT INTO orders (branch_code, kiosk_id, order_type, total_amount)
-        VALUES (#{branchCode}, #{kioskId}, #{orderType}, #{totalAmount})
+    <insert id="insertOrder" parameterType="orders">
+        INSERT INTO orders (order_id,branch_code, kiosk_id, order_type, total_amount)
+        VALUES (#{orderId}, #{branchCode}, #{kioskId}, #{orderType}, #{totalAmount})
     </insert>
 
     <!-- order_menu INSERT -->
@@ -67,7 +67,7 @@
 	</insert>
 
     <!-- 주문 완료 조회 -->
-    <select id="selectOrder" parameterType="int" resultType="orders">
+    <select id="selectOrder" parameterType="String" resultType="orders">
         SELECT
             order_id        AS orderId,
             branch_code     AS branchCode,

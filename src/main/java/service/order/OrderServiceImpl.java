@@ -27,7 +27,7 @@ public class OrderServiceImpl implements OrderService {
 	}
 
 	@Override
-	public OrdersDto insertFullOrder(OrdersDto ordersDto, List<OrderMenuDto> orderMenuList,
+	public void insertFullOrder(OrdersDto ordersDto, List<OrderMenuDto> orderMenuList,
 			List<List<OrderOptionDto>> orderOptionLists) throws Exception {
 		try (SqlSession sqlSession = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession(false)) {
 			try {
@@ -48,7 +48,6 @@ public class OrderServiceImpl implements OrderService {
 					}
 				}
 				sqlSession.commit();
-				return ordersDao.selectOrder(ordersDto.getOrderId());
 
 			} catch (Exception e) {
 				sqlSession.rollback();

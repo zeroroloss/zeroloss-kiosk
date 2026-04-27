@@ -175,7 +175,7 @@ window.goPay = function() {
 		return;
 	}
 
-	const form = document.createElement("form");
+	/*const form = document.createElement("form");
 	form.method = "POST";
 	form.action = contextPath + "/kiosk/order";
 
@@ -200,18 +200,19 @@ window.goPay = function() {
 			addInput(form, `optMaterialPrice_${i}_${j}`, option.price || 0);
 			addInput(form, `optMaterialGroupId_${i}_${j}`, option.materialGroupId);
 		});
-	});
+	});*/
+	location.href = contextPath + '/kiosk/order';
 
-	document.body.appendChild(form);
-	form.submit();
+	/*document.body.appendChild(form);
+	form.submit();*/
 };
 
-function addInput(form, name, value) {
+/*function addInput(form, name, value) {
 	const input = document.createElement("input");
 	input.type = "hidden";
 	input.name = name;
 	input.value = value;
 	form.appendChild(input);
-}
+}*/
 
 renderOrders();

@@ -9,6 +9,6 @@ public class OrderOptionDaoImpl implements OrderOptionDao {
 
 	@Override
 	public void insertOrderOption(SqlSession sqlSession, OrderOptionDto orderOptionDto) throws Exception {
-		sqlSession.insert("mapper.kiosk2.insertOrderMenu", orderOptionDto);
+		sqlSession.insert("mapper.kiosk2.insertOrderOption", orderOptionDto);
 	}
 }

@@ -2,17 +2,16 @@ package dto;
 
 public class OrderMenuDto {
 	private Integer orderMenuId;
-	private Integer orderId;
+	private String orderId;
 	private String recipeCode;
 	private Integer qty;
 	private Integer unit_price;
 	private Integer lineTotalAmount;
-	
+
 	public OrderMenuDto() {
 		super();
-		// TODO Auto-generated constructor stub
 	}
-	public OrderMenuDto(Integer orderMenuId, Integer orderId, String recipeCode, Integer qty, Integer unit_price,
+	public OrderMenuDto(Integer orderMenuId, String orderId, String recipeCode, Integer qty, Integer unit_price,
 			Integer lineTotalAmount) {
 		super();
 		this.orderMenuId = orderMenuId;
@@ -22,17 +21,16 @@ public class OrderMenuDto {
 		this.unit_price = unit_price;
 		this.lineTotalAmount = lineTotalAmount;
 	}
-	
 	public Integer getOrderMenuId() {
 		return orderMenuId;
 	}
 	public void setOrderMenuId(Integer orderMenuId) {
 		this.orderMenuId = orderMenuId;
 	}
-	public Integer getOrderId() {
+	public String getOrderId() {
 		return orderId;
 	}
-	public void setOrderId(Integer orderId) {
+	public void setOrderId(String orderId) {
 		this.orderId = orderId;
 	}
 	public String getRecipeCode() {
@@ -59,4 +57,11 @@ public class OrderMenuDto {
 	public void setLineTotalAmount(Integer lineTotalAmount) {
 		this.lineTotalAmount = lineTotalAmount;
 	}
+	
+	@Override
+	public String toString() {
+		return "OrderMenuDto [orderMenuId=" + orderMenuId + ", orderId=" + orderId + ", recipeCode=" + recipeCode
+				+ ", qty=" + qty + ", unit_price=" + unit_price + ", lineTotalAmount=" + lineTotalAmount + "]";
+	}
+	
 }

@@ -99,7 +99,7 @@
 ========================= */
 .menu-area {
   position: relative;
-  min-height: 980px;
+  height: 980px;
   padding: 14px 54px 0;
   overflow: hidden;
   background: var(--panel);
@@ -213,13 +213,14 @@
 ========================= */
 .cart-panel {
   border-top: 3px solid #111;
-  min-height: 430px;
   background: var(--white);
   padding: 18px 24px 0;
-  overflow: hidden;
 
   display: flex;
   flex-direction: column;
+
+  height: 430px;
+  overflow: hidden;
 }
 
 .cart-empty {
@@ -244,16 +245,18 @@
 }
 
 .cart-filled {
-  min-height: 360px;
   display: flex;
   flex-direction: column;
   flex: 1;
+  min-height: 0;
 }
 
 .cart-list {
   flex: 1;
+  min-height: 0;
   overflow-y: auto;
   padding-right: 6px;
+
   display: flex;
   flex-direction: column;
   gap: 12px;

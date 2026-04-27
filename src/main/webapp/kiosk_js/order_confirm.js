@@ -50,10 +50,23 @@ function makeRows(item) {
 
 	rows.push({ label: "메뉴", value: item.menuName || "-" });
 
+	const grouped = {};
+
 	(item.options || []).forEach(option => {
+		const groupName = option.groupName || option.optionGroupName || "옵션";
+		const materialName = option.materialName || option.optionName || "-";
+
+		if (!grouped[groupName]) {
+			grouped[groupName] = [];
+		}
+
+		grouped[groupName].push(materialName);
+	});
+
+	Object.keys(grouped).forEach(groupName => {
 		rows.push({
-			label: option.groupName || "옵션",
-			value: option.materialName || "-"
+			label: groupName,
+			value: grouped[groupName].join(", ")
 		});
 	});
 

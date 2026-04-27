@@ -276,7 +276,7 @@ function renderCart() {
 	}
 
 	cartEmpty.style.display = "none";
-	cartFilled.style.display = "block";
+	cartFilled.style.display = "flex";
 
 	cartList.innerHTML = items.map(item => `
 		<div class="cart-item">

@@ -74,15 +74,25 @@ function isSameOptions(options1 = [], options2 = []) {
 	return JSON.stringify(options1) === JSON.stringify(options2);
 }
 
-function renderOptionRows(options = []) {
-	if (!options.length) {
-		return [["옵션", "-"]];
-	}
+function makeOptionRows(options = []) {
+	if (!options.length) return [];
 
-	return options.map(option => [
-		option.groupName || "옵션",
-		option.materialName || "-"
-	]);
+	const grouped = {};
+
+	options.forEach(option => {
+		const group = option.groupName || option.optionGroupName || "옵션";
+		const name = option.materialName || option.optionName || "";
+
+		if (!grouped[group]) {
+			grouped[group] = [];
+		}
+
+		grouped[group].push(name);
+	});
+
+	return Object.keys(grouped).map(group => {
+		return [group, grouped[group].join(", ")];
+	});
 }
 
 function render() {
@@ -92,7 +102,7 @@ function render() {
 
 	rows.push(["메뉴", item.menuName || "-"]);
 
-	renderOptionRows(item.options || []).forEach(row => {
+	makeOptionRows(item.options || []).forEach(row => {
 		rows.push(row);
 	});
 
@@ -104,7 +114,6 @@ function render() {
 	`).join("");
 
 	qtyValue.textContent = qty;
-
 	totalPrice.textContent = format(getItemUnitPrice(item) * qty);
 }
 

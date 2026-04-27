@@ -242,10 +242,23 @@ function getTotalAmount() {
 function renderOptionRows(options = []) {
 	if (!options.length) return "";
 
-	return options.map(option => `
+	const grouped = {};
+
+	options.forEach(option => {
+		const group = option.groupName || option.optionGroupName || "옵션";
+		const name = option.materialName || option.optionName || "";
+
+		if (!grouped[group]) {
+			grouped[group] = [];
+		}
+
+		grouped[group].push(name);
+	});
+
+	return Object.keys(grouped).map(group => `
 		<div class="cart-tag-row">
-			<div class="cart-tag">${option.groupName || option.optionGroupName || "옵션"}</div>
-			<div class="cart-tag-value">${option.materialName || option.optionName || ""}</div>
+			<div class="cart-tag">${group}</div>
+			<div class="cart-tag-value">${grouped[group].join(", ")}</div>
 		</div>
 	`).join("");
 }

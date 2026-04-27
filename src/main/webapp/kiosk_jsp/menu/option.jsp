@@ -80,6 +80,7 @@ String contextPath = request.getContextPath();
     window.goNext();
   };
 </script>
-<script src="<%=contextPath%>/kiosk_js/idle_timer.js"></script>
+
+<script src="<%=contextPath%>/kiosk_js/timer.js"></script>
 </body>
 </html>

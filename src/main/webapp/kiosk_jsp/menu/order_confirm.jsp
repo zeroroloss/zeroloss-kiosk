@@ -48,6 +48,11 @@
 
 <script>
     const contextPath = "${contextPath}";
+    
+    const errorMessage = "${errorMessage}";
+    if (errorMessage) {
+        alert("결제 실패: " + errorMessage);
+    }
 </script>
 
 <!-- ✅ 토스 SDK 먼저, order_confirm.js는 한 번만 -->

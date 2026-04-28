@@ -182,6 +182,7 @@ window.goMenu = function() {
 window.goPay = async function() {
    const cart = getCart();
    const items = cart.items || [];
+   let data = null;
 
    if (!items.length) {
       alert("장바구니가 비어있습니다.");
@@ -215,7 +216,7 @@ window.goPay = async function() {
          body: params.toString()
       });
 
-      const data = await res.json();
+      data = await res.json();
 
       if (!data.success) {
          alert("주문 저장에 실패했습니다.");
@@ -241,11 +242,23 @@ window.goPay = async function() {
             : items[0].menuName,
          customerName: String(randomNum),
          successUrl: location.origin + contextPath + "/kiosk/payment/success?orderNum=" + randomNum,
-         failUrl: location.origin + contextPath + "/kiosk/payment/fail",
+         failUrl: location.origin + contextPath + "/kiosk/payment/fail?orderId=" + data.orderId,
       });
 
    } catch (e) {
-      alert("결제 중 오류가 발생했습니다: " + e.message);
+     // 토스 결제창 닫기(취소) 감지
+    if (e.code === "PAY_PROCESS_CANCELED" || e.message?.includes("취소")) {
+        if (data?.orderId) {
+            // 주문 상태를 CANCEL로 업데이트
+            await fetch(contextPath + "/kiosk/payment/cancel", {
+                method: "POST",
+                headers: { "Content-Type": "application/x-www-form-urlencoded" },
+                body: "orderId=" + encodeURIComponent(data.orderId)
+            });
+        }
+        return;
+    }
+    alert("결제 중 오류가 발생했습니다: " + e.message);
    }
 };
 

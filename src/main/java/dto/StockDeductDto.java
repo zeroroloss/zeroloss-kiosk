@@ -4,6 +4,7 @@ public class StockDeductDto {
 	private Integer branchCode;   // 지점
     private String materialCode;  // 재료코드
     private Integer deductQty;    // 차감 수량
+    private Integer orderMenuId;
     
 	public StockDeductDto() {
 		super();
@@ -15,6 +16,14 @@ public class StockDeductDto {
 		this.branchCode = branchCode;
 		this.materialCode = materialCode;
 		this.deductQty = deductQty;
+	}
+	
+	public Integer getOrderMenuId() {
+	    return orderMenuId;
+	}
+	
+	public void setOrderMenuId(Integer orderMenuId) {
+	    this.orderMenuId = orderMenuId;
 	}
 
 	public Integer getBranchCode() {

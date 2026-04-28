@@ -81,6 +81,5 @@ String contextPath = request.getContextPath();
   };
 </script>
 
-<script src="<%=contextPath%>/kiosk_js/timer.js"></script>
 </body>
 </html>

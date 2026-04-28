@@ -5,11 +5,24 @@ public class RecipeDetailDto {
 	private String recipeCode;
 	private String materialCode;
 	private Integer requiredQty;
+	private String materialName;
 	
 	public RecipeDetailDto() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
+
+	public RecipeDetailDto(Integer recipeDetailId, String recipeCode, String materialCode, Integer requiredQty,
+			String materialName) {
+		super();
+		this.recipeDetailId = recipeDetailId;
+		this.recipeCode = recipeCode;
+		this.materialCode = materialCode;
+		this.requiredQty = requiredQty;
+		this.materialName = materialName;
+	}
+
+
 
 	public RecipeDetailDto(Integer recipeDetailId, String recipeCode, String materialCode, Integer requiredQty) {
 		super();
@@ -49,6 +62,14 @@ public class RecipeDetailDto {
 
 	public void setRequiredQty(Integer requiredQty) {
 		this.requiredQty = requiredQty;
+	}
+
+	public String getMaterialName() {
+		return materialName;
+	}
+
+	public void setMaterialName(String materialName) {
+		this.materialName = materialName;
 	}
 	
 	

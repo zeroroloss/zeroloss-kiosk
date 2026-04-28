@@ -71,8 +71,20 @@
             mg.group_max AS groupMax
         FROM category_material_group cmg
         JOIN material_group mg
-          USING (material_group_id)
+        USING (material_group_id)
         WHERE cmg.category_id = #{categoryId}
         ORDER BY cmg.material_group_id
     </select>
+    
+    <select id="selectRecipeDetailList" parameterType="string" resultType="dto.RecipeDetailDto">
+    	SELECT
+       		rd.recipe_code AS recipeCode, 
+       		rd.material_code AS materialCode, 
+       		m.material_name AS materialName,
+       		rd.required_qty AS requiredQty
+    	FROM recipe_detail rd JOIN material m
+      	ON rd.material_code = m.material_code
+      	WHERE rd.recipe_code = #{recipeCode}
+    </select>
+    
 </mapper>

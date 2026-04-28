@@ -126,13 +126,14 @@ function createBaseItem(menu) {
 		qty: 1,
 		price: Number(menu.price || 0),
 		totalPrice: Number(menu.price || 0),
+		defaultMaterials: [],
 		options: []
 	};
 }
 
 function handleMenuClick(menu) {
 	const item = createBaseItem(menu);
-
+	sessionStorage.setItem("item", JSON.stringify(item));
 	if (item.menuType === "sandwich" || item.menuType === "salad") {
 		window.goOptionPage(item);
 		return;

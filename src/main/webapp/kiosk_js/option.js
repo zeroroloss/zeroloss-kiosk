@@ -17,6 +17,21 @@ if (!item) {
 
 const OPTION_STATE_KEY = `optionState_${item.menuType}_${item.menuName}`;
 
+const url = `${contextPath}/kiosk/recipeDetail?recipeCode=${item.recipeCode}`;
+
+fetch(url)
+  .then(res => {
+    return res.json();
+  })
+  .then(data => {
+
+    item.defaultMaterials = data;
+
+    sessionStorage.setItem("item", JSON.stringify(item));
+
+  })
+  .catch(err => console.error("fetch 에러:", err));
+
 /* ===== 공통 함수 ===== */
 
 function formatPrice(v) {

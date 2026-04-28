@@ -10,4 +10,5 @@ public interface OrderService {
 	void insertFullOrder(OrdersDto ordersDto,
 							  List<OrderMenuDto> orderMenuList,
 							  List<List<OrderOptionDto>> orderOptionLists) throws Exception;
+	void updateOrders(OrdersDto ordersDto) throws Exception;
 }

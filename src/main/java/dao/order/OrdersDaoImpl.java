@@ -22,4 +22,14 @@ public class OrdersDaoImpl implements OrdersDao {
 		}
 		return ordersDto;
 	}
+
+	@Override
+	public void updateOrders(OrdersDto ordersDto) throws Exception {
+		try (SqlSession sqlSession = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession()) {
+			sqlSession.update("mapper.kiosk2.updateOrder", ordersDto);
+			sqlSession.commit();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
 }

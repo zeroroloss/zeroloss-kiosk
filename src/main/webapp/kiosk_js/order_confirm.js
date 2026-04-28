@@ -180,69 +180,73 @@ window.goMenu = function() {
 };
 
 window.goPay = async function() {
-    const cart = getCart();
-    const items = cart.items || [];
+	const cart = getCart();
+	const items = cart.items || [];
 
-    if (!items.length) {
-        alert("장바구니가 비어있습니다.");
-        return;
-    }
+	if (!items.length) {
+		alert("장바구니가 비어있습니다.");
+		return;
+	}
 
-    try {
-        // ✅ FormData 빌드 (기존 주석 코드 재활용)
-        const params = new URLSearchParams();
-params.append("totalAmount", cart.totalAmount || 0);
-params.append("menuCount", items.length);
+	try {
+		// ✅ FormData 빌드 (기존 주석 코드 재활용)
+		const params = new URLSearchParams();
+		params.append("totalAmount", cart.totalAmount || 0);
+		params.append("menuCount", items.length);
 
-items.forEach((item, i) => {
-    params.append(`recipeCode${i}`, item.recipeCode);
-    params.append(`menuName${i}`, item.menuName);
-    params.append(`qty${i}`, item.qty || 1);
-    params.append(`unit_price${i}`, item.price || 0);
-    params.append(`lineTotalAmount${i}`, getItemTotal(item));
+		items.forEach((item, i) => {
+			params.append(`recipeCode${i}`, item.recipeCode);
+			params.append(`menuName${i}`, item.menuName);
+			params.append(`qty${i}`, item.qty || 1);
+			params.append(`unit_price${i}`, item.price || 0);
+			params.append(`lineTotalAmount${i}`, getItemTotal(item));
 
-    const options = item.options || [];
-    params.append(`optionCount${i}`, options.length);
+			const options = item.options || [];
+			params.append(`optionCount${i}`, options.length);
 
-    options.forEach((option, j) => {
-        params.append(`materialCode${i}_${j}`, option.materialCode);
-    });
-});
+			options.forEach((option, j) => {
+				params.append(`materialCode${i}_${j}`, option.materialCode);
+			});
+		});
 
-const res = await fetch(contextPath + "/kiosk/order", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: params.toString()
-});
+		const res = await fetch(contextPath + "/kiosk/order", {
+			method: "POST",
+			headers: { "Content-Type": "application/x-www-form-urlencoded" },
+			body: params.toString()
+		});
 
-        const data = await res.json();
+		const data = await res.json();
 
-        if (!data.success) {
-            alert("주문 저장에 실패했습니다.");
-            return;
-        }
+		if (!data.success) {
+			alert("주문 저장에 실패했습니다.");
+			return;
+		}
 
-        // ✅ 토스 결제 요청
-        const tossPayments = TossPayments("");
-        const payment = tossPayments.payment({
-            customerKey: "KIOSK_" + Date.now()
-        });
+		// ✅ 토스 결제 요청
+		const tossPayments = TossPayments("");
+		const payment = tossPayments.payment({
+			customerKey: "KIOSK_" + Date.now()
+		});
+		const randomNum = Math.floor(Math.random() * 900) + 100;
 
-        await payment.requestPayment({
-            method: "CARD",
-            amount: {
-                currency: "KRW",
-                value: cart.totalAmount
-            },
-            orderId: data.orderId,
-            orderName: "제로로스 키오스크 주문",
-            successUrl: location.origin + contextPath + "/kiosk/payment/success",
-            failUrl:    location.origin + contextPath + "/kiosk/payment/fail",
-        });
+		await payment.requestPayment({
+			method: "CARD",
+			amount: {
+				currency: "KRW",
+				value: cart.totalAmount
+			},
+			orderId: data.orderId,
+			orderName: items.length > 1
+				? `${items[0].menuName} 외 ${items.length - 1}건`
+				: items[0].menuName,
+			customerName: String(randomNum),
+			successUrl: location.origin + contextPath + "/kiosk/payment/success",
+			failUrl: location.origin + contextPath + "/kiosk/payment/fail",
+		});
 
-    } catch (e) {
-        alert("결제 중 오류가 발생했습니다: " + e.message);
-    }
+	} catch (e) {
+		alert("결제 중 오류가 발생했습니다: " + e.message);
+	}
 };
 
 function addInput(form, name, value) {

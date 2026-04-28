@@ -7,6 +7,9 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import dto.OrdersDto;
+import service.order.OrderService;
+import service.order.OrderServiceImpl;
 import service.payment.TossPaymentService;
 import service.payment.TossPaymentServiceImpl;
 
@@ -30,13 +33,14 @@ public class PaymentController extends HttpServlet {
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String pathInfo = request.getPathInfo();
-
+		OrderService orderservice = new OrderServiceImpl();
+		
+		String paymentKey = request.getParameter("paymentKey");
+		String orderId = request.getParameter("orderId");
+		int amount = Integer.parseInt(request.getParameter("amount"));
+		
         // 결제 성공
         if ("/success".equals(pathInfo)) {
-            String paymentKey = request.getParameter("paymentKey");
-            String orderId = request.getParameter("orderId");
-            int amount = Integer.parseInt(request.getParameter("amount"));
-
             try {
                 // 토스 결제 승인 API 호출
             	TossPaymentService tossPaymentService = new TossPaymentServiceImpl();
@@ -46,6 +50,12 @@ public class PaymentController extends HttpServlet {
             	request.setAttribute("paidOrderId", orderId);
             	request.setAttribute("paidAmount", amount);
             	request.setAttribute("receiptUrl", receiptUrl);
+            	
+            	OrdersDto ordersDto = new OrdersDto();
+            	ordersDto.setOrderId(orderId);
+            	ordersDto.setStatus("PAID");
+            	orderservice.updateOrders(ordersDto);
+            	System.out.println(ordersDto);
 
                 // 완료 화면으로
                 request.getRequestDispatcher("/kiosk_jsp/complete/order_complete.jsp")
@@ -63,6 +73,9 @@ public class PaymentController extends HttpServlet {
 
         // 결제 실패
         if ("/fail".equals(pathInfo)) {
+        	OrdersDto failDto = new OrdersDto();
+            failDto.setOrderId(orderId);
+            failDto.setStatus("FAIL");
             String errorMessage = request.getParameter("message");
             request.setAttribute("errorMessage", errorMessage);
             request.getRequestDispatcher("/kiosk_jsp/menu/order_confirm.jsp")

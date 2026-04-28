@@ -6,18 +6,22 @@ public class OrdersDto {
 	private Integer kioskId;
 	private String orderType;
 	private Integer totalAmount;
+	private String status;
 	
 	public OrdersDto() {
 		super();
 	}
-	public OrdersDto(String orderId, Integer branchCode, Integer kioskId, String orderType, Integer totalAmount) {
+	public OrdersDto(String orderId, Integer branchCode, Integer kioskId, String orderType, Integer totalAmount,
+			String status) {
 		super();
 		this.orderId = orderId;
 		this.branchCode = branchCode;
 		this.kioskId = kioskId;
 		this.orderType = orderType;
 		this.totalAmount = totalAmount;
+		this.status = status;
 	}
+
 	public String getOrderId() {
 		return orderId;
 	}
@@ -49,6 +53,12 @@ public class OrdersDto {
 		this.totalAmount = totalAmount;
 	}
 	
+	public String getStatus() {
+		return status;
+	}
+	public void setStatus(String status) {
+		this.status = status;
+	}
 	@Override
 	public String toString() {
 		return "OrdersDto [orderId=" + orderId + ", branchCode=" + branchCode + ", kioskId=" + kioskId + ", orderType="

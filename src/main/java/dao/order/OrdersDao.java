@@ -7,4 +7,5 @@ import dto.OrdersDto;
 public interface OrdersDao {
 	void insertOrder(SqlSession sqlSession, OrdersDto ordersDto) throws Exception;
 	OrdersDto selectOrder(String orderId) throws Exception;
+	void updateOrders(OrdersDto ordersDto) throws Exception;
 }

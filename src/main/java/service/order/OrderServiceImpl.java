@@ -55,4 +55,9 @@ public class OrderServiceImpl implements OrderService {
 			}
 		}
 	}
+
+	@Override
+	public void updateOrders(OrdersDto ordersDto) throws Exception {
+		ordersDao.updateOrders(ordersDto);
+	}
 }

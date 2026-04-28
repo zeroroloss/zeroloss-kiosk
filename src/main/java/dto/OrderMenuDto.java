@@ -7,10 +7,24 @@ public class OrderMenuDto {
 	private Integer qty;
 	private Integer unit_price;
 	private Integer lineTotalAmount;
+	private Integer categoryId;
 
 	public OrderMenuDto() {
 		super();
 	}
+	
+	public OrderMenuDto(Integer orderMenuId, String orderId, String recipeCode, Integer qty, Integer unit_price,
+			Integer lineTotalAmount, Integer categoryId) {
+		super();
+		this.orderMenuId = orderMenuId;
+		this.orderId = orderId;
+		this.recipeCode = recipeCode;
+		this.qty = qty;
+		this.unit_price = unit_price;
+		this.lineTotalAmount = lineTotalAmount;
+		this.categoryId = categoryId;
+	}
+
 	public OrderMenuDto(Integer orderMenuId, String orderId, String recipeCode, Integer qty, Integer unit_price,
 			Integer lineTotalAmount) {
 		super();
@@ -58,10 +72,18 @@ public class OrderMenuDto {
 		this.lineTotalAmount = lineTotalAmount;
 	}
 	
+	public Integer getCategoryId() {
+		return categoryId;
+	}
+
+	public void setCategoryId(Integer categoryId) {
+		this.categoryId = categoryId;
+	}
+
 	@Override
 	public String toString() {
 		return "OrderMenuDto [orderMenuId=" + orderMenuId + ", orderId=" + orderId + ", recipeCode=" + recipeCode
-				+ ", qty=" + qty + ", unit_price=" + unit_price + ", lineTotalAmount=" + lineTotalAmount + "]";
+				+ ", qty=" + qty + ", unit_price=" + unit_price + ", lineTotalAmount=" + lineTotalAmount + ", categoryId=" + categoryId + "]";
 	}
 	
 }

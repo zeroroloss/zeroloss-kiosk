@@ -26,9 +26,14 @@ public class StockServiceImpl implements StockService {
 			stockDao.deductStock(dto);
 		}
 		
-		for(StockDeductDto dto : optionList) {
-			dto.setBranchCode(branchCode);
-			stockDao.deductStock(dto);
+		for (StockDeductDto dto : optionList) {
+			
+			if ("401".equals(dto.getMaterialCode()) || "407".equals(dto.getMaterialCode())) {
+			    continue;
+			}
+			
+		    dto.setBranchCode(branchCode);
+		    stockDao.deductStock(dto);
 		}
 	}
 

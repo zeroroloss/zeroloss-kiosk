@@ -240,7 +240,7 @@ window.goPay = async function() {
             ? `${items[0].menuName} 외 ${items.length - 1}건`
             : items[0].menuName,
          customerName: String(randomNum),
-         successUrl: location.origin + contextPath + "/kiosk/payment/success",
+         successUrl: location.origin + contextPath + "/kiosk/payment/success?orderNum=" + randomNum,
          failUrl: location.origin + contextPath + "/kiosk/payment/fail",
       });
 

@@ -36,7 +36,7 @@ window.contextPath = "${contextPath}";
 
 <div class="order-box">
 <div class="order-box-title">주문 번호</div>
-<div class="order-number" id="orderNumber">000</div>
+<div class="order-number" id="orderNumber">${orderNum}</div>
 </div>
 
 <div class="info-grid">

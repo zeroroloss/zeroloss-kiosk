@@ -55,7 +55,10 @@ public class PaymentController extends HttpServlet {
             	ordersDto.setOrderId(orderId);
             	ordersDto.setStatus("PAID");
             	orderservice.updateOrders(ordersDto);
-            	System.out.println(ordersDto);
+            	
+            	// 구매자 번호
+            	String orderNum = request.getParameter("orderNum");
+            	request.setAttribute("orderNum", orderNum);
 
                 // 완료 화면으로
                 request.getRequestDispatcher("/kiosk_jsp/complete/order_complete.jsp")

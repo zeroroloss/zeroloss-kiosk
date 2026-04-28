@@ -11,8 +11,6 @@ const orderNumber = document.getElementById('orderNumber');
 const receiptStatus = document.getElementById('receiptStatus');
 const countdown = document.getElementById('countdown');
 
-/* ===== 주문번호 ===== */
-const fixedOrderNumber = '309';
 
 /* ===== 세션 초기화 ===== */
 function clearKioskSession() {
@@ -60,6 +58,5 @@ function startCountdown(contextPath) {
 
 const contextPath = window.contextPath || '';
 
-orderNumber.textContent = fixedOrderNumber;
 renderReceiptStatus();
 startCountdown(contextPath);

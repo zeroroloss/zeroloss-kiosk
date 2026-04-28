@@ -10,4 +10,5 @@ public interface MenuSelectService {
 	List<RecipeDto> RecipeList() throws Exception;
 	List<MainCategoryDto> MainList() throws Exception;
 	List<SubCategoryDto> SubList() throws Exception;
+	List<Integer> selectUnavailableRecipeCodes(int branchCode) throws Exception;
 }

@@ -3,6 +3,14 @@ const ITEM_KEY = "item";
 const materialGroupList = window.materialGroupList || [];
 const materialList = window.optionMaterialList || [];
 
+const materialStockList = window.materialStockList || [];
+
+const stockMap = {};
+
+materialStockList.forEach(m => {
+	stockMap[Number(m.materialCode)] = m;
+});
+
 function moveToMenu() {
 	location.href = contextPath + "/kiosk/menu";
 }
@@ -20,17 +28,17 @@ const OPTION_STATE_KEY = `optionState_${item.menuType}_${item.menuName}`;
 const url = `${contextPath}/kiosk/recipeDetail?recipeCode=${item.recipeCode}`;
 
 fetch(url)
-  .then(res => {
-    return res.json();
-  })
-  .then(data => {
+	.then(res => {
+		return res.json();
+	})
+	.then(data => {
 
-    item.defaultMaterials = data;
+		item.defaultMaterials = data;
 
-    sessionStorage.setItem("item", JSON.stringify(item));
+		sessionStorage.setItem("item", JSON.stringify(item));
 
-  })
-  .catch(err => console.error("fetch 에러:", err));
+	})
+	.catch(err => console.error("fetch 에러:", err));
 
 /* ===== 공통 함수 ===== */
 
@@ -270,12 +278,29 @@ function renderSections() {
 							<div class="group-title">${group.title}</div>
 							<div class="option-grid">
 								${group.options.map((option, index) => {
+									const stock = stockMap[Number(option.materialCode)];
+
+									const isDisabled =
+										stock && Number(stock.unavailableYn) === 1;
+
+									const isActionOption =
+										Number(option.materialCode) === 401 ||
+										Number(option.materialCode) === 407;
+
+									const isAddDisabled =
+										isActionOption &&
+										stock &&
+										Number(stock.addUnavailableYn) === 1;
+
+									const finalDisabled = isDisabled || isAddDisabled;
+
 									return `
 										<button
 											type="button"
-											class="option-chip ${option.selected ? "active" : ""}"
+											class="option-chip ${option.selected ? "active" : ""} ${finalDisabled ? "disabled" : ""}"
 											data-group="${group.key}"
 											data-index="${index}"
+											${finalDisabled ? "disabled" : ""}
 										>
 											${option.label}${option.price ? ` (+${option.price.toLocaleString()}원)` : ""}
 										</button>
@@ -291,12 +316,38 @@ function renderSections() {
 
 	optionScroll.querySelectorAll(".option-chip").forEach(button => {
 		button.addEventListener("click", function() {
+			if (this.disabled) return;
+
 			const groupKey = this.dataset.group;
 			const optionIndex = Number(this.dataset.index);
+
+			const group = findGroup(groupKey);
+			if (!group) return;
+
+			const option = group.options[optionIndex];
+			if (!option) return;
+
+			const stock = stockMap[Number(option.materialCode)];
+
+			const isActionOption =
+				Number(option.materialCode) === 401 ||
+				Number(option.materialCode) === 407;
+
+			if (stock && Number(stock.unavailableYn) === 1) {
+				alert("재고 부족으로 선택할 수 없습니다.");
+				return;
+			}
+
+			if (isActionOption && stock && Number(stock.addUnavailableYn) === 1) {
+				alert("추가할 재고가 부족합니다.");
+				return;
+			}
+
 			toggleOption(groupKey, optionIndex);
 		});
 	});
 }
+
 
 function renderSummary() {
 	if (!summaryGrid || !totalPrice) return;

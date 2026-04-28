@@ -69,6 +69,24 @@ String contextPath = request.getContextPath();
   ];
 </script>
 
+<script>
+window.materialStockList = [
+<c:forEach var="m" items="${materialStockList}" varStatus="s">
+{
+  materialCode: ${m.materialCode},
+  materialGroupId: ${m.materialGroupId},
+  materialName: "${m.materialName}",
+  deductQty: ${m.deductQty},
+  currentQty: ${m.currentQty},
+  unavailableYn: ${m.unavailableYn},
+  addUnavailableYn: ${m.addUnavailableYn}
+}<c:if test="${!s.last}">,</c:if>
+</c:forEach>
+];
+
+console.log("옵션 재고 상태:", window.materialStockList);
+</script>
+
 <script src="<%=contextPath%>/kiosk_js/option.js"></script>
 
 <script>

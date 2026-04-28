@@ -139,5 +139,51 @@
     	FROM orders
    		WHERE order_id = #{orderId}
 	</select>
+	
+	<select id="selectUnavailableRecipeCodes" parameterType="int" resultType="int">
+    	<![CDATA[
+			SELECT DISTINCT r.recipe_code
+			FROM recipe r
+			JOIN recipe_detail rd ON r.recipe_code = rd.recipe_code
+			JOIN material m ON rd.material_code = m.material_code
+			LEFT JOIN branch_stock bs
+            ON bs.branch_code = #{branchCode}
+			AND bs.material_code = rd.material_code
+			WHERE IFNULL(bs.current_qty, 0) <
+              (
+                  rd.required_qty
+                  * IFNULL(m.deduct_qty, 1)
+                  * CASE WHEN r.category_id = 2 THEN 2 ELSE 1 END
+              )
+    ]]>
+	</select>
+	
+	<!-- 옵션 재료별 재고 정보 조회 -->
+	<select id="selectOptionMaterialStockList" parameterType="map" resultType="dto.OptionMaterialStockDto">
+    <![CDATA[
+        SELECT
+            m.material_code AS materialCode,
+            m.material_group_id AS materialGroupId,
+            m.material_name AS materialName,
+            IFNULL(m.deduct_qty, 1) AS deductQty,
+            IFNULL(bs.current_qty, 0) AS currentQty,
+            CASE
+                WHEN IFNULL(bs.current_qty, 0) < (IFNULL(m.deduct_qty, 1) * #{multiplier})
+                THEN 1
+                ELSE 0
+            END AS unavailableYn,
+            CASE
+                WHEN IFNULL(bs.current_qty, 0) < (IFNULL(m.deduct_qty, 1) * #{multiplier} * 2)
+                THEN 1
+                ELSE 0
+            END AS addUnavailableYn
+        FROM material m
+        LEFT JOIN branch_stock bs
+            ON bs.material_code = m.material_code
+           AND bs.branch_code = #{branchCode}
+        ORDER BY m.material_group_id, m.material_code
+    ]]>
+</select>
+
     
 </mapper>

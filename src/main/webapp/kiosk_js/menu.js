@@ -79,19 +79,24 @@ function renderMenus() {
 		filtered = filtered.filter(r => String(r.subCategoryCode) === currentSubCode);
 	}
 
-	menuGrid.innerHTML = filtered.map(item => `
-		<article class="menu-card"
-			data-name="${item.name}"
-			data-price="${item.price}"
-			data-category="${item.categoryId}"
-			data-recipe-code="${item.recipeCode}">
-			<div class="menu-thumb">
-				${item.imgUrl ? `<img src="/zero/${item.imgUrl}">` : `<div>이미지</div>`}
-			</div>
-			<div class="menu-name">${item.name}</div>
-			<div class="menu-price">${formatPrice(item.price)}</div>
-		</article>
-	`).join("");
+	menuGrid.innerHTML = filtered.map(item => {
+		const isUnavailable = unavailableRecipeCodes.includes(Number(item.recipeCode));
+
+		return `
+        <article class="menu-card ${isUnavailable ? "sold-out" : ""}"
+            data-name="${item.name}"
+            data-price="${item.price}"
+            data-category="${item.categoryId}"
+            data-recipe-code="${item.recipeCode}">
+            <div class="menu-thumb">
+                ${item.imgUrl ? `<img src="/zero/${item.imgUrl}">` : `<div>이미지</div>`}
+            </div>
+            <div class="menu-name">${item.name}</div>
+            <div class="menu-price">${formatPrice(item.price)}</div>
+            ${isUnavailable ? `<div class="sold-out-badge">재고 부족</div>` : ""}
+        </article>
+    `;
+	}).join("");
 
 	menuGrid.querySelectorAll(".menu-card").forEach(card => {
 		card.addEventListener("click", () => {
@@ -132,6 +137,10 @@ function createBaseItem(menu) {
 }
 
 function handleMenuClick(menu) {
+	if (unavailableRecipeCodes.includes(Number(menu.recipeCode))) {
+		alert("현재 재고 부족으로 선택할 수 없는 메뉴입니다.");
+		return;
+	}
 	const item = createBaseItem(menu);
 	sessionStorage.setItem("item", JSON.stringify(item));
 	if (item.menuType === "sandwich" || item.menuType === "salad") {

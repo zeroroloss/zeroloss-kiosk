@@ -410,6 +410,24 @@
   font-size: 30px;
   font-weight: 800;
 }
+
+
+.menu-card.sold-out {
+    opacity: 0.45;
+    position: relative;
+}
+
+.sold-out-badge {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.75);
+    color: white;
+    padding: 10px 18px;
+    border-radius: 20px;
+    font-weight: bold;
+}
 /* =========================
    메뉴 이미지 회색박스 제거 전용
    기존 CSS 건드리지 않음

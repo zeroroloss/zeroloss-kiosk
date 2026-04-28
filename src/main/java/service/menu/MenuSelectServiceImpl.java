@@ -33,4 +33,9 @@ public class MenuSelectServiceImpl implements MenuSelectService {
 		return subDao.selectSubCategory();
 	}
 
+	@Override
+	public List<Integer> selectUnavailableRecipeCodes(int branchCode) throws Exception {
+		return recipeDao.selectUnavailableRecipeCodes(branchCode);
+	}
+
 }

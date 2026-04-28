@@ -8,13 +8,13 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import dto.CategoryMaterialDto;
 import dto.MaterialDto;
-import dto.RecipeDetailDto;
+import dto.OptionMaterialStockDto;
 import service.menu.OptionSelectService;
 import service.menu.OptionSelectServiceImpl;
-import service.menu.RecipeDetailService;
 
 /**
  * Servlet implementation class OptionController
@@ -36,33 +36,52 @@ public class OptionController extends HttpServlet {
 	 */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
+    	System.out.println("=== OptionController 새 코드 실행됨 ===");
         try {
-        	OptionSelectService optionService = new OptionSelectServiceImpl();
+            request.setCharacterEncoding("utf-8");
+
+            OptionSelectService optionService = new OptionSelectServiceImpl();
+
             int categoryId = Integer.parseInt(request.getParameter("categoryId"));
+
+            HttpSession session = request.getSession();
+            Integer branchCode = (Integer) session.getAttribute("branchCode");
+
+            if (branchCode == null) {
+                response.sendRedirect(request.getContextPath() + "/kiosk/test");
+                return;
+            }
+
+            int multiplier = (categoryId == 2) ? 2 : 1;
 
             // 1. 옵션 그룹
             List<CategoryMaterialDto> groupList =
-                optionService.selectCategoryMaterialList(categoryId);
+                    optionService.selectCategoryMaterialList(categoryId);
 
             // 2. 재료 리스트
             List<MaterialDto> materialList =
-                optionService.selectMaterialListByCategoryId(categoryId);
-            
+                    optionService.selectMaterialListByCategoryId(categoryId);
+
+            // 3. 옵션 재고 상태 리스트
+            List<OptionMaterialStockDto> materialStockList =
+                    optionService.selectOptionMaterialStockList(branchCode, multiplier);
+
             System.out.println("categoryId = " + categoryId);
+            System.out.println("branchCode = " + branchCode);
+            System.out.println("multiplier = " + multiplier);
             System.out.println("materialGroupList size = " + groupList.size());
             System.out.println("materialList size = " + materialList.size());
+            System.out.println("materialStockList size = " + materialStockList.size());
 
-            // 3. request에 담기
             request.setAttribute("materialGroupList", groupList);
             request.setAttribute("materialList", materialList);
+            request.setAttribute("materialStockList", materialStockList);
 
-            // 4. JSP 이동
-            request.getRequestDispatcher("/kiosk_jsp/menu/option.jsp").forward(request, response);
+            request.getRequestDispatcher("/kiosk_jsp/menu/option.jsp")
+                   .forward(request, response);
 
         } catch (Exception e) {
             throw new ServletException(e);
         }
     }
-
 }

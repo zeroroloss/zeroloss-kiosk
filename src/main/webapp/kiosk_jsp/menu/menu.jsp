@@ -118,6 +118,17 @@
     location.href = contextPath + "/kiosk/orderCon";
   });
 </script>
+
+<script>
+    const unavailableRecipeCodes = [
+        <c:forEach var="code" items="${unavailableRecipeCodes}" varStatus="st">
+            ${code}<c:if test="${!st.last}">,</c:if>
+        </c:forEach>
+    ];
+
+    console.log("품절 메뉴 코드:", unavailableRecipeCodes);
+</script>
+
     <script src="<%=contextPath%>/kiosk_js/menu.js"></script>
     <script src="<%=contextPath%>/kiosk_js/timer.js"></script>
 </body>

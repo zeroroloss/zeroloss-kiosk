@@ -311,3 +311,8 @@
   line-height: 1.35;
   padding-top: 1px;
 }
+
+.option-chip.disabled {
+    opacity: 0.4;
+    pointer-events: none;
+}

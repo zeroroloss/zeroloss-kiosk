@@ -8,11 +8,12 @@ import dao.menu.MaterialDao;
 import dao.menu.MaterialDaoImpl;
 import dto.CategoryMaterialDto;
 import dto.MaterialDto;
+import dto.OptionMaterialStockDto;
 
 public class OptionSelectServiceImpl implements OptionSelectService {
 	private CategoryMaterialDao categoryMaterialDao = new CategoryMaterialDaoImpl();
-	private MaterialDao materialDao = new MaterialDaoImpl();	
-	
+	private MaterialDao materialDao = new MaterialDaoImpl();
+
 	@Override
 	public List<CategoryMaterialDto> selectCategoryMaterialList(int categoryId) throws Exception {
 		return categoryMaterialDao.selectCategoryMaterialList(categoryId);
@@ -21,6 +22,11 @@ public class OptionSelectServiceImpl implements OptionSelectService {
 	@Override
 	public List<MaterialDto> selectMaterialListByCategoryId(int categoryId) throws Exception {
 		return materialDao.selectMaterialListByCategoryId(categoryId);
+	}
+
+	@Override
+	public List<OptionMaterialStockDto> selectOptionMaterialStockList(int branchCode, int multiplier) throws Exception {
+		return materialDao.selectOptionMaterialStockList(branchCode, multiplier);
 	}
 
 }

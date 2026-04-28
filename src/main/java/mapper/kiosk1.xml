@@ -87,4 +87,39 @@
       	WHERE rd.recipe_code = #{recipeCode}
     </select>
     
+    <select id="baseStock" parameterType="string" resultType="dto.StockDeductDto"> <!-- 기본재료 -->
+    	SELECT
+			rd.material_code AS materialCode,
+        	(rd.required_qty * om.qty) AS deductQty
+    	FROM order_menu om 
+    	JOIN recipe_detail rd
+      	ON om.recipe_code = rd.recipe_code
+    	WHERE om.order_id = #{orderId}
+	</select>
+
+	<select id="optionStock" parameterType="string" resultType="dto.StockDeductDto"> <!-- 옵션 재료 -->
+    	SELECT
+			oo.material_code AS materialCode,
+			(m.deduct_qty * om.qty) AS deductQty
+    	FROM order_option oo
+		JOIN order_menu om
+   	   	ON oo.order_menu_id = om.order_menu_id
+    	JOIN material m
+   	   	ON oo.material_code = m.material_code
+  	 	WHERE om.order_id = #{orderId}
+	</select>
+
+	<update id="deductStock" parameterType="dto.StockDeductDto"> <!--  재료 차감 -->
+		UPDATE branch_stock
+    	SET current_qty = current_qty - #{deductQty}
+    	WHERE branch_code = #{branchCode}
+      	AND material_code = #{materialCode}
+	</update>
+	
+	<select id="selectBranchCode" parameterType="string" resultType="int">
+    	SELECT branch_code
+    	FROM orders
+   		WHERE order_id = #{orderId}
+	</select>
+    
 </mapper>

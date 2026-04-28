@@ -32,4 +32,14 @@ public class OrdersDaoImpl implements OrdersDao {
 			e.printStackTrace();
 		}
 	}
+
+	@Override
+	public int selectBranchCode(String orderId) throws Exception {
+		SqlSession sqlSession = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession();
+	    try {
+	        return sqlSession.selectOne("mapper.kiosk1.selectBranchCode", orderId);
+	    } finally {
+	        sqlSession.close();
+	    }
+	}
 }

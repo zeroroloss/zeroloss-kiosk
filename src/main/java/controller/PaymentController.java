@@ -1,6 +1,7 @@
 package controller;
 
 import java.io.IOException;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -10,6 +11,8 @@ import javax.servlet.http.HttpServletResponse;
 import dto.OrdersDto;
 import service.order.OrderService;
 import service.order.OrderServiceImpl;
+import service.order.StockService;
+import service.order.StockServiceImpl;
 import service.payment.TossPaymentService;
 import service.payment.TossPaymentServiceImpl;
 
@@ -55,6 +58,9 @@ public class PaymentController extends HttpServlet {
             	ordersDto.setOrderId(orderId);
             	ordersDto.setStatus("PAID");
             	orderservice.updateOrders(ordersDto);
+            	
+            	StockService stockService = new StockServiceImpl();
+            	stockService.deductStockByOrderId(orderId);
             	
             	// 구매자 번호
             	String orderNum = request.getParameter("orderNum");

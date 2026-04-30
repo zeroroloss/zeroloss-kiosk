@@ -29,7 +29,7 @@
 
         <div class="form-group">
             <label class="form-label" for="branchSelect">지점 선택</label>
-            <select class="form-select" id="branchSelect" name="branchCode">
+            <select class="form-select" id="branchSelect" name="branchCode">zl
                 <option value="">지점을 선택하세요</option>
                 <c:forEach var="branch" items="${branchList}">
                     <option value="${branch.branch_code}"

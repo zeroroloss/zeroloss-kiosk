@@ -182,15 +182,6 @@
   letter-spacing: -1px;
 }
 
-.group-title {
-  font-size: 30px;
-  font-weight: 700;
-  margin: 0 0 16px;
-  padding-bottom: 12px;
-  border-bottom: 2px solid #ededed;
-  color: #333;
-}
-
 .group {
   margin-bottom: 28px;
 }

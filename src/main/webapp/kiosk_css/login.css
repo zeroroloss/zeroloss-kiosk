@@ -129,6 +129,12 @@ body {
 }
 
 /* 폼 */
+#loginForm {
+  display: flex;
+  flex-direction: column;
+  gap: 34px;
+}
+
 .form-group {
   display: flex;
   flex-direction: column;
@@ -258,3 +264,4 @@ body {
     height: 100vh;
   }
 }
+

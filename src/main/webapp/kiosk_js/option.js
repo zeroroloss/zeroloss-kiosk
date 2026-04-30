@@ -37,6 +37,8 @@ fetch(url)
 
 		sessionStorage.setItem("item", JSON.stringify(item));
 
+		renderSections();
+  		renderSummary();
 	})
 	.catch(err => console.error("fetch 에러:", err));
 
@@ -291,7 +293,6 @@ function renderSections() {
 				${section.groups.map(group => {
 			return `
 						<div class="group">
-							<div class="group-title">${group.title}</div>
 							<div class="option-grid">
 								${group.options.map((option, index) => {
 				const stock = stockMap[Number(option.materialCode)];
@@ -308,7 +309,9 @@ function renderSections() {
 					stock &&
 					Number(stock.addUnavailableYn) === 1;
 
-				const finalDisabled = isDisabled || isAddDisabled;
+				const stockBlock = !canSelectByStock(option);
+
+				const finalDisabled = isDisabled || isAddDisabled || stockBlock;
 
 				return `
 										<button
@@ -358,6 +361,11 @@ function renderSections() {
 				alert("추가할 재고가 부족합니다.");
 				return;
 			}
+			
+			if (!canSelectByStock(option)) {
+  				alert("재고 부족으로 선택할 수 없습니다.");
+  				return;
+				}
 
 			toggleOption(groupKey, optionIndex);
 		});
@@ -427,6 +435,39 @@ function validateBeforeNext() {
 	}
 
 	return true;
+}
+
+function canSelectByStock(option) {
+  const stock = stockMap[Number(option.materialCode)];
+  if (!stock) return true;
+
+  const stockQty = Number(stock.currentQty || 0);
+
+  let usedQty = 0;
+
+  // 1️⃣ 기본 재료 사용량 포함
+  if (item.defaultMaterials && item.defaultMaterials.length) {
+    item.defaultMaterials.forEach(m => {
+      if (String(m.materialCode) === String(option.materialCode)) {
+        usedQty += Number(m.deductQty || 1);
+      }
+    });
+  }
+
+  // 2️⃣ 선택된 옵션 사용량 포함
+  optionConfig.sections.forEach(section => {
+    section.groups.forEach(group => {
+      group.options.forEach(o => {
+        if (o.selected && String(o.materialCode) === String(option.materialCode)) {
+          usedQty += 1; // 옵션도 deductQty 있으면 그걸로 변경 가능
+        }
+      });
+    });
+  });
+
+  const nextUse = 1;
+
+  return stockQty >= usedQty + nextUse;
 }
 
 /* ===== 이동 함수 ===== */

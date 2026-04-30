@@ -20,7 +20,7 @@
   <section class="panel">
 
     <header class="panel-header">
-      <button type="button" class="close-btn" onclick="goBack()">×</button>
+      <button type="button" class="close-btn" onclick="goBack()">x</button>
       <div class="panel-title">옵션 확인</div>
       <div class="panel-desc">선택하신 옵션을 확인해주세요</div>
     </header>

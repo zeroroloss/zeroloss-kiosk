@@ -1,5 +1,5 @@
 const ITEM_KEY = "item";
-
+const MINI_ROTISSERIE_SALAD_CODE = 2027;
 const materialGroupList = window.materialGroupList || [];
 const materialList = window.optionMaterialList || [];
 
@@ -239,6 +239,11 @@ function toggleOption(groupKey, optionIndex) {
 
 /* ===== 렌더 ===== */
 
+if (Number(item.recipeCode) === MINI_ROTISSERIE_SALAD_CODE) {
+	optionConfig.steps = optionConfig.steps.filter(step => step === "소스");
+	optionConfig.activeStep = "소스";
+}
+
 function renderSteps() {
 	if (!stepTabs) return;
 
@@ -268,33 +273,44 @@ function renderSteps() {
 function renderSections() {
 	if (!optionScroll) return;
 
-	optionScroll.innerHTML = optionConfig.sections.map(section => {
+	const visibleSections = optionConfig.sections.filter(section => {
+		const isMiniRotisserieSalad =
+			Number(item.recipeCode) === MINI_ROTISSERIE_SALAD_CODE;
+
+		if (isMiniRotisserieSalad) {
+			return section.title === "소스";
+		}
+
+		return true;
+	});;
+
+	optionScroll.innerHTML = visibleSections.map(section => {
 		return `
 			<section class="section" data-section="${section.title}">
 				<h2 class="section-title">${section.title}</h2>
 				${section.groups.map(group => {
-					return `
+			return `
 						<div class="group">
 							<div class="group-title">${group.title}</div>
 							<div class="option-grid">
 								${group.options.map((option, index) => {
-									const stock = stockMap[Number(option.materialCode)];
+				const stock = stockMap[Number(option.materialCode)];
 
-									const isDisabled =
-										stock && Number(stock.unavailableYn) === 1;
+				const isDisabled =
+					stock && Number(stock.unavailableYn) === 1;
 
-									const isActionOption =
-										Number(option.materialCode) === 401 ||
-										Number(option.materialCode) === 407;
+				const isActionOption =
+					Number(option.materialCode) === 401 ||
+					Number(option.materialCode) === 407;
 
-									const isAddDisabled =
-										isActionOption &&
-										stock &&
-										Number(stock.addUnavailableYn) === 1;
+				const isAddDisabled =
+					isActionOption &&
+					stock &&
+					Number(stock.addUnavailableYn) === 1;
 
-									const finalDisabled = isDisabled || isAddDisabled;
+				const finalDisabled = isDisabled || isAddDisabled;
 
-									return `
+				return `
 										<button
 											type="button"
 											class="option-chip ${option.selected ? "active" : ""} ${finalDisabled ? "disabled" : ""}"
@@ -305,11 +321,11 @@ function renderSections() {
 											${option.label}${option.price ? ` (+${option.price.toLocaleString()}원)` : ""}
 										</button>
 									`;
-								}).join("")}
+			}).join("")}
 							</div>
 						</div>
 					`;
-				}).join("")}
+		}).join("")}
 			</section>
 		`;
 	}).join("");
@@ -356,7 +372,18 @@ function renderSummary() {
 		메뉴: item.menuName
 	};
 
-	optionConfig.sections.forEach(section => {
+	const visibleSections = optionConfig.sections.filter(section => {
+		const isMiniRotisserieSalad =
+			Number(item.recipeCode) === MINI_ROTISSERIE_SALAD_CODE;
+
+		if (isMiniRotisserieSalad) {
+			return section.title === "소스";
+		}
+
+		return true;
+	});
+
+	visibleSections.forEach(section => {
 		const values = [];
 
 		section.groups.forEach(group => {

@@ -3,6 +3,32 @@
 <%
     String contextPath = request.getContextPath();
 %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+
+<script>
+const recipeMaterialMap = {
+<c:forEach var="entry" items="${recipeMaterialMap}" varStatus="st">
+  "${entry.key}": [
+    <c:forEach var="m" items="${entry.value}" varStatus="ms">
+    {
+      materialCode: "${m.materialCode}",
+      deductQty: ${m.deductQty}
+    }<c:if test="${!ms.last}">,</c:if>
+    </c:forEach>
+  ]<c:if test="${!st.last}">,</c:if>
+</c:forEach>
+};
+
+const stockMap = {
+<c:forEach var="s" items="${stockList}" varStatus="st">
+  "${s.materialCode}": ${s.currentQty}<c:if test="${!st.last}">,</c:if>
+</c:forEach>
+};
+
+console.log("option_confirm recipeMaterialMap", recipeMaterialMap);
+console.log("option_confirm stockMap", stockMap);
+
+</script>
 
 <!DOCTYPE html>
 <html lang="ko">

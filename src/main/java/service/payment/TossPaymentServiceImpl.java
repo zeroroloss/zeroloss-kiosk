@@ -13,10 +13,11 @@ import org.json.simple.parser.JSONParser;
 
 public class TossPaymentServiceImpl implements TossPaymentService {
 	
-	private static final String SECRET_KEY = "";
+	private static final String SECRET_KEY = "test_sk_Ba5PzR0ArnXnEqgvn4qB3vmYnNeD";
 
 	@Override
 	public String confirmPayment(String paymentKey, String orderId, int amount) throws Exception {
+		System.out.println("[" + SECRET_KEY + "]");
 		String authorization = "Basic " + Base64.getEncoder().encodeToString((SECRET_KEY + ":").getBytes("UTF-8"));
 
 		URL url = new URL("https://api.tosspayments.com/v1/payments/confirm");

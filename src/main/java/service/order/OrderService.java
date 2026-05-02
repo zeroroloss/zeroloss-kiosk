@@ -11,4 +11,9 @@ public interface OrderService {
 							  List<OrderMenuDto> orderMenuList,
 							  List<List<OrderOptionDto>> orderOptionLists) throws Exception;
 	void updateOrders(OrdersDto ordersDto) throws Exception;
+	boolean checkStockAvailable(
+		    int branchCode,
+		    List<OrderMenuDto> orderMenuList,
+		    List<List<OrderOptionDto>> orderOptionList
+		) throws Exception;
 }

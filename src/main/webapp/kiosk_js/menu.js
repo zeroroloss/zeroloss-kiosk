@@ -66,6 +66,98 @@ function createSubTabs() {
 	});
 }
 
+function calculateUsedMaterialsFromCart() {
+	const cart = getCart();
+	const used = {};
+
+	(cart.items || []).forEach(item => {
+
+		const qty = Number(item.qty || 1);
+
+		const recipeMaterials =
+			recipeMaterialMap[String(item.recipeCode)] || [];
+
+		recipeMaterials.forEach(material => {
+
+			const code = String(material.materialCode);
+
+			const needQty =
+				Number(material.deductQty || 0) * qty;
+
+			used[code] = (used[code] || 0) + needQty;
+		});
+
+		(item.options || []).forEach(option => {
+
+			const code = String(option.materialCode);
+
+			const needQty =
+				Number(option.deductQty || 0) * qty;
+
+			used[code] = (used[code] || 0) + needQty;
+		});
+	});
+
+	return used;
+}
+
+function isCartStockAvailable(cart) {
+	const used = {};
+
+	(cart.items || []).forEach(item => {
+		const qty = Number(item.qty || 1);
+
+		const defaultMaterials =
+			(item.defaultMaterials && item.defaultMaterials.length)
+				? item.defaultMaterials
+				: (recipeMaterialMap[String(item.recipeCode)] || []);
+
+		defaultMaterials.forEach(material => {
+			const code = String(material.materialCode);
+			const needQty =
+				Number(material.deductQty || material.requiredQty || 1) * qty;
+
+			used[code] = (used[code] || 0) + needQty;
+		});
+
+		(item.options || []).forEach(option => {
+			const code = String(option.materialCode);
+			const needQty = Number(option.deductQty || 1) * qty;
+
+			used[code] = (used[code] || 0) + needQty;
+		});
+	});
+
+	return Object.keys(used).every(code => {
+		const dbQty = Number(stockMap[code] || 0);
+		const usedQty = Number(used[code] || 0);
+
+		return dbQty - usedQty >= 0;
+	});
+}
+
+function canAddRecipe(recipeCode, addQty = 1) {
+	const used = calculateUsedMaterialsFromCart();
+
+	const recipeMaterials =
+		recipeMaterialMap[String(recipeCode)] || [];
+
+	return recipeMaterials.every(material => {
+		const code = String(material.materialCode);
+
+		const dbQty =
+			Number(stockMap[code] || 0);
+
+		const usedQty =
+			Number(used[code] || 0);
+
+		const needQty =
+			Number(material.deductQty || 0) * Number(addQty || 1);
+
+		return dbQty - usedQty - needQty >= 0;
+	});
+}
+
 // ================== 메뉴 출력 ==================
 function renderMenus() {
 	const currentMain = mainCategoryList.find(c => Number(c.categoryId) === currentMainId);
@@ -80,7 +172,7 @@ function renderMenus() {
 	}
 
 	menuGrid.innerHTML = filtered.map(item => {
-		const isUnavailable = unavailableRecipeCodes.includes(Number(item.recipeCode));
+		const isUnavailable = unavailableRecipeCodes.includes(Number(item.recipeCode)) || !canAddRecipe(item.recipeCode, 1);
 
 		return `
         <article class="menu-card ${isUnavailable ? "sold-out" : ""}"
@@ -137,8 +229,12 @@ function createBaseItem(menu) {
 }
 
 function handleMenuClick(menu) {
-	if (unavailableRecipeCodes.includes(Number(menu.recipeCode))) {
+	if (
+		unavailableRecipeCodes.includes(Number(menu.recipeCode)) ||
+		!canAddRecipe(menu.recipeCode, 1)
+	) {
 		alert("현재 재고 부족으로 선택할 수 없는 메뉴입니다.");
+		renderMenus();
 		return;
 	}
 	const item = createBaseItem(menu);
@@ -200,12 +296,19 @@ function addCartItem(item) {
 			qty: Number(item.qty || 1),
 			price: Number(item.price || 0),
 			totalPrice: Number(item.price || 0) * Number(item.qty || 1),
+			defaultMaterials: item.defaultMaterials || [],
 			options: item.options || []
 		});
 	}
 
+	if (!isCartStockAvailable(cart)) {
+		alert("재고가 부족해서 장바구니에 담을 수 없습니다.");
+		return;
+	}
+
 	saveCart(cart);
 	renderCart();
+	renderMenus();
 }
 
 function removeItem(id) {
@@ -214,6 +317,7 @@ function removeItem(id) {
 
 	saveCart(cart);
 	renderCart();
+	renderMenus();
 }
 
 function increaseQty(id) {
@@ -222,10 +326,20 @@ function increaseQty(id) {
 	if (!item) return;
 
 	item.qty += 1;
+
+	if (!isCartStockAvailable(cart)) {
+		item.qty -= 1;
+		alert("재고가 부족해서 수량을 더 늘릴 수 없습니다.");
+		renderCart();
+		renderMenus();
+		return;
+	}
+
 	item.totalPrice = Number(item.price) * Number(item.qty);
 
 	saveCart(cart);
 	renderCart();
+	renderMenus();
 }
 
 function decreaseQty(id) {
@@ -242,6 +356,7 @@ function decreaseQty(id) {
 
 	saveCart(cart);
 	renderCart();
+	renderMenus();
 }
 
 function getTotalAmount() {

@@ -4,7 +4,9 @@ import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
 
+import dto.MaterialStockDto;
 import dto.RecipeDto;
+import dto.RecipeMaterialDto;
 import util.MyBatisSqlSessionFactory;
 
 public class RecipeDaoImpl implements RecipeDao {
@@ -38,6 +40,38 @@ public class RecipeDaoImpl implements RecipeDao {
 	    }
 
 	    return list;
+	}
+
+	@Override
+	public List<RecipeMaterialDto> selectRecipeMaterialList() throws Exception {
+		SqlSession sqlSession = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession();
+		List<RecipeMaterialDto> list = null;
+
+		try {
+			list = sqlSession.selectList("mapper.kiosk1.selectRecipeMaterialList");
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			sqlSession.close();
+		}
+
+		return list;
+	}
+
+	@Override
+	public List<MaterialStockDto> selectCurrentStockList(Integer branchCode) throws Exception {
+		SqlSession sqlSession = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession();
+		List<MaterialStockDto> list = null;
+
+		try {
+			list = sqlSession.selectList("mapper.kiosk1.selectCurrentStockList", branchCode);
+		} catch (Exception e) {
+			throw e;
+		} finally {
+			sqlSession.close();
+		}
+
+		return list;
 	}
 
 }

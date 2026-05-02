@@ -105,6 +105,19 @@ public class OrderController extends HttpServlet {
 
 			// DB 저장
 			OrderService orderService = new OrderServiceImpl();
+			
+			boolean stockAvailable = orderService.checkStockAvailable(branchCode, orderMenuList, orderOptionList);
+
+			if (!stockAvailable) {
+			    JSONObject res = new JSONObject();
+			    res.put("success", false);
+			    res.put("message", "재고가 부족합니다.");
+
+			    response.setContentType("application/json;charset=UTF-8");
+			    response.getWriter().write(res.toJSONString());
+			    return;
+			}
+			
 			orderService.insertFullOrder(ordersDto, orderMenuList, orderOptionList);
 			JSONObject res = new JSONObject();
 			

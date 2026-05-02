@@ -65,6 +65,75 @@ function getCart() {
 	return savedCart;
 }
 
+function calculateUsedMaterialsFromCart() {
+	const cart = getCart();
+	const used = {};
+
+	(cart.items || []).forEach(cartItem => {
+		const qty = Number(cartItem.qty || 1);
+
+		const defaultMaterials =
+			(cartItem.defaultMaterials && cartItem.defaultMaterials.length)
+				? cartItem.defaultMaterials
+				: (recipeMaterialMap[String(cartItem.recipeCode)] || []);
+
+		defaultMaterials.forEach(m => {
+			const code = String(m.materialCode);
+			const needQty = Number(m.deductQty || m.requiredQty || 1) * qty;
+
+			used[code] = (used[code] || 0) + needQty;
+		});
+
+		(cartItem.options || []).forEach(o => {
+			const code = String(o.materialCode);
+			const needQty = Number(o.deductQty || 1) * qty;
+
+			used[code] = (used[code] || 0) + needQty;
+		});
+	});
+
+	return used;
+}
+
+function isOptionConfirmStockAvailable(nextQty) {
+	const used = calculateUsedMaterialsFromCart();
+
+	const defaultMaterials =
+		(item.defaultMaterials && item.defaultMaterials.length)
+			? item.defaultMaterials
+			: (recipeMaterialMap[String(item.recipeCode)] || []);
+
+	defaultMaterials.forEach(m => {
+		const code = String(m.materialCode);
+		const needQty = Number(m.deductQty || m.requiredQty || 1) * nextQty;
+
+		used[code] = (used[code] || 0) + needQty;
+	});
+
+	(item.options || []).forEach(o => {
+		const code = String(o.materialCode);
+		const needQty = Number(o.deductQty || 1) * nextQty;
+
+		used[code] = (used[code] || 0) + needQty;
+	});
+
+	console.log("option_confirm used", used);
+
+	return Object.keys(used).every(code => {
+		const dbQty = Number(stockMap[code] || 0);
+		const usedQty = Number(used[code] || 0);
+
+		console.log("stock check detail", {
+			code,
+			dbQty,
+			usedQty,
+			remain: dbQty - usedQty
+		});
+
+		return dbQty - usedQty >= 0;
+	});
+}
+
 function saveCart(cart) {
 	cart.totalAmount = calculateTotalAmount(cart.items);
 	sessionStorage.setItem(CART_KEY, JSON.stringify(cart));
@@ -132,7 +201,20 @@ if (minusBtn) {
 
 if (plusBtn) {
 	plusBtn.onclick = () => {
-		qty++;
+		const nextQty = qty + 1;
+
+		const canIncrease = isOptionConfirmStockAvailable(nextQty);
+
+		console.log("nextQty", nextQty);
+		console.log("stock check", canIncrease);
+
+		if (!canIncrease) {
+			alert("재고가 부족해서 수량을 더 늘릴 수 없습니다.");
+			return;
+		}
+
+		qty = nextQty;
+		item.qty = qty;
 		render();
 	};
 }
@@ -165,11 +247,21 @@ function addItemToCart() {
 
 /* 버튼 함수 */
 window.addCart = function () {
+	if (!isOptionConfirmStockAvailable(qty)) {
+		alert("재고가 부족해서 장바구니에 담을 수 없습니다.");
+		return;
+	}
+
 	addItemToCart();
 	location.href = contextPath + "/kiosk/menu";
 };
 
 window.goPay = function () {
+	if (!isOptionConfirmStockAvailable(qty)) {
+		alert("재고가 부족해서 결제할 수 없습니다.");
+		return;
+	}
+
 	addItemToCart();
 	location.href = contextPath + "/kiosk/orderCon";
 };

@@ -1,146 +1,156 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD mapper 3.0//EN"
 	"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-	
+
 <mapper namespace="mapper.kiosk1">
-	<select id="selectMainCategoryList" resultType="dto.MainCategoryDto">
-        SELECT
-            category_id AS categoryId,
-            name,
-            is_active AS isActive
-        FROM main_category
-        WHERE is_active = TRUE
-        ORDER BY category_id
+	<select id="selectMainCategoryList"
+		resultType="dto.MainCategoryDto">
+		SELECT
+		category_id AS categoryId,
+		name,
+		is_active AS isActive
+		FROM main_category
+		WHERE is_active = TRUE
+		ORDER BY category_id
 	</select>
-	
+
 	<select id="selectRecipeList" resultType="dto.RecipeDto">
-        SELECT
-            recipe_code AS recipeCode,
-            category_id AS categoryId,
-            sub_category_code AS subCategoryCode,
-            name,
-            price,
-            img_url AS imgUrl,
-            is_active AS isActive
-        FROM recipe
-        WHERE is_active = TRUE
-        ORDER BY recipe_code,category_id, recipe_code
+		SELECT
+		recipe_code AS recipeCode,
+		category_id AS categoryId,
+		sub_category_code AS subCategoryCode,
+		name,
+		price,
+		img_url AS imgUrl,
+		is_active AS isActive
+		FROM recipe
+		WHERE is_active = TRUE
+		ORDER BY recipe_code,category_id, recipe_code
 	</select>
-	
-	<select id="selectSubCategoryList" resultType="dto.SubCategoryDto">
-        SELECT
-            sub_category_code AS subCategoryCode, 
-            main_category_id AS categoryId,
-            name
-        FROM sub_category
-        ORDER BY main_category_id, sub_category_code
+
+	<select id="selectSubCategoryList"
+		resultType="dto.SubCategoryDto">
+		SELECT
+		sub_category_code AS subCategoryCode,
+		main_category_id AS categoryId,
+		name
+		FROM sub_category
+		ORDER BY main_category_id, sub_category_code
 	</select>
-	
+
 	<!-- 카테고리 기준 재료 조회 -->
-    <select id="selectMaterialListByCategoryId" parameterType="int" resultType="dto.MaterialDto">
-        SELECT 
-            m.material_code AS materialCode,
-            m.material_group_id AS materialGroupId,
-            m.material_name AS materialName,
-            m.price AS price
-        FROM material m
-        JOIN category_material_group cmg
-        USING (material_group_id)
-        WHERE cmg.category_id = #{categoryId}
-          AND m.material_name NOT IN ('머쉬룸', '채소믹스')
-        ORDER BY m.material_group_id, m.material_code
-    </select>
-    
-    <!-- 그룹 기준 재료 조회 -->
-    <select id="selectMaterialListByMaterialGroupId" parameterType="int" resultType="dto.MaterialDto">
-        SELECT 
-            material_code AS materialCode,
-            material_group_id AS materialGroupId,
-            material_name AS materialName,
-            price AS price
-        FROM material
-        WHERE material_group_id = #{materialGroupId}
-        ORDER BY material_code
-    </select>
-    
-     <select id="selectCategoryMaterialList" parameterType="int" resultType="dto.CategoryMaterialDto">
-        SELECT 
-            cmg.material_group_id AS materialGroupId,
-            mg.group_name AS groupName,
-            mg.group_min AS groupMin,
-            mg.group_max AS groupMax
-        FROM category_material_group cmg
-        JOIN material_group mg
-        USING (material_group_id)
-        WHERE cmg.category_id = #{categoryId}
-        ORDER BY cmg.material_group_id
-    </select>
-    
-    <select id="selectRecipeDetailList" parameterType="string" resultType="dto.RecipeDetailDto">
-    	SELECT
-       		rd.recipe_code AS recipeCode, 
-       		rd.material_code AS materialCode, 
-       		m.material_name AS materialName,
-       		rd.required_qty AS requiredQty
-    	FROM recipe_detail rd JOIN material m
-      	ON rd.material_code = m.material_code
-      	WHERE rd.recipe_code = #{recipeCode}
-    </select>
-    
-    <select id="baseStock" parameterType="string" resultType="dto.StockDeductDto">
-    SELECT
-        om.order_menu_id AS orderMenuId,
-        rd.material_code AS materialCode,
-        (m.deduct_qty * om.qty *
-            CASE
-                WHEN r.category_id = 2 THEN 2
-                ELSE 1
-            END
-        ) AS deductQty
-    FROM order_menu om
-    JOIN recipe_detail rd
-      ON om.recipe_code = rd.recipe_code
-    JOIN material m
-      ON rd.material_code = m.material_code
-    JOIN recipe r
-      ON om.recipe_code = r.recipe_code
-    WHERE om.order_id = #{orderId}
-</select>
-
-	<select id="optionStock" parameterType="string" resultType="dto.StockDeductDto">
-    SELECT
-        om.order_menu_id AS orderMenuId,
-        oo.material_code AS materialCode,
-        (m.deduct_qty * om.qty *
-            CASE
-                WHEN r.category_id = 2 THEN 2
-                ELSE 1
-            END
-        ) AS deductQty
-    FROM order_option oo
-    JOIN order_menu om
-      ON oo.order_menu_id = om.order_menu_id
-    JOIN material m
-      ON oo.material_code = m.material_code
-    JOIN recipe r
-      ON om.recipe_code = r.recipe_code
-    WHERE om.order_id = #{orderId}
-</select>
-
-	<update id="deductStock" parameterType="dto.StockDeductDto"> <!--  재료 차감 -->
-		UPDATE branch_stock
-    	SET current_qty = current_qty - #{deductQty}
-    	WHERE branch_code = #{branchCode}
-      	AND material_code = #{materialCode}
-	</update>
-	
-	<select id="selectBranchCode" parameterType="string" resultType="int">
-    	SELECT branch_code
-    	FROM orders
-   		WHERE order_id = #{orderId}
+	<select id="selectMaterialListByCategoryId" parameterType="int"
+		resultType="dto.MaterialDto">
+		SELECT
+		m.material_code AS materialCode,
+		m.material_group_id AS materialGroupId,
+		m.material_name AS materialName,
+		m.price AS price
+		FROM material m
+		JOIN category_material_group cmg
+		USING (material_group_id)
+		WHERE cmg.category_id = #{categoryId}
+		AND m.material_name NOT IN ('머쉬룸', '채소믹스')
+		ORDER BY m.material_group_id, m.material_code
 	</select>
-	
-	<select id="selectUnavailableRecipeCodes" parameterType="int" resultType="int">
+
+	<!-- 그룹 기준 재료 조회 -->
+	<select id="selectMaterialListByMaterialGroupId"
+		parameterType="int" resultType="dto.MaterialDto">
+		SELECT
+		material_code AS materialCode,
+		material_group_id AS materialGroupId,
+		material_name AS materialName,
+		price AS price
+		FROM material
+		WHERE material_group_id = #{materialGroupId}
+		ORDER BY material_code
+	</select>
+
+	<select id="selectCategoryMaterialList" parameterType="int"
+		resultType="dto.CategoryMaterialDto">
+		SELECT
+		cmg.material_group_id AS materialGroupId,
+		mg.group_name AS groupName,
+		mg.group_min AS groupMin,
+		mg.group_max AS groupMax
+		FROM category_material_group cmg
+		JOIN material_group mg
+		USING (material_group_id)
+		WHERE cmg.category_id = #{categoryId}
+		ORDER BY cmg.material_group_id
+	</select>
+
+	<select id="selectRecipeDetailList" parameterType="string"
+		resultType="dto.RecipeDetailDto">
+		SELECT
+		rd.recipe_code AS recipeCode,
+		rd.material_code AS materialCode,
+		m.material_name AS materialName,
+		rd.required_qty AS requiredQty
+		FROM recipe_detail rd JOIN material m
+		ON rd.material_code = m.material_code
+		WHERE rd.recipe_code = #{recipeCode}
+	</select>
+
+	<select id="baseStock" parameterType="string"
+		resultType="dto.StockDeductDto">
+		SELECT
+		om.order_menu_id AS orderMenuId,
+		rd.material_code AS materialCode,
+		(m.deduct_qty * om.qty *
+		CASE
+		WHEN r.category_id = 2 THEN 2
+		ELSE 1
+		END
+		) AS deductQty
+		FROM order_menu om
+		JOIN recipe_detail rd
+		ON om.recipe_code = rd.recipe_code
+		JOIN material m
+		ON rd.material_code = m.material_code
+		JOIN recipe r
+		ON om.recipe_code = r.recipe_code
+		WHERE om.order_id = #{orderId}
+	</select>
+
+	<select id="optionStock" parameterType="string"
+		resultType="dto.StockDeductDto">
+		SELECT
+		om.order_menu_id AS orderMenuId,
+		oo.material_code AS materialCode,
+		(m.deduct_qty * om.qty *
+		CASE
+		WHEN r.category_id = 2 THEN 2
+		ELSE 1
+		END
+		) AS deductQty
+		FROM order_option oo
+		JOIN order_menu om
+		ON oo.order_menu_id = om.order_menu_id
+		JOIN material m
+		ON oo.material_code = m.material_code
+		JOIN recipe r
+		ON om.recipe_code = r.recipe_code
+		WHERE om.order_id = #{orderId}
+	</select>
+
+	<update id="deductStock" parameterType="dto.StockDeductDto"> <!-- 재료 차감 -->
+		UPDATE branch_stock
+		SET current_qty = current_qty - #{deductQty}
+		WHERE branch_code = #{branchCode}
+		AND material_code = #{materialCode}
+	</update>
+
+	<select id="selectBranchCode" parameterType="string"
+		resultType="int">
+		SELECT branch_code
+		FROM orders
+		WHERE order_id = #{orderId}
+	</select>
+
+	<select id="selectUnavailableRecipeCodes" parameterType="int"
+		resultType="int">
     	<![CDATA[
 			SELECT DISTINCT r.recipe_code
 			FROM recipe r
@@ -157,33 +167,88 @@
               )
     ]]>
 	</select>
-	
-	<!-- 옵션 재료별 재고 정보 조회 -->
-	<select id="selectOptionMaterialStockList" parameterType="map" resultType="dto.OptionMaterialStockDto">
-    <![CDATA[
-        SELECT
-            m.material_code AS materialCode,
-            m.material_group_id AS materialGroupId,
-            m.material_name AS materialName,
-            IFNULL(m.deduct_qty, 1) AS deductQty,
-            IFNULL(bs.current_qty, 0) AS currentQty,
-            CASE
-                WHEN IFNULL(bs.current_qty, 0) < (IFNULL(m.deduct_qty, 1) * #{multiplier})
-                THEN 1
-                ELSE 0
-            END AS unavailableYn,
-            CASE
-                WHEN IFNULL(bs.current_qty, 0) < (IFNULL(m.deduct_qty, 1) * #{multiplier} * 2)
-                THEN 1
-                ELSE 0
-            END AS addUnavailableYn
-        FROM material m
-        LEFT JOIN branch_stock bs
-            ON bs.material_code = m.material_code
-           AND bs.branch_code = #{branchCode}
-        ORDER BY m.material_group_id, m.material_code
-    ]]>
-</select>
 
-    
+	<!-- 옵션 재료별 재고 정보 조회 -->
+	<select id="selectOptionMaterialStockList" parameterType="map"
+		resultType="dto.OptionMaterialStockDto">
+<![CDATA[
+    SELECT
+        m.material_code AS materialCode,
+        m.material_group_id AS materialGroupId,
+        m.material_name AS materialName,
+
+        1 AS deductQty,
+
+        IFNULL(SUM(bs.current_qty), 0) AS currentQty,
+
+        CASE
+            WHEN IFNULL(SUM(bs.current_qty), 0) < (1 * #{multiplier})
+            THEN 1
+            ELSE 0
+        END AS unavailableYn,
+
+        CASE
+            WHEN IFNULL(SUM(bs.current_qty), 0) < (1 * #{multiplier} * 2)
+            THEN 1
+            ELSE 0
+        END AS addUnavailableYn
+
+    FROM material m
+    LEFT JOIN branch_stock bs
+        ON bs.material_code = m.material_code
+       AND bs.branch_code = #{branchCode}
+
+    GROUP BY
+        m.material_code,
+        m.material_group_id,
+        m.material_name
+
+    ORDER BY m.material_group_id, m.material_code
+]]>
+	</select>
+
+	<select id="selectRecipeMaterialList"
+		resultType="dto.RecipeMaterialDto">
+		SELECT
+		recipe_code AS recipeCode,
+		material_code AS materialCode,
+		required_qty
+		AS deductQty
+		FROM recipe_detail
+	</select>
+
+	<select id="selectCurrentStockList" parameterType="int"
+		resultType="dto.MaterialStockDto">
+		SELECT
+		material_code AS materialCode,
+		SUM(current_qty) AS currentQty
+		FROM branch_stock
+		WHERE branch_code = #{branchCode}
+		GROUP BY material_code
+	</select>
+
+	<select id="selectCategoryIdByRecipeCode" parameterType="string"
+		resultType="int">
+		SELECT category_id
+		FROM recipe
+		WHERE recipe_code = #{recipeCode}
+	</select>
+
+	<select id="selectRecipeMaterialForStockCheck"
+		parameterType="string" resultType="map">
+		SELECT
+		material_code AS materialCode,
+		required_qty AS requiredQty
+		FROM recipe_detail
+		WHERE recipe_code = #{recipeCode}
+	</select>
+
+	<select id="selectCurrentQtyForStockCheck" parameterType="map"
+		resultType="double">
+		SELECT IFNULL(SUM(current_qty), 0)
+		FROM branch_stock
+		WHERE branch_code = #{branchCode}
+		AND material_code = #{materialCode}
+	</select>
+
 </mapper>

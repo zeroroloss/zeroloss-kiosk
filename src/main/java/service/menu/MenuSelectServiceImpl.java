@@ -9,7 +9,9 @@ import dao.menu.RecipeDaoImpl;
 import dao.menu.SubCategoryDao;
 import dao.menu.SubCategoryDaoImpl;
 import dto.MainCategoryDto;
+import dto.MaterialStockDto;
 import dto.RecipeDto;
+import dto.RecipeMaterialDto;
 import dto.SubCategoryDto;
 
 public class MenuSelectServiceImpl implements MenuSelectService {
@@ -36,6 +38,16 @@ public class MenuSelectServiceImpl implements MenuSelectService {
 	@Override
 	public List<Integer> selectUnavailableRecipeCodes(int branchCode) throws Exception {
 		return recipeDao.selectUnavailableRecipeCodes(branchCode);
+	}
+
+	@Override
+	public List<RecipeMaterialDto> selectRecipeMaterialList() throws Exception {
+		return recipeDao.selectRecipeMaterialList();
+	}
+
+	@Override
+	public List<MaterialStockDto> selectCurrentStockList(Integer branchCode) throws Exception {
+		return recipeDao.selectCurrentStockList(branchCode);
 	}
 
 }

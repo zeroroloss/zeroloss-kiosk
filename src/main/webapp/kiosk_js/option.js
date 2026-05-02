@@ -1,4 +1,5 @@
 const ITEM_KEY = "item";
+const CART_KEY = "cart";
 const MINI_ROTISSERIE_SALAD_CODE = 2027;
 const materialGroupList = window.materialGroupList || [];
 const materialList = window.optionMaterialList || [];
@@ -16,6 +17,8 @@ function moveToMenu() {
 }
 
 let item = JSON.parse(sessionStorage.getItem(ITEM_KEY) || "null");
+
+const OPTION_MULTIPLIER = Number(item.categoryId) === 2 ? 2 : 1;
 
 if (!item) {
 	console.error("item 없음");
@@ -38,7 +41,7 @@ fetch(url)
 		sessionStorage.setItem("item", JSON.stringify(item));
 
 		renderSections();
-  		renderSummary();
+		renderSummary();
 	})
 	.catch(err => console.error("fetch 에러:", err));
 
@@ -46,6 +49,16 @@ fetch(url)
 
 function formatPrice(v) {
 	return Number(v || 0).toLocaleString() + "원";
+}
+
+function getCart() {
+	return JSON.parse(sessionStorage.getItem(CART_KEY) || "null") || {
+		items: []
+	};
+}
+
+function getOptionDeductQty(materialCode) {
+	return 1;
 }
 
 /* ===== 옵션 상태 생성 ===== */
@@ -194,12 +207,24 @@ function getSelectedOptions() {
 		section.groups.forEach(group => {
 			group.options.forEach(option => {
 				if (option.selected) {
+					const realMaterialCode =
+						getRealMaterialCodeForStock(option);
+
 					selectedOptions.push({
 						materialGroupId: group.materialGroupId,
 						groupName: group.title,
-						materialCode: option.materialCode,
+
+						materialCode:
+							realMaterialCode || option.materialCode,
+
+						optionMaterialCode:
+							option.materialCode,
+
 						materialName: option.label,
-						price: Number(option.price || 0)
+
+						price: Number(option.price || 0),
+
+						deductQty: getOptionDeductQty(option.materialCode) * OPTION_MULTIPLIER
 					});
 				}
 			});
@@ -207,6 +232,15 @@ function getSelectedOptions() {
 	});
 
 	return selectedOptions;
+}
+
+function isExclusiveOption(option) {
+	const code = Number(option.materialCode);
+
+	return (
+		code === 309 ||   // 담지않기
+		code === 409      // 추가없음
+	);
 }
 
 function toggleOption(groupKey, optionIndex) {
@@ -222,17 +256,41 @@ function toggleOption(groupKey, optionIndex) {
 		const selectedCount = group.options.filter(option => option.selected).length;
 
 		if (target.selected) {
+
 			target.selected = false;
+
 		} else {
+
 			if (selectedCount >= Number(group.max || Infinity)) {
 				alert("최대 " + group.max + "개까지 선택할 수 있습니다.");
 				return;
 			}
 
-			target.selected = true;
+			// 담지않기 / 추가없음 선택 시
+			if (isExclusiveOption(target)) {
+
+				group.options.forEach(option => {
+					option.selected = false;
+				});
+
+				target.selected = true;
+
+			} else {
+
+				// 일반 옵션 선택 시
+				// 기존 담지않기 / 추가없음 해제
+				group.options.forEach(option => {
+					if (isExclusiveOption(option)) {
+						option.selected = false;
+					}
+				});
+
+				target.selected = true;
+			}
 		}
 	}
 
+	removeInvalidSelectedOptions();
 	renderSections();
 	renderSteps();
 	renderSummary();
@@ -304,13 +362,9 @@ function renderSections() {
 					Number(option.materialCode) === 401 ||
 					Number(option.materialCode) === 407;
 
-				const isAddDisabled =
-					isActionOption &&
-					stock &&
-					Number(stock.addUnavailableYn) === 1;
+				const isAddDisabled = false;
 
-				const stockBlock = !canSelectByStock(option);
-
+				const stockBlock = !isExclusiveOption(option) && !option.selected && !canSelectByStock(option);
 				const finalDisabled = isDisabled || isAddDisabled || stockBlock;
 
 				return `
@@ -357,15 +411,15 @@ function renderSections() {
 				return;
 			}
 
-			if (isActionOption && stock && Number(stock.addUnavailableYn) === 1) {
+			/*if (isActionOption && stock && Number(stock.addUnavailableYn) === 1) {
 				alert("추가할 재고가 부족합니다.");
 				return;
+			}*/
+
+			if (!isExclusiveOption(option) && !canSelectByStock(option)) {
+				alert("재고 부족으로 선택할 수 없습니다.");
+				return;
 			}
-			
-			if (!canSelectByStock(option)) {
-  				alert("재고 부족으로 선택할 수 없습니다.");
-  				return;
-				}
 
 			toggleOption(groupKey, optionIndex);
 		});
@@ -437,37 +491,160 @@ function validateBeforeNext() {
 	return true;
 }
 
+function calculateUsedMaterialsFromCart() {
+	const cart = getCart();
+	const used = {};
+
+	(cart.items || []).forEach(cartItem => {
+		const qty = Number(cartItem.qty || 1);
+
+		(cartItem.defaultMaterials || []).forEach(m => {
+			const code = String(m.materialCode);
+			const deductQty = Number(m.deductQty || m.requiredQty || 1) * qty;
+
+			used[code] = (used[code] || 0) + deductQty;
+		});
+
+		(cartItem.options || []).forEach(o => {
+			const code = String(o.materialCode);
+			const deductQty = Number(o.deductQty || getOptionDeductQty(o.materialCode)) * qty;
+
+			used[code] = (used[code] || 0) + deductQty;
+		});
+	});
+
+	return used;
+}
+
+function calculateUsedMaterialsFromCurrentItem(exceptMaterialCode = null) {
+	const used = {};
+	const itemQty = Number(item.qty || 1);
+
+	(item.defaultMaterials || []).forEach(m => {
+		const code = String(m.materialCode);
+		const deductQty = Number(m.deductQty || m.requiredQty || 1) * itemQty;
+
+		used[code] = (used[code] || 0) + deductQty;
+	});
+
+	optionConfig.sections.forEach(section => {
+		section.groups.forEach(group => {
+			group.options.forEach(option => {
+				if (!option.selected) return;
+
+				const code = String(option.materialCode);
+
+				if (
+					exceptMaterialCode !== null &&
+					String(exceptMaterialCode) === code
+				) {
+					return;
+				}
+
+				const deductQty = getOptionDeductQty(option.materialCode) * itemQty * OPTION_MULTIPLIER;
+
+				used[code] = (used[code] || 0) + deductQty;
+			});
+		});
+	});
+
+	return used;
+}
+
+function getSelectedOptionByGroupName(groupName) {
+	for (const section of optionConfig.sections) {
+		for (const group of section.groups) {
+			if (group.title === groupName) {
+				return group.options.find(option => option.selected) || null;
+			}
+		}
+	}
+
+	return null;
+}
+
+function getRealMaterialCodeForStock(option) {
+	const code = Number(option.materialCode);
+
+	// 치즈 추가
+	if (code === 401) {
+		const selectedCheese =
+			getSelectedOptionByGroupName("치즈");
+
+		return selectedCheese
+			? String(selectedCheese.materialCode)
+			: null;
+	}
+
+	// 미트 추가
+	if (code === 407) {
+		const selectedMeat =
+			getSelectedOptionByGroupName("미트");
+
+		return selectedMeat
+			? String(selectedMeat.materialCode)
+			: null;
+	}
+
+	return String(option.materialCode);
+}
+
 function canSelectByStock(option) {
-  const stock = stockMap[Number(option.materialCode)];
-  if (!stock) return true;
 
-  const stockQty = Number(stock.currentQty || 0);
+	const realCode = getRealMaterialCodeForStock(option);
 
-  let usedQty = 0;
+	if (!realCode) {
+		return false;
+	}
 
-  // 1️⃣ 기본 재료 사용량 포함
-  if (item.defaultMaterials && item.defaultMaterials.length) {
-    item.defaultMaterials.forEach(m => {
-      if (String(m.materialCode) === String(option.materialCode)) {
-        usedQty += Number(m.deductQty || 1);
-      }
-    });
-  }
+	const stock = stockMap[Number(realCode)];
 
-  // 2️⃣ 선택된 옵션 사용량 포함
-  optionConfig.sections.forEach(section => {
-    section.groups.forEach(group => {
-      group.options.forEach(o => {
-        if (o.selected && String(o.materialCode) === String(option.materialCode)) {
-          usedQty += 1; // 옵션도 deductQty 있으면 그걸로 변경 가능
-        }
-      });
-    });
-  });
+	if (!stock) return true;
 
-  const nextUse = 1;
+	const dbQty = Number(stock.currentQty || 0);
 
-  return stockQty >= usedQty + nextUse;
+	const cartUsed = calculateUsedMaterialsFromCart();
+
+	const isAddOption =
+		Number(option.materialCode) === 401 ||
+		Number(option.materialCode) === 407;
+
+	let itemUsed;
+
+	if (isAddOption) {
+		// 치즈추가 / 미트추가는 현재 선택된 치즈, 미트 사용량을 포함해야 함
+		itemUsed = calculateUsedMaterialsFromCurrentItem();
+	} else {
+		// 일반 옵션은 자기 자신 선택/해제 가능해야 해서 제외
+		itemUsed = calculateUsedMaterialsFromCurrentItem(realCode);
+	}
+
+	const alreadyUsed =
+		Number(cartUsed[realCode] || 0) +
+		Number(itemUsed[realCode] || 0);
+
+	const nextUse = Number(item.qty || 1) * OPTION_MULTIPLIER;
+
+	return dbQty - alreadyUsed - nextUse >= 0;
+}
+
+function removeInvalidSelectedOptions() {
+
+	optionConfig.sections.forEach(section => {
+		section.groups.forEach(group => {
+
+			group.options.forEach(option => {
+
+				if (!option.selected) {
+					return;
+				}
+
+				if (!canSelectByStock(option)) {
+					option.selected = false;
+				}
+			});
+		});
+	});
 }
 
 /* ===== 이동 함수 ===== */

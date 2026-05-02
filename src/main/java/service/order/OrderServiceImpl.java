@@ -1,6 +1,8 @@
 package service.order;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 
@@ -59,5 +61,84 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public void updateOrders(OrdersDto ordersDto) throws Exception {
 		ordersDao.updateOrders(ordersDto);
+	}
+
+	@Override
+	public boolean checkStockAvailable(int branchCode, List<OrderMenuDto> orderMenuList,
+			List<List<OrderOptionDto>> orderOptionList) throws Exception {
+		try (SqlSession sqlSession =
+	            MyBatisSqlSessionFactory.getSqlSessionFactory().openSession()) {
+
+	        Map<String, Double> needMap = new HashMap<>();
+
+	        for (int i = 0; i < orderMenuList.size(); i++) {
+	            OrderMenuDto menu = orderMenuList.get(i);
+
+	            String recipeCode = menu.getRecipeCode();
+	            int qty = menu.getQty();
+
+	            Integer categoryId =
+	                    sqlSession.selectOne("mapper.kiosk1.selectCategoryIdByRecipeCode", recipeCode);
+
+	            int multiplier = categoryId != null && categoryId == 2 ? 2 : 1;
+
+	            // 1. 기본 재료 계산
+	            List<Map<String, Object>> recipeMaterials =
+	                    sqlSession.selectList("mapper.kiosk1.selectRecipeMaterialForStockCheck", recipeCode);
+
+	            for (Map<String, Object> material : recipeMaterials) {
+	                String materialCode = String.valueOf(material.get("materialCode"));
+	                double requiredQty = Double.parseDouble(String.valueOf(material.get("requiredQty")));
+
+	                double needQty = requiredQty * qty * multiplier;
+
+	                needMap.put(
+	                        materialCode,
+	                        needMap.getOrDefault(materialCode, 0.0) + needQty
+	                );
+	            }
+
+	            // 2. 옵션 재료 계산
+	            List<OrderOptionDto> options = orderOptionList.get(i);
+
+	            for (OrderOptionDto option : options) {
+	                String materialCode = option.getMaterialCode();
+
+	                // 담지않기 / 추가없음 같은 비재고 옵션은 제외
+	                if ("901".equals(materialCode) || "902".equals(materialCode) || "903".equals(materialCode)) {
+	                    continue;
+	                }
+
+	                double needQty = qty * multiplier;
+
+	                needMap.put(
+	                        materialCode,
+	                        needMap.getOrDefault(materialCode, 0.0) + needQty
+	                );
+	            }
+	        }
+
+	        // 3. 현재 DB 재고와 비교
+	        for (String materialCode : needMap.keySet()) {
+	            Map<String, Object> param = new HashMap<>();
+	            param.put("branchCode", branchCode);
+	            param.put("materialCode", materialCode);
+
+	            Double currentQty =
+	                    sqlSession.selectOne("mapper.kiosk1.selectCurrentQtyForStockCheck", param);
+
+	            if (currentQty == null) {
+	                currentQty = 0.0;
+	            }
+
+	            double needQty = needMap.get(materialCode);
+
+	            if (currentQty < needQty) {
+	                return false;
+	            }
+	        }
+
+	        return true;
+	    }
 	}
 }

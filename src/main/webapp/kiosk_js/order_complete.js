@@ -7,10 +7,7 @@ const OPTION_EDIT_MODE_KEY = 'optionEditMode';
 let remainSeconds = 10;
 let timerId = null;
 
-const orderNumber = document.getElementById('orderNumber');
-const receiptStatus = document.getElementById('receiptStatus');
 const countdown = document.getElementById('countdown');
-
 
 /* ===== 세션 초기화 ===== */
 function clearKioskSession() {
@@ -21,7 +18,7 @@ function clearKioskSession() {
   sessionStorage.removeItem(OPTION_EDIT_MODE_KEY);
 
   Object.keys(sessionStorage).forEach(key => {
-    if (key.startsWith('optionState_') || key === 'pendingCartItem') {
+    if (key.startsWith('optionState_') || key === 'pendingCartItem' || key === 'item') {
       sessionStorage.removeItem(key);
     }
   });
@@ -30,18 +27,16 @@ function clearKioskSession() {
 /* ===== 홈 이동 ===== */
 window.goHome = function(contextPath) {
   if (timerId) clearInterval(timerId);
+
   clearKioskSession();
+
   location.href = contextPath + '/kiosk/start';
 };
 
-/* ===== 렌더 ===== */
-
-function renderReceiptStatus() {
-  const receipt = sessionStorage.getItem(RECEIPT_PRINT_KEY);
-  receiptStatus.textContent = receipt === 'Y' ? '출력함' : '미출력';
-}
-
+/* ===== 카운트다운 ===== */
 function startCountdown(contextPath) {
+  if (!countdown) return;
+
   countdown.textContent = remainSeconds;
 
   timerId = setInterval(() => {
@@ -55,8 +50,6 @@ function startCountdown(contextPath) {
 }
 
 /* ===== 실행 ===== */
-
 const contextPath = window.contextPath || '';
 
-renderReceiptStatus();
 startCountdown(contextPath);

@@ -32,7 +32,8 @@
         name
     FROM branch
     WHERE status = 'ACTIVE'
-    ORDER BY branch_code ASC
+     AND branch_code != 1
+    ORDER BY name ASC
 	</select>
 	
 	<select id="getKioskList" parameterType="int" resultType="kiosk">

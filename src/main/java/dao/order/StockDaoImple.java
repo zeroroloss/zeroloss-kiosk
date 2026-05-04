@@ -53,4 +53,15 @@ public class StockDaoImple implements StockDao {
 		return result;
 	}
 
+	@Override
+	public List<String> selectUnavailableRecipeCodes(int branchCode) throws Exception {
+		List<String> list = null;
+		try(SqlSession sqlSession = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession()) {
+			list = sqlSession.selectList("mapper.kiosk1.selectUnavailableRecipeCodes", branchCode);
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+		return list;
+	}
+
 }

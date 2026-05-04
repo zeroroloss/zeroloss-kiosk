@@ -1,11 +1,15 @@
 package controller;
 
+import java.awt.Graphics2D;
+import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.imageio.ImageIO;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -14,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import dto.MaterialStockDto;
+import dto.RecipeDto;
 import dto.RecipeMaterialDto;
 import service.menu.MenuSelectService;
 import service.menu.MenuSelectServiceImpl;
@@ -54,6 +59,38 @@ public class MenuController extends HttpServlet {
             List<Integer> unavailableRecipeCodes = service.selectUnavailableRecipeCodes(branchCode);
 			List<RecipeMaterialDto> recipeMaterialList = service.selectRecipeMaterialList();
 			List<MaterialStockDto> stockList = service.selectCurrentStockList(branchCode);
+			
+			List<RecipeDto> recipeList = service.RecipeList();
+			String realPath = request.getServletContext().getRealPath("/");
+			
+			for (RecipeDto recipe : recipeList) {
+			    if (recipe.getImgUrl() != null && !recipe.getImgUrl().isEmpty()) {
+			        try {
+			            File imgFile = new File(realPath + recipe.getImgUrl());
+			            if (imgFile.exists()) {
+			            	BufferedImage original = ImageIO.read(imgFile);
+			            	if (original.getWidth() == original.getHeight()) continue;
+
+			            	int targetSize = 400;
+			            	BufferedImage resized = new BufferedImage(targetSize, targetSize, BufferedImage.TYPE_INT_ARGB);
+			            	Graphics2D g = resized.createGraphics();
+
+			            	
+			            	double ratio = Math.min((double) targetSize / original.getWidth(), (double) targetSize / original.getHeight());
+			            	int newWidth  = (int) (original.getWidth()  * ratio);
+			            	int newHeight = (int) (original.getHeight() * ratio);
+			            	int x = (targetSize - newWidth)  / 2;
+			            	int y = (targetSize - newHeight) / 2;
+
+			            	g.drawImage(original, x, y, newWidth, newHeight, null);
+			            	g.dispose();
+			            	ImageIO.write(resized, "png", imgFile);
+			            }
+			        } catch (Exception e) {
+			            System.out.println("이미지 리사이징 실패: " + recipe.getImgUrl());
+			        }
+			    }
+			}
 
 			Map<Integer, List<RecipeMaterialDto>> recipeMaterialMap = new HashMap<>();
 
@@ -67,7 +104,8 @@ public class MenuController extends HttpServlet {
 				recipeMaterialMap.get(recipeCode).add(dto);
 			}
 
-            request.setAttribute("recipeList", service.RecipeList());
+//            request.setAttribute("recipeList", service.RecipeList());
+            request.setAttribute("recipeList", recipeList);
             request.setAttribute("mainCategoryList", service.MainList());
             request.setAttribute("subCategoryList", service.SubList());
             request.setAttribute("unavailableRecipeCodes", unavailableRecipeCodes);

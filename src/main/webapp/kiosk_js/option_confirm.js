@@ -86,7 +86,9 @@ function calculateUsedMaterialsFromCart() {
 
 		(cartItem.options || []).forEach(o => {
 			const code = String(o.materialCode);
-			const needQty = Number(o.deductQty || 1) * qty;
+			const needQty = Number(o.deductQty || 0) * qty;
+
+			if (needQty <= 0) return;
 
 			used[code] = (used[code] || 0) + needQty;
 		});
@@ -105,14 +107,18 @@ function isOptionConfirmStockAvailable(nextQty) {
 
 	defaultMaterials.forEach(m => {
 		const code = String(m.materialCode);
-		const needQty = Number(m.deductQty || m.requiredQty || 1) * nextQty;
+		const needQty = Number(m.deductQty || m.requiredQty || 1) * Number(nextQty || 1);
+
+		if (needQty <= 0) return;
 
 		used[code] = (used[code] || 0) + needQty;
 	});
 
 	(item.options || []).forEach(o => {
 		const code = String(o.materialCode);
-		const needQty = Number(o.deductQty || 1) * nextQty;
+		const needQty = Number(o.deductQty || 0) * Number(nextQty || 1);
+
+		if (needQty <= 0) return;
 
 		used[code] = (used[code] || 0) + needQty;
 	});
@@ -120,7 +126,7 @@ function isOptionConfirmStockAvailable(nextQty) {
 	console.log("option_confirm used", used);
 
 	return Object.keys(used).every(code => {
-		const dbQty = Number(stockMap[code] || 0);
+		const dbQty = getDbQty(code);
 		const usedQty = Number(used[code] || 0);
 
 		console.log("stock check detail", {
@@ -235,14 +241,41 @@ function addItemToCart() {
 	);
 
 	if (sameItem) {
-		sameItem.qty += qty;
+		const originalQty = Number(sameItem.qty || 1);
+
+		sameItem.qty = originalQty + Number(qty || 1);
 		sameItem.totalPrice = getItemUnitPrice(cartItem);
+
+		if (!isCartStockAvailable(cart)) {
+			sameItem.qty = originalQty;
+			alert("재고가 부족해서 장바구니에 담을 수 없습니다.");
+			return false;
+		}
 	} else {
 		cart.items.push(cartItem);
+
+		if (!isCartStockAvailable(cart)) {
+			cart.items = cart.items.filter(savedItem => savedItem.id !== cartItem.id);
+			alert("재고가 부족해서 장바구니에 담을 수 없습니다.");
+			return false;
+		}
 	}
 
 	saveCart(cart);
 	sessionStorage.removeItem(ITEM_KEY);
+	return true;
+}
+
+function getDbQty(code) {
+	const stock = stockMap[String(code)] || stockMap[Number(code)];
+
+	if (!stock) return 0;
+
+	if (typeof stock === "object") {
+		return Number(stock.currentQty || stock.qty || stock.stockQty || 0);
+	}
+
+	return Number(stock || 0);
 }
 
 /* 버튼 함수 */
@@ -252,7 +285,10 @@ window.addCart = function () {
 		return;
 	}
 
-	addItemToCart();
+	if (!addItemToCart()) {
+		return;
+	}
+
 	location.href = contextPath + "/kiosk/menu";
 };
 
@@ -262,7 +298,10 @@ window.goPay = function () {
 		return;
 	}
 
-	addItemToCart();
+	if (!addItemToCart()) {
+		return;
+	}
+
 	location.href = contextPath + "/kiosk/orderCon";
 };
 
@@ -271,5 +310,51 @@ window.goBack = function () {
 	sessionStorage.setItem(ITEM_KEY, JSON.stringify(item));
 	location.href = contextPath + "/kiosk/option?categoryId=" + item.categoryId;
 };
+
+function isCartStockAvailable(cart) {
+	const used = {};
+
+	(cart.items || []).forEach(cartItem => {
+		const qty = Number(cartItem.qty || 1);
+
+		const defaultMaterials =
+			(cartItem.defaultMaterials && cartItem.defaultMaterials.length)
+				? cartItem.defaultMaterials
+				: (recipeMaterialMap[String(cartItem.recipeCode)] || []);
+
+		defaultMaterials.forEach(m => {
+			const code = String(m.materialCode);
+			const needQty = Number(m.deductQty || m.requiredQty || 1) * qty;
+
+			if (needQty <= 0) return;
+
+			used[code] = (used[code] || 0) + needQty;
+		});
+
+		(cartItem.options || []).forEach(o => {
+			const code = String(o.materialCode);
+			const needQty = Number(o.deductQty || 0) * qty;
+
+			if (needQty <= 0) return;
+
+			used[code] = (used[code] || 0) + needQty;
+		});
+	});
+
+	return Object.keys(used).every(code => {
+		const dbQty = getDbQty(code);
+		const usedQty = Number(used[code] || 0);
+		
+		console.log("cart final stock check", {
+		code,
+		rawStock: stockMap[String(code)] || stockMap[Number(code)],
+		dbQty,
+		usedQty,
+		remain: dbQty - usedQty
+		});
+
+		return dbQty - usedQty >= 0;
+	});
+}
 
 render();

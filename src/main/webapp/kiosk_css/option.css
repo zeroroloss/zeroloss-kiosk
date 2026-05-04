@@ -77,7 +77,7 @@
   cursor: pointer;
 }
 
-.close-btn::after {
+/* .close-btn::after {
   content: "메뉴 선택";
   position: absolute;
   top: 62px;
@@ -88,7 +88,7 @@
   color: white;
   white-space: nowrap;
 }
-
+ */
 /* =========================
    단계 탭
 ========================= */

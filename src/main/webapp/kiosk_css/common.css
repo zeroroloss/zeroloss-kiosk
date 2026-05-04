@@ -45,7 +45,7 @@ body {
 
 .app {
   width: 1080px;
-  min-height: 1920px;
+  height: 1920px;
   background: var(--white);
   overflow: hidden;
   display: flex;

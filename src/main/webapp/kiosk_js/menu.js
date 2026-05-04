@@ -71,28 +71,27 @@ function calculateUsedMaterialsFromCart() {
 	const used = {};
 
 	(cart.items || []).forEach(item => {
-
 		const qty = Number(item.qty || 1);
 
-		const recipeMaterials =
-			recipeMaterialMap[String(item.recipeCode)] || [];
+		const defaultMaterials =
+			(item.defaultMaterials && item.defaultMaterials.length)
+				? item.defaultMaterials
+				: (recipeMaterialMap[String(item.recipeCode)] || []);
 
-		recipeMaterials.forEach(material => {
-
+		defaultMaterials.forEach(material => {
 			const code = String(material.materialCode);
+			const needQty = Number(material.deductQty || material.requiredQty || 1) * qty;
 
-			const needQty =
-				Number(material.deductQty || 0) * qty;
+			if (needQty <= 0) return;
 
 			used[code] = (used[code] || 0) + needQty;
 		});
 
 		(item.options || []).forEach(option => {
-
 			const code = String(option.materialCode);
+			const needQty = Number(option.deductQty || 0) * qty;
 
-			const needQty =
-				Number(option.deductQty || 0) * qty;
+			if (needQty <= 0) return;
 
 			used[code] = (used[code] || 0) + needQty;
 		});
@@ -122,7 +121,9 @@ function isCartStockAvailable(cart) {
 
 		(item.options || []).forEach(option => {
 			const code = String(option.materialCode);
-			const needQty = Number(option.deductQty || 1) * qty;
+			const needQty = Number(option.deductQty || 0) * qty;
+
+			if (needQty <= 0) return;
 
 			used[code] = (used[code] || 0) + needQty;
 		});
@@ -145,14 +146,19 @@ function canAddRecipe(recipeCode, addQty = 1) {
 	return recipeMaterials.every(material => {
 		const code = String(material.materialCode);
 
-		const dbQty =
-			Number(stockMap[code] || 0);
-
-		const usedQty =
-			Number(used[code] || 0);
-
+		const dbQty = Number(stockMap[code] || 0);
+		const usedQty = Number(used[code] || 0);
 		const needQty =
-			Number(material.deductQty || 0) * Number(addQty || 1);
+			getRecipeMaterialNeedQty(recipeCode, material) * Number(addQty || 1);
+
+		console.log("menu stock check", {
+			recipeCode,
+			code,
+			dbQty,
+			usedQty,
+			needQty,
+			remainAfterAdd: dbQty - usedQty - needQty
+		});
 
 		return dbQty - usedQty - needQty >= 0;
 	});
@@ -434,6 +440,22 @@ function renderCart() {
 	`).join("");
 
 	cartTotalPrice.innerText = formatPrice(cart.totalAmount);
+}
+
+function getRecipeCategoryId(recipeCode) {
+	const recipe = recipeList.find(r => String(r.recipeCode) === String(recipeCode));
+	return recipe ? Number(recipe.categoryId) : null;
+}
+
+function getRecipeMaterialNeedQty(recipeCode, material) {
+	const baseQty = Number(material.deductQty || material.requiredQty || 1);
+	const categoryId = getRecipeCategoryId(recipeCode);
+
+	if (categoryId === 2) {
+		return baseQty * 2;
+	}
+
+	return baseQty;
 }
 
 // ================== 이동 ==================

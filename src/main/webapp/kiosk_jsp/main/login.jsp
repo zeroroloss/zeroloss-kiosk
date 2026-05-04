@@ -1,88 +1,94 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<c:set var="contextPath" value="${pageContext.request.contextPath}"/>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
+<c:set var="contextPath" value="${pageContext.request.contextPath}" />
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-<meta charset="UTF-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>키오스크 로그인</title>
-<link rel="stylesheet" href="${contextPath}/kiosk_css/login.css"/>
+<link rel="stylesheet" href="${contextPath}/kiosk_css/login.css" />
 </head>
 <body>
-<div class="screen">
+	<div class="screen">
 
-<header class="top-header">
-    <h1 class="header-title">키오스크 로그인</h1>
-    <p class="header-desc">관리자 계정으로 로그인해주세요</p>
-    <div class="header-badge">ZEROLOSS</div>
-</header>
+		<header class="top-header">
+			<h1 class="header-title">키오스크 로그인</h1>
+			<p class="header-desc">관리자 계정으로 로그인해주세요</p>
+			<div class="header-badge">ZEROLOSS</div>
+		</header>
 
-<main class="main-content">
-<section class="login-card">
+		<main class="main-content">
+			<section class="login-card">
 
-    <c:if test="${not empty errorMsg}">
-        <div class="error-msg">${errorMsg}</div>
-    </c:if>
+				<c:if test="${not empty errorMsg}">
+					<div class="error-msg">${errorMsg}</div>
+				</c:if>
 
-    <form id="loginForm" action="${contextPath}/kiosk/login" method="post">
+				<form id="loginForm" action="${contextPath}/kiosk/login"
+					method="post">
 
-        <div class="form-group">
-            <label class="form-label" for="branchSelect">지점 선택</label>
-            <select class="form-select" id="branchSelect" name="branchCode">zl
-                <option value="">지점을 선택하세요</option>
-                <c:forEach var="branch" items="${branchList}">
-                    <option value="${branch.branch_code}"
-                        <c:if test="${branch.branch_code == selectedBranchCode}">selected</c:if>>
-                        ${branch.name} (${branch.branch_code})
-                    </option>
-                </c:forEach>
-            </select>
-        </div>
+					<div class="form-group">
+						<label class="form-label" for="branchSelect">지점 선택</label> <select
+							class="form-select" id="branchSelect" name="branchCode">
+							<option value="">지점을 선택하세요</option>
 
-        <div class="form-group">
-            <label class="form-label" for="kioskSelect">키오스크 선택</label>
-           <select class="form-select" id="kioskSelect" name="kiosk_id" disabled>
-    			<option value="">지점을 먼저 선택하세요</option>
-		   </select>
-        </div>
+							<c:forEach var="branch" items="${branchList}">
 
-        <div class="form-group">
-            <label class="form-label" for="loginId">아이디</label>
-            <input class="form-input" type="text" id="loginId"
-                   name="loginId" placeholder="아이디를 입력하세요"
-                   value="${param.loginId}"/>
-        </div>
+								<c:if test="${branch.branch_code != 1}">
+									<option value="${branch.branch_code}"
+										<c:if test="${branch.branch_code == selectedBranchCode}">
+                        					selected
+                    					</c:if>>
+										${branch.name} (${branch.branch_code})
+									</option>
+								</c:if>
 
-        <div class="form-group">
-            <label class="form-label" for="password">비밀번호</label>
-            <input class="form-input" type="password" id="password"
-                   name="password" placeholder="비밀번호를 입력하세요"/>
-        </div>
+							</c:forEach>
+						</select>
+					</div>
 
-        <div class="selected-info">
-            <div class="info-row">
-                <span class="info-label">선택 지점</span>
-                <span class="info-value" id="infoText">-</span>
-            </div>
-            <div class="info-row">
-                <span class="info-label">키오스크</span>
-                <span class="info-value" id="infoKiosk">-</span>
-            </div>
-        </div>
+					<div class="form-group">
+						<label class="form-label" for="kioskSelect">키오스크 선택</label> <select
+							class="form-select" id="kioskSelect" name="kiosk_id" disabled>
+							<option value="">지점을 먼저 선택하세요</option>
+						</select>
+					</div>
 
-        <button type="submit" class="confirm-btn" id="confirmBtn" disabled>
-            로그인
-        </button>
+					<div class="form-group">
+						<label class="form-label" for="loginId">아이디</label> <input
+							class="form-input" type="text" id="loginId" name="loginId"
+							placeholder="아이디를 입력하세요" value="${param.loginId}" />
+					</div>
 
-    </form>
+					<div class="form-group">
+						<label class="form-label" for="password">비밀번호</label> <input
+							class="form-input" type="password" id="password" name="password"
+							placeholder="비밀번호를 입력하세요" />
+					</div>
 
-</section>
-</main>
+					<div class="selected-info">
+						<div class="info-row">
+							<span class="info-label">선택 지점</span> <span class="info-value"
+								id="infoText">-</span>
+						</div>
+						<div class="info-row">
+							<span class="info-label">키오스크</span> <span class="info-value"
+								id="infoKiosk">-</span>
+						</div>
+					</div>
 
-</div>
+					<button type="submit" class="confirm-btn" id="confirmBtn" disabled>
+						로그인</button>
 
-<script>
+				</form>
+
+			</section>
+		</main>
+
+	</div>
+
+	<script>
 const contextPath = "${contextPath}";
 
 

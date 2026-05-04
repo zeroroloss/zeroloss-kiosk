@@ -101,7 +101,9 @@ function isCartStockAvailable(cart) {
 
 		(item.options || []).forEach(option => {
 			const code = String(option.materialCode);
-			const needQty = Number(option.deductQty || 1) * qty;
+			const needQty = Number(option.deductQty || 0) * qty;
+
+			if (needQty <= 0) return;
 
 			used[code] = (used[code] || 0) + needQty;
 		});

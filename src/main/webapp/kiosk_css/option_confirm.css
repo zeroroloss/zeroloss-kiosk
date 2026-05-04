@@ -54,7 +54,7 @@
   cursor: pointer;
 }
 
-.close-btn::after {
+/* .close-btn::after {
   content: "옵션 변경";
   position: absolute;
   top: 62px;
@@ -64,7 +64,7 @@
   font-size: 12px;
   color: white;
   white-space: nowrap;
-}
+} */
 
 /* BODY */
 .panel-body {

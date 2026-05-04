@@ -1,5 +1,10 @@
 @charset "UTF-8";
 
+.screen,
+.app {
+  background: var(--panel);
+}
+
 /* =========================
    HEADER
 ========================= */
@@ -99,7 +104,7 @@
 ========================= */
 .menu-area {
   position: relative;
-  height: 980px;
+  height: 975px;
   padding: 14px 54px 0;
   overflow: hidden;
   background: var(--panel);
@@ -136,7 +141,7 @@
   grid-auto-rows: 300px;
   gap: 18px;
   align-content: start;
-  height: 900px;
+  height: 940px;
   overflow-y: auto;
   overflow-x: hidden;
   padding-right: 2px;
@@ -210,16 +215,39 @@
 /* =========================
    CART PANEL
 ========================= */
+
 .cart-panel {
   border-top: 3px solid #111;
   background: var(--white);
-  padding: 18px 24px 0;
+
+  margin-top: auto; /* 핵심: 카트를 하단 고정 */
 
   display: flex;
   flex-direction: column;
 
-  height: 430px;
+  height: 475px;
   overflow: hidden;
+
+  padding: 0 24px 16px;
+}
+
+.cart-list {
+  order: 2;
+  flex: 1;
+  min-height: 0;
+
+  overflow-y: auto;
+  overflow-x: hidden;
+
+  padding: 12px 6px 0 0;
+
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cart-item:last-child {
+  margin-bottom: 60px;
 }
 
 .cart-empty {
@@ -253,8 +281,11 @@
 .cart-list {
   flex: 1;
   min-height: 0;
+
   overflow-y: auto;
-  padding-right: 6px;
+  overflow-x: hidden;
+
+  padding: 12px 6px 18px 0;
 
   display: flex;
   flex-direction: column;
@@ -372,14 +403,20 @@
    CART SUMMARY
 ========================= */
 .cart-summary {
-  margin-top: auto;
-  padding: 16px 4px 0;
-  border-top: 2px solid #d9d9d9;
+  order: 1;	
+	
+  flex-shrink: 0;
+
+  padding: 16px 4px;
+  border-bottom: 2px solid #111;
+
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+
   background: #fff;
+
+  z-index: 3;
 }
 
 .cart-total {

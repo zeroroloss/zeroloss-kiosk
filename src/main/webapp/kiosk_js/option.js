@@ -58,7 +58,8 @@ function getCart() {
 }
 
 function getOptionDeductQty(materialCode) {
-	return 1;
+	const stock = stockMap[Number(materialCode)];
+	return stock ? Number(stock.deductQty || 1) : 1;
 }
 
 /* ===== 옵션 상태 생성 ===== */
@@ -623,7 +624,7 @@ function canSelectByStock(option) {
 		Number(cartUsed[realCode] || 0) +
 		Number(itemUsed[realCode] || 0);
 
-	const nextUse = Number(item.qty || 1) * OPTION_MULTIPLIER;
+	const nextUse = getOptionDeductQty(realCode) * Number(item.qty || 1) * OPTION_MULTIPLIER;
 
 	return dbQty - alreadyUsed - nextUse >= 0;
 }

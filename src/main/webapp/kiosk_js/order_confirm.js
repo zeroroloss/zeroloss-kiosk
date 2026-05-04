@@ -267,7 +267,7 @@ window.goPay = async function() {
 		}
 
 		// ✅ 토스 결제 요청
-		const tossPayments = TossPayments("test_ck_Z61JOxRQVEERbxzR5OMRVW0X9bAq");
+		const tossPayments = TossPayments("");
 		const payment = tossPayments.payment({
 			customerKey: "KIOSK_" + Date.now()
 		});

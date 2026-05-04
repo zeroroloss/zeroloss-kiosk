@@ -56,7 +56,7 @@
 						<!-- 3. 하단 영역 -->
 						<div class="complete-bottom">
 							<div class="countdown-box">
-								<span class="countdown-time" id="countdown">10</span>초 후 초기 화면으로
+								<span class="countdown-time" id="countdown">30</span>초 후 초기 화면으로
 								돌아갑니다
 							</div>
 

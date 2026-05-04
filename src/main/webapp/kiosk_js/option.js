@@ -18,7 +18,26 @@ function moveToMenu() {
 
 let item = JSON.parse(sessionStorage.getItem(ITEM_KEY) || "null");
 
-const OPTION_MULTIPLIER = Number(item.categoryId) === 2 ? 2 : 1;
+function getOptionMultiplier() {
+
+	// 샐러드
+	if (item.menuType === "salad") {
+		return 2;
+	}
+
+	// 샌드위치 라지 빵
+	const selectedBread = getSelectedOptionByGroupName("빵");
+
+	if (selectedBread) {
+		const breadCode = Number(selectedBread.materialCode);
+
+		if (breadCode >= 107 && breadCode <= 112) {
+			return 2;
+		}
+	}
+
+	return 1;
+}
 
 if (!item) {
 	console.error("item 없음");
@@ -225,7 +244,7 @@ function getSelectedOptions() {
 
 						price: Number(option.price || 0),
 
-						deductQty: getOptionDeductQty(option.materialCode) * OPTION_MULTIPLIER
+						deductQty: getOptionDeductQty(option.materialCode) * getOptionMultiplier()
 					});
 				}
 			});
@@ -542,7 +561,7 @@ function calculateUsedMaterialsFromCurrentItem(exceptMaterialCode = null) {
 					return;
 				}
 
-				const deductQty = getOptionDeductQty(option.materialCode) * itemQty * OPTION_MULTIPLIER;
+				const deductQty = getOptionDeductQty(option.materialCode) * itemQty * getOptionMultiplier();
 
 				used[code] = (used[code] || 0) + deductQty;
 			});
@@ -624,7 +643,7 @@ function canSelectByStock(option) {
 		Number(cartUsed[realCode] || 0) +
 		Number(itemUsed[realCode] || 0);
 
-	const nextUse = getOptionDeductQty(realCode) * Number(item.qty || 1) * OPTION_MULTIPLIER;
+	const nextUse = getOptionDeductQty(realCode) * Number(item.qty || 1) * getOptionMultiplier();
 
 	return dbQty - alreadyUsed - nextUse >= 0;
 }

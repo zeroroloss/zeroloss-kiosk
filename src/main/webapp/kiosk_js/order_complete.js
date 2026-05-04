@@ -4,7 +4,7 @@ const RECEIPT_PRINT_KEY = 'receiptPrint';
 const SELECTED_MENU_KEY = 'selectedMenu';
 const OPTION_EDIT_MODE_KEY = 'optionEditMode';
 
-let remainSeconds = 10;
+let remainSeconds = 30;
 let timerId = null;
 
 const countdown = document.getElementById('countdown');

@@ -78,9 +78,34 @@ public class OrderServiceImpl implements OrderService {
 	            int qty = menu.getQty();
 
 	            Integer categoryId =
-	                    sqlSession.selectOne("mapper.kiosk1.selectCategoryIdByRecipeCode", recipeCode);
+	                    sqlSession.selectOne(
+	                            "mapper.kiosk1.selectCategoryIdByRecipeCode",
+	                            recipeCode
+	                    );
 
-	            int multiplier = categoryId != null && categoryId == 2 ? 2 : 1;
+	            boolean isLargeBread = false;
+
+	            List<OrderOptionDto> options = orderOptionList.get(i);
+
+	            for (OrderOptionDto option : options) {
+
+	                String code = option.getMaterialCode();
+
+	                try {
+
+	                    int breadCode = Integer.parseInt(code);
+
+	                    if (breadCode >= 107 && breadCode <= 112) {
+	                        isLargeBread = true;
+	                        break;
+	                    }
+
+	                } catch (Exception e) {
+	                }
+	            }
+
+	            int multiplier =
+	                    (categoryId != null && categoryId == 2) || isLargeBread ? 2: 1;
 
 	            // 1. 기본 재료 계산
 	            List<Map<String, Object>> recipeMaterials =
@@ -99,8 +124,6 @@ public class OrderServiceImpl implements OrderService {
 	            }
 
 	            // 2. 옵션 재료 계산
-	            List<OrderOptionDto> options = orderOptionList.get(i);
-
 	            for (OrderOptionDto option : options) {
 	                String materialCode = option.getMaterialCode();
 

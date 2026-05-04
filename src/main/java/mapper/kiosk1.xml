@@ -177,7 +177,7 @@
         m.material_group_id AS materialGroupId,
         m.material_name AS materialName,
 
-        1 AS deductQty,
+        IFNULL(m.deduct_qty,1) AS deductQty,
 
         IFNULL(SUM(bs.current_qty), 0) AS currentQty,
 

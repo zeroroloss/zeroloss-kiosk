@@ -287,7 +287,7 @@ window.goPay = async function() {
 				: items[0].menuName,
 			customerName: String(randomNum),
 			successUrl: location.origin + contextPath + "/kiosk/payment/success?orderNum=" + randomNum,
-			failUrl: location.origin + contextPath + "/kiosk/payment/fail?orderId=" + data.orderId,
+			failUrl: location.origin + contextPath + "/kiosk/payment/fail?orderId=" + data.orderId + "&message=결제에 실패했습니다",
 		});
 
 	} catch (e) {

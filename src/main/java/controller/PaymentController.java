@@ -83,16 +83,25 @@ public class PaymentController extends HttpServlet {
 		}
 		// 결제 실패
 		if ("/fail".equals(pathInfo)) {
-			try {
-				OrdersDto failDto = new OrdersDto();
-				failDto.setOrderId(orderId);
-				failDto.setStatus("FAIL");
-				orderservice.updateOrders(failDto);
-			} catch (Exception e) {
-				String errorMessage = request.getParameter("message");
-				request.setAttribute("errorMessage", errorMessage);
-				request.getRequestDispatcher("/kiosk_jsp/menu/order_confirm.jsp").forward(request, response);
-			}
+		    // 토스가 failUrl에 자동으로 붙여주는 파라미터
+		    String errorCode = request.getParameter("code");
+		    String errorMessage = request.getParameter("message");
+
+		    // DB 업데이트는 시도만 하고, 실패해도 화면은 이동
+		    try {
+		        OrdersDto failDto = new OrdersDto();
+		        failDto.setOrderId(orderId);
+		        failDto.setStatus("FAIL");
+		        orderservice.updateOrders(failDto);
+		    } catch (Exception e) {
+		        e.printStackTrace(); // 로그만 남기고 계속 진행
+		    }
+
+		    // DB 성공/실패 상관없이 항상 실패 화면으로 이동
+		    request.setAttribute("errorCode", errorCode);
+		    request.setAttribute("errorMessage", errorMessage);
+		    request.getRequestDispatcher("/kiosk_jsp/menu/order_confirm.jsp").forward(request, response);
+		    return;
 		}
 	}
 	
@@ -111,10 +120,10 @@ public class PaymentController extends HttpServlet {
 	            orderService.updateOrders(cancelDto);
 	        } catch (Exception e) {
 	            e.printStackTrace();
-	            String errorMessage = request.getParameter("message");
-				request.setAttribute("errorMessage", errorMessage);
-				request.getRequestDispatcher("/kiosk_jsp/menu/order_confirm.jsp").forward(request, response);
 	        }
+	        String errorMessage = request.getParameter("message");
+	        request.setAttribute("errorMessage", errorMessage);
+	        request.getRequestDispatcher("/kiosk_jsp/menu/order_confirm.jsp").forward(request, response);
 	    }
 	}
 

@@ -97,81 +97,43 @@
 		resultType="dto.RecipeDetailDto">
 		SELECT
 		rd.recipe_code AS recipeCode,
-		rd.material_code AS
-		materialCode,
+		rd.material_code AS materialCode,
 		m.material_name AS materialName,
-		( rd.required_qty *
-		IFNULL(m.deduct_qty, 1) * CASE
-		WHEN EXISTS (
-		SELECT 1
-		FROM recipe r
-		WHERE
-		r.recipe_code = rd.recipe_code
-		AND r.category_id = 2
-		)
-		THEN 2
-		ELSE 1
-		END
-		)
-		AS requiredQty
-		FROM recipe_detail rd JOIN material m
-		ON
-		rd.material_code
-		= m.material_code
+		(rd.required_qty *
+		IFNULL(m.deduct_qty, 1)) AS requiredQty
+		FROM recipe_detail rd
+		JOIN material m
+		ON rd.material_code = m.material_code
 		WHERE rd.recipe_code = #{recipeCode}
 	</select>
 
 	<select id="baseStock" parameterType="string"
-		resultType="dto.StockDeductDto">
-		SELECT
-			om.order_menu_id AS orderMenuId,
-			rd.material_code AS materialCode, 
-			( m.deduct_qty * om.qty *
-				CASE
-				WHEN r.category_id = 2
-				OR EXISTS (
-					SELECT 1
-					FROM order_option oo2
-					WHERE oo2.order_menu_id = om.order_menu_id
-					AND oo2.material_code BETWEEN 107 AND 112 )
-				THEN 2
-				ELSE 1
-				END) 
-			AS deductQty
-			FROM order_menu om
-			JOIN recipe_detail rd
-			ON om.recipe_code = rd.recipe_code
-			JOIN material m
-			ON rd.material_code = m.material_code
-			JOIN recipe r
-			ON om.recipe_code = r.recipe_code
-			WHERE om.order_id = #{orderId}
-	</select>
+	resultType="dto.StockDeductDto">
+	SELECT
+		om.order_menu_id AS orderMenuId,
+		rd.material_code AS materialCode,
+		(m.deduct_qty * om.qty * om.multiplier) AS deductQty
+	FROM order_menu om
+	JOIN recipe_detail rd
+		ON om.recipe_code = rd.recipe_code
+	JOIN material m
+		ON rd.material_code = m.material_code
+	WHERE om.order_id = #{orderId}
+</select>
 
 	<select id="optionStock" parameterType="string"
-		resultType="dto.StockDeductDto">
-		SELECT
+	resultType="dto.StockDeductDto">
+	SELECT
 		om.order_menu_id AS orderMenuId,
-		oo.material_code AS
-		materialCode,
-		(m.deduct_qty * om.qty *
-		CASE
-		WHEN r.category_id = 2 THEN 2
-		ELSE 1
-		END
-		) AS deductQty
-		FROM order_option oo
-		JOIN order_menu om
-		ON
-		oo.order_menu_id = om.order_menu_id
-		JOIN material m
-		ON oo.material_code
-		= m.material_code
-		JOIN recipe r
-		ON om.recipe_code = r.recipe_code
-		WHERE
-		om.order_id = #{orderId}
-	</select>
+		oo.material_code AS materialCode,
+		(m.deduct_qty * om.qty * om.multiplier) AS deductQty
+	FROM order_option oo
+	JOIN order_menu om
+		ON oo.order_menu_id = om.order_menu_id
+	JOIN material m
+		ON oo.material_code = m.material_code
+	WHERE om.order_id = #{orderId}
+</select>
 
 	<select id="selectBranchStockLotsForDeduct" parameterType="map"
 		resultType="map">
@@ -328,6 +290,15 @@
 		WHERE
 		branch_code = #{branchCode}
 		AND material_code = #{materialCode}
+	</select>
+
+	<select id="selectOptionDeductQty" parameterType="map"
+		resultType="double">
+
+		SELECT IFNULL(deduct_qty, 1)
+		FROM material
+		WHERE material_code = #{materialCode}
+
 	</select>
 
 </mapper>

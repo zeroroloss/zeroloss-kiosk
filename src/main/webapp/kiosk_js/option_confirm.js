@@ -85,7 +85,7 @@ function calculateUsedMaterialsFromCart() {
 		});
 
 		(cartItem.options || []).forEach(o => {
-			const code = String(o.materialCode);
+			const code = String(o.realMaterialCode || o.materialCode);
 			const needQty = Number(o.deductQty || 0) * qty;
 
 			if (needQty <= 0) return;
@@ -115,7 +115,7 @@ function isOptionConfirmStockAvailable(nextQty) {
 	});
 
 	(item.options || []).forEach(o => {
-		const code = String(o.materialCode);
+		const code = String(o.realMaterialCode || o.materialCode);
 		const needQty = Number(o.deductQty || 0) * Number(nextQty || 1);
 
 		if (needQty <= 0) return;
@@ -340,7 +340,7 @@ function isCartStockAvailable(cart) {
 		});
 
 		(cartItem.options || []).forEach(o => {
-			const code = String(o.materialCode);
+			const code = String(o.realMaterialCode || o.materialCode);
 			const needQty = Number(o.deductQty || 0) * qty;
 
 			if (needQty <= 0) return;

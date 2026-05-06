@@ -266,16 +266,20 @@ window.goPay = async function() {
 			params.append(`qty${i}`, item.qty || 1);
 			params.append(`unit_price${i}`, item.price || 0);
 			params.append(`lineTotalAmount${i}`, getItemTotal(item));
+			params.append(`multiplier${i}`, item.multiplier || 1);
 
 			const options = item.options || [];
 			params.append(`optionCount${i}`, options.length);
 
 			options.forEach((option, j) => {
-				params.append(
-					`materialCode${i}_${j}`,
-					option.optionMaterialCode || option.materialCode
-				);
+				params.append(`materialCode${i}_${j}`, option.materialCode);
+				params.append(`optionMaterialCode${i}_${j}`, option.optionMaterialCode || option.materialCode);
+				params.append(`deductQty${i}_${j}`, option.deductQty || 0);
+				params.append(`materialName${i}_${j}`, option.materialName || "");
 			});
+			
+			console.log("ORDER ITEM", item);
+console.log("MULTIPLIER", item.multiplier);
 		});
 
 		const res = await fetch(contextPath + "/kiosk/order", {
@@ -310,7 +314,7 @@ window.goPay = async function() {
 				: items[0].menuName,
 			customerName: String(randomNum),
 			successUrl: location.origin + contextPath + "/kiosk/payment/success?orderNum=" + randomNum,
-			failUrl: location.origin + contextPath + "/kiosk/payment/fail?orderId=" + data.orderId + "&message=결제에 실패했습니다",
+			failUrl: location.origin + contextPath + "/kiosk/payment/fail?orderId=" + data.orderId + "&message=" + encodeURIComponent("결제에 실패했습니다"),
 		});
 
 	} catch (e) {

@@ -86,6 +86,12 @@ public class OrderController extends HttpServlet {
 				orderMenuDto.setQty(Integer.parseInt(request.getParameter("qty" + i)));
 				orderMenuDto.setUnit_price(Integer.parseInt(request.getParameter("unit_price" + i)));
 				orderMenuDto.setLineTotalAmount(Integer.parseInt(request.getParameter("lineTotalAmount" + i)));
+				String multiplierParam = request.getParameter("multiplier" + i);
+				int multiplier = multiplierParam == null || multiplierParam.trim().isEmpty()
+						? 1
+						: Integer.parseInt(multiplierParam);
+
+				orderMenuDto.setMultiplier(multiplier);
 				orderMenuList.add(orderMenuDto);
 
 				// 옵션 리스트
@@ -93,7 +99,31 @@ public class OrderController extends HttpServlet {
 				List<OrderOptionDto> options = new ArrayList<>();
 				for (int j = 0; j < optionCount; j++) {
 					OrderOptionDto optionDto = new OrderOptionDto();
-					optionDto.setMaterialCode(request.getParameter("materialCode" + i + "_" + j));
+
+					String materialCode = request.getParameter("materialCode" + i + "_" + j);
+					String optionMaterialCode = request.getParameter("optionMaterialCode" + i + "_" + j);
+					String deductQty = request.getParameter("deductQty" + i + "_" + j);
+					String materialName = request.getParameter("materialName" + i + "_" + j);
+
+					System.out.println("===== ORDER OPTION PARAM =====");
+					System.out.println("i=" + i + ", j=" + j);
+					System.out.println("materialCode=" + materialCode);
+					System.out.println("optionMaterialCode=" + optionMaterialCode);
+					System.out.println("deductQty=" + deductQty);
+					System.out.println("materialName=" + materialName);
+					System.out.println("==============================");
+
+					if (
+						"SIZE_REGULAR".equals(materialCode) ||
+						"SIZE_LARGE".equals(materialCode) ||
+						"NO_CHEESE".equals(materialCode) ||
+						"NO_EXTRA".equals(materialCode) ||
+						"NO_VEGETABLE".equals(materialCode)
+					) {
+						continue;
+					}
+
+					optionDto.setMaterialCode(materialCode);
 					options.add(optionDto);
 				}
 				orderOptionList.add(options);
@@ -133,5 +163,6 @@ public class OrderController extends HttpServlet {
 		    response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 		    response.getWriter().write("{\"success\":false,\"message\":\"주문 처리 중 오류가 발생했습니다\"}");
 		}
+		
 	}
 }

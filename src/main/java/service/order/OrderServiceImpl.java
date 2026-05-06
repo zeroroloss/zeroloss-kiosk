@@ -21,7 +21,7 @@ public class OrderServiceImpl implements OrderService {
 	private OrdersDao ordersDao;
 	private OrderMenuDao orderMenuDao;
 	private OrderOptionDao orderOptionDao;
-	
+
 	public OrderServiceImpl() {
 		ordersDao = new OrdersDaoImpl();
 		orderMenuDao = new OrderMenuDaoImpl();
@@ -66,102 +66,102 @@ public class OrderServiceImpl implements OrderService {
 	@Override
 	public boolean checkStockAvailable(int branchCode, List<OrderMenuDto> orderMenuList,
 			List<List<OrderOptionDto>> orderOptionList) throws Exception {
-		try (SqlSession sqlSession =
-	            MyBatisSqlSessionFactory.getSqlSessionFactory().openSession()) {
+		try (SqlSession sqlSession = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession()) {
 
-	        Map<String, Double> needMap = new HashMap<>();
+			Map<String, Double> needMap = new HashMap<>();
 
-	        for (int i = 0; i < orderMenuList.size(); i++) {
-	            OrderMenuDto menu = orderMenuList.get(i);
+			for (int i = 0; i < orderMenuList.size(); i++) {
+				OrderMenuDto menu = orderMenuList.get(i);
 
-	            String recipeCode = menu.getRecipeCode();
-	            int qty = menu.getQty();
+				String recipeCode = menu.getRecipeCode();
+				int qty = menu.getQty();
 
-	            Integer categoryId =
-	                    sqlSession.selectOne(
-	                            "mapper.kiosk1.selectCategoryIdByRecipeCode",
-	                            recipeCode
-	                    );
+				Integer categoryId = sqlSession.selectOne("mapper.kiosk1.selectCategoryIdByRecipeCode", recipeCode);
 
-	            boolean isLargeBread = false;
+				boolean isLargeBread = false;
 
-	            List<OrderOptionDto> options = orderOptionList.get(i);
+				List<OrderOptionDto> options = orderOptionList.get(i);
 
-	            for (OrderOptionDto option : options) {
+				for (OrderOptionDto option : options) {
 
-	                String code = option.getMaterialCode();
+					String code = option.getMaterialCode();
 
-	                try {
+					try {
 
-	                    int breadCode = Integer.parseInt(code);
+						int breadCode = Integer.parseInt(code);
 
-	                    if (breadCode >= 107 && breadCode <= 112) {
-	                        isLargeBread = true;
-	                        break;
-	                    }
+						if (breadCode >= 107 && breadCode <= 112) {
+							isLargeBread = true;
+							break;
+						}
 
-	                } catch (Exception e) {
-	                }
-	            }
+					} catch (Exception e) {
+					}
+				}
 
-	            int multiplier =
-	                    (categoryId != null && categoryId == 2) || isLargeBread ? 2: 1;
+				int multiplier = (categoryId != null && categoryId == 2) || isLargeBread ? 2 : 1;
 
-	            // 1. 기본 재료 계산
-	            List<Map<String, Object>> recipeMaterials =
-	                    sqlSession.selectList("mapper.kiosk1.selectRecipeMaterialForStockCheck", recipeCode);
+				// 1. 기본 재료 계산
+				List<Map<String, Object>> recipeMaterials = sqlSession
+						.selectList("mapper.kiosk1.selectRecipeMaterialForStockCheck", recipeCode);
 
-	            for (Map<String, Object> material : recipeMaterials) {
-	                String materialCode = String.valueOf(material.get("materialCode"));
-	                double requiredQty = Double.parseDouble(String.valueOf(material.get("requiredQty")));
+				for (Map<String, Object> material : recipeMaterials) {
+					String materialCode = String.valueOf(material.get("materialCode"));
+					double requiredQty = Double.parseDouble(String.valueOf(material.get("requiredQty")));
 
-	                double needQty = requiredQty * qty * multiplier;
+					double needQty = requiredQty * qty * multiplier;
 
-	                needMap.put(
-	                        materialCode,
-	                        needMap.getOrDefault(materialCode, 0.0) + needQty
-	                );
-	            }
+					needMap.put(materialCode, needMap.getOrDefault(materialCode, 0.0) + needQty);
+				}
 
-	            // 2. 옵션 재료 계산
-	            for (OrderOptionDto option : options) {
-	                String materialCode = option.getMaterialCode();
+				// 2. 옵션 재료 계산
+				for (OrderOptionDto option : options) {
 
-	                // 담지않기 / 추가없음 같은 비재고 옵션은 제외
-	                if ("901".equals(materialCode) || "902".equals(materialCode) || "903".equals(materialCode)) {
-	                    continue;
-	                }
+					String materialCode = option.getMaterialCode();
 
-	                double needQty = qty * multiplier;
+					// ===== 액션 옵션 제외 =====
+					if ("SIZE_REGULAR".equals(materialCode) || "SIZE_LARGE".equals(materialCode)
+							|| "NO_CHEESE".equals(materialCode) || "NO_EXTRA".equals(materialCode)
+							|| "NO_VEGETABLE".equals(materialCode)) {
+						continue;
+					}
 
-	                needMap.put(
-	                        materialCode,
-	                        needMap.getOrDefault(materialCode, 0.0) + needQty
-	                );
-	            }
-	        }
+					// 실제 재료 차감량 조회
+					Map<String, Object> param = new HashMap<>();
+					param.put("materialCode", materialCode);
 
-	        // 3. 현재 DB 재고와 비교
-	        for (String materialCode : needMap.keySet()) {
-	            Map<String, Object> param = new HashMap<>();
-	            param.put("branchCode", branchCode);
-	            param.put("materialCode", materialCode);
+					Double deductQty = sqlSession.selectOne("mapper.kiosk1.selectOptionDeductQty", param);
 
-	            Double currentQty =
-	                    sqlSession.selectOne("mapper.kiosk1.selectCurrentQtyForStockCheck", param);
+					if (deductQty == null || deductQty <= 0) {
+						continue;
+					}
 
-	            if (currentQty == null) {
-	                currentQty = 0.0;
-	            }
+					double needQty = deductQty * qty * multiplier;
 
-	            double needQty = needMap.get(materialCode);
+					needMap.put(materialCode, needMap.getOrDefault(materialCode, 0.0) + needQty);
+				}
+			}
 
-	            if (currentQty < needQty) {
-	                return false;
-	            }
-	        }
+			// 3. 현재 DB 재고와 비교
+			for (String materialCode : needMap.keySet()) {
+				Map<String, Object> param = new HashMap<>();
+				param.put("branchCode", branchCode);
+				param.put("materialCode", materialCode);
 
-	        return true;
-	    }
+				Double currentQty = sqlSession.selectOne("mapper.kiosk1.selectCurrentQtyForStockCheck", param);
+
+				if (currentQty == null) {
+					currentQty = 0.0;
+				}
+
+				double needQty = needMap.get(materialCode);
+
+				if (currentQty < needQty) {
+					return false;
+				}
+			}
+
+			return true;
+		}
 	}
 }

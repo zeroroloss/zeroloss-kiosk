@@ -18,27 +18,25 @@ function moveToMenu() {
 
 let item = JSON.parse(sessionStorage.getItem(ITEM_KEY) || "null");
 
-function isLargeBreadSelected() {
-	const selectedBread = getSelectedOptionByGroupName("빵");
+function isLargeSizeSelected() {
+	const selectedSize = getSelectedOptionByGroupName("길이");
 
-	if (!selectedBread) return false;
+	if (!selectedSize) return false;
 
-	const breadCode = Number(selectedBread.materialCode);
-
-	return breadCode >= 107 && breadCode <= 112;
+	return String(selectedSize.materialCode) === ACTION_CODE.SIZE_LARGE;
 }
 
 function getDefaultMultiplier() {
-	// 기본재료는 샐러드 2배가 mapper에서 이미 적용됨
-	// 그래서 L빵만 JS에서 2배
-	return isLargeBreadSelected() ? 2 : 1;
+	if (item.menuType === "salad") return 2;
+	if (isLargeSizeSelected()) return 2;
+	return 1;
 }
 
 function getOptionMultiplier() {
 	// 옵션은 mapper에서 미리 2배 처리되지 않음
 	// 샐러드 또는 L빵이면 2배
 	if (item.menuType === "salad") return 2;
-	if (isLargeBreadSelected()) return 2;
+	if (isLargeSizeSelected()) return 2;
 
 	return 1;
 }
@@ -91,10 +89,33 @@ function getOptionDeductQty(materialCode) {
 
 /* ===== 옵션 상태 생성 ===== */
 
+const ACTION_CODE = {
+	NO_CHEESE: "NO_CHEESE",
+	CHEESE_ADD: "CHEESE_ADD",
+	MEAT_ADD: "MEAT_ADD",
+	NO_EXTRA: "NO_EXTRA",
+	NO_VEGETABLE: "NO_VEGETABLE",
+	SIZE_REGULAR: "SIZE_REGULAR",
+	SIZE_LARGE: "SIZE_LARGE"
+};
+
+function isActionCode(code) {
+	return Object.values(ACTION_CODE).includes(String(code));
+}
+
 function createDefaultOptionConfig() {
 	const sections = materialGroupList.map(group => {
-		const options = materialList
+		let options = materialList
 			.filter(m => Number(m.materialGroupId) === Number(group.materialGroupId))
+
+			// 빵 그룹에서는 L빵 107~112 숨김
+			.filter(m => !(group.groupName === "빵" && Number(m.materialCode) >= 107 && Number(m.materialCode) <= 112))
+
+			.filter(m => !(group.groupName === "치즈" && m.materialName === "치즈 제외"))
+			.filter(m => !(group.groupName === "추가재료" && m.materialName === "치즈 추가"))
+			.filter(m => !(group.groupName === "추가재료" && m.materialName === "미트추가"))
+			.filter(m => !(group.groupName === "추가재료" && m.materialName === "재료 추가 없음"))
+			.filter(m => !(group.groupName === "야채" && m.materialName === "야채 담지 않기"))
 			.map(m => ({
 				label: m.materialName,
 				value: m.materialName,
@@ -102,8 +123,73 @@ function createDefaultOptionConfig() {
 				materialGroupId: group.materialGroupId,
 				groupName: group.groupName,
 				price: Number(m.price || 0),
-				selected: false
+				selected: false,
+				actionOption: false
 			}));
+
+		if (group.groupName === "치즈") {
+			options.unshift({
+				label: "치즈 제외",
+				value: "치즈 제외",
+				materialCode: ACTION_CODE.NO_CHEESE,
+				materialGroupId: group.materialGroupId,
+				groupName: group.groupName,
+				price: 0,
+				selected: false,
+				actionOption: true,
+				deductQty: 0
+			});
+		}
+
+		if (group.groupName === "야채") {
+			options.unshift({
+				label: "야채 담지 않기",
+				value: "야채 담지 않기",
+				materialCode: ACTION_CODE.NO_VEGETABLE,
+				materialGroupId: group.materialGroupId,
+				groupName: group.groupName,
+				price: 0,
+				selected: false,
+				actionOption: true,
+				deductQty: 0
+			});
+		}
+
+		if (group.groupName === "추가재료") {
+			options.unshift({
+				label: "치즈 추가",
+				value: "치즈 추가",
+				materialCode: ACTION_CODE.CHEESE_ADD,
+				materialGroupId: group.materialGroupId,
+				groupName: group.groupName,
+				price: 1500,
+				selected: false,
+				actionOption: true
+			});
+
+			options.unshift({
+				label: "재료 추가 없음",
+				value: "재료 추가 없음",
+				materialCode: ACTION_CODE.NO_EXTRA,
+				materialGroupId: group.materialGroupId,
+				groupName: group.groupName,
+				price: 0,
+				selected: false,
+				actionOption: true,
+				deductQty: 0
+			});
+
+			options.splice(2, 0, {
+				label: "미트추가",
+				value: "미트추가",
+				materialCode: ACTION_CODE.MEAT_ADD,
+				materialGroupId: group.materialGroupId,
+				groupName: group.groupName,
+				price: 3000,
+				selected: false,
+				actionOption: true
+			});
+		}
 
 		return {
 			title: group.groupName,
@@ -119,9 +205,49 @@ function createDefaultOptionConfig() {
 		};
 	});
 
+	const sizeSection = {
+		title: "길이",
+		groups: [{
+			key: "group_size",
+			materialGroupId: "SIZE",
+			title: "길이",
+			type: "single",
+			min: 1,
+			max: 1,
+			options: [
+				{
+					label: "15cm",
+					value: "15cm",
+					materialCode: ACTION_CODE.SIZE_REGULAR,
+					materialGroupId: "SIZE",
+					groupName: "길이",
+					price: 0,
+					selected: true,
+					actionOption: true,
+					deductQty: 0
+				},
+				{
+					label: "30cm",
+					value: "30cm",
+					materialCode: ACTION_CODE.SIZE_LARGE,
+					materialGroupId: "SIZE",
+					groupName: "길이",
+					price: 6000,
+					selected: false,
+					actionOption: true,
+					deductQty: 0
+				}
+			]
+		}]
+	};
+
+	if (item.menuType === "sandwich") {
+		sections.unshift(sizeSection);
+	}
+
 	return {
-		steps: materialGroupList.map(g => g.groupName),
-		activeStep: materialGroupList.length ? materialGroupList[0].groupName : "",
+		steps: sections.map(section => section.title),
+		activeStep: sections.length ? sections[0].title : "",
 		sections: sections
 	};
 }
@@ -249,7 +375,7 @@ function getSelectedOptions() {
 
 						price: Number(option.price || 0),
 
-						deductQty: isExclusiveOption(option)
+						deductQty: isNoDeductOption(option)
 							? 0
 							: getOptionDeductQty(realMaterialCode || option.materialCode) * getOptionMultiplier()
 					});
@@ -261,12 +387,28 @@ function getSelectedOptions() {
 	return selectedOptions;
 }
 
-function isExclusiveOption(option) {
-	const code = Number(option.materialCode);
+function isNoDeductOption(option) {
+	const code = String(option.materialCode);
 
 	return (
-		code === 309 ||   // 담지않기
-		code === 409      // 추가없음
+		code === ACTION_CODE.NO_CHEESE ||
+		code === ACTION_CODE.NO_EXTRA ||
+		code === ACTION_CODE.NO_VEGETABLE ||
+		code === ACTION_CODE.SIZE_REGULAR ||
+		code === ACTION_CODE.SIZE_LARGE ||
+		Number(code) === 309 ||
+		Number(code) === 409
+	);
+}
+
+function isExclusiveOption(option) {
+	const code = String(option.materialCode);
+
+	return (
+		code === ACTION_CODE.NO_EXTRA ||
+		code === ACTION_CODE.NO_VEGETABLE ||
+		Number(code) === 309 ||
+		Number(code) === 409
 	);
 }
 
@@ -284,6 +426,27 @@ function recalculateDefaultMaterials() {
 			deductQty: baseQty * multiplier
 		};
 	});
+
+	console.log("===== 기본재료 재계산 =====");
+
+	console.log({
+		menuName: item.menuName,
+		menuType: item.menuType,
+		isLargeSizeSelected: isLargeSizeSelected(),
+		multiplier
+	});
+
+	item.defaultMaterials.forEach(material => {
+		console.log({
+			materialCode: material.materialCode,
+			materialName: material.materialName,
+			baseRequiredQty: material.baseRequiredQty,
+			requiredQty: material.requiredQty,
+			deductQty: material.deductQty
+		});
+	});
+
+	console.log("========================");
 
 	sessionStorage.setItem(ITEM_KEY, JSON.stringify(item));
 }
@@ -397,8 +560,8 @@ function renderSections() {
 					stock && Number(stock.unavailableYn) === 1;
 
 				const isActionOption =
-					Number(option.materialCode) === 401 ||
-					Number(option.materialCode) === 407;
+					String(option.materialCode) === ACTION_CODE.CHEESE_ADD ||
+					String(option.materialCode) === ACTION_CODE.MEAT_ADD;
 
 				const isAddDisabled = false;
 
@@ -441,8 +604,8 @@ function renderSections() {
 			const stock = stockMap[Number(option.materialCode)];
 
 			const isActionOption =
-				Number(option.materialCode) === 401 ||
-				Number(option.materialCode) === 407;
+				String(option.materialCode) === ACTION_CODE.CHEESE_ADD ||
+				String(option.materialCode) === ACTION_CODE.MEAT_ADD;
 
 			if (stock && Number(stock.unavailableYn) === 1) {
 				alert("재고 부족으로 선택할 수 없습니다.");
@@ -452,7 +615,7 @@ function renderSections() {
 			/*if (isActionOption && stock && Number(stock.addUnavailableYn) === 1) {
 				alert("추가할 재고가 부족합니다.");
 				return;
-			}*/
+			} */
 
 			if (!isExclusiveOption(option) && !canSelectByStock(option)) {
 				alert("재고 부족으로 선택할 수 없습니다.");
@@ -631,20 +794,24 @@ function getBaseMeatMaterialCode() {
 }
 
 function getRealMaterialCodeForStock(option) {
-	const code = Number(option.materialCode);
+	const code = String(option.materialCode);
 
 	// 치즈 추가
-	if (code === 401) {
-		const selectedCheese =
-			getSelectedOptionByGroupName("치즈");
+	if (code === ACTION_CODE.CHEESE_ADD || Number(code) === 401) {
+		const selectedCheese = getSelectedOptionByGroupName("치즈");
 
-		return selectedCheese
-			? String(selectedCheese.materialCode)
-			: null;
+		if (!selectedCheese) return null;
+
+		// 치즈 제외를 선택한 상태에서는 치즈 추가 불가
+		if (String(selectedCheese.materialCode) === ACTION_CODE.NO_CHEESE) {
+			return null;
+		}
+
+		return String(selectedCheese.materialCode);
 	}
 
 	// 미트 추가
-	if (code === 407) {
+	if (code === ACTION_CODE.MEAT_ADD || Number(code) === 407) {
 		return getBaseMeatMaterialCode();
 	}
 
@@ -669,8 +836,8 @@ function canSelectByStock(option) {
 
 	// 현재 item에서 자기 자신 제외한 사용량
 	const isAddOption =
-		Number(option.materialCode) === 401 ||
-		Number(option.materialCode) === 407;
+		String(option.materialCode) === ACTION_CODE.CHEESE_ADD ||
+		String(option.materialCode) === ACTION_CODE.MEAT_ADD;
 
 	const itemUsed =
 		isAddOption
@@ -755,6 +922,8 @@ window.goBackMenu = function() {
 window.goNext = function() {
 	if (!validateBeforeNext()) return;
 
+	item.multiplier = getDefaultMultiplier();
+		
 	item.options = getSelectedOptions();
 	item.totalPrice = Number(item.price || 0) + getExtraPrice();
 

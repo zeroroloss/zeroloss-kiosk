@@ -4,98 +4,116 @@
 <mapper namespace="mapper.kiosk2">
 	<!--로그인 -->
 	<select id="loginKiosk" parameterType="map" resultType="account">
-        SELECT 
-            a.account_id, 
-            a.emp_no,
-            a.branch_code, 
-            a.role_id,
-            a.login_id,
-            b.name AS branchName,
-            k.kiosk_id,
-            e.name AS name
-        FROM account a
-        JOIN kiosk k ON a.branch_code = k.branch_code
-        JOIN branch b ON a.branch_code = b.branch_code
-        JOIN employee e ON a.emp_no = e.emp_no
-        WHERE a.login_id = #{login_id}
-          AND a.password = #{password}
-          AND k.kiosk_id = #{kiosk_id}
-          AND a.role_id = 2
-          AND a.status = 'ACTIVE'
-       	  AND b.status = 'ACTIVE'
-          AND k.status = 'NORMAL'
-    </select>
-    
-    <select id="getBranchList" resultType="branch">
-    SELECT
-        branch_code,
-        name
-    FROM branch
-    WHERE status = 'ACTIVE'
-     AND branch_code != 1
-    ORDER BY name ASC
+		SELECT
+		a.account_id,
+		a.emp_no,
+		a.branch_code,
+		a.role_id,
+		a.login_id,
+		b.name AS
+		branchName,
+		k.kiosk_id,
+		e.name AS name
+		FROM account a
+		JOIN kiosk k ON
+		a.branch_code = k.branch_code
+		JOIN branch b ON a.branch_code =
+		b.branch_code
+		JOIN employee e ON a.emp_no = e.emp_no
+		WHERE a.login_id =
+		#{login_id}
+		AND a.password = #{password}
+		AND k.kiosk_id = #{kiosk_id}
+		AND a.role_id = 2
+		AND a.status = 'ACTIVE'
+		AND b.status = 'ACTIVE'
+		AND
+		k.status = 'NORMAL'
 	</select>
-	
+
+	<select id="getBranchList" resultType="branch">
+		SELECT
+		branch_code,
+		name
+		FROM branch
+		WHERE status = 'ACTIVE'
+		AND branch_code != 1
+		ORDER BY name
+		ASC
+	</select>
+
 	<select id="getKioskList" parameterType="int" resultType="kiosk">
-        SELECT
-            kiosk_id,
-            branch_code,
-            status
-        FROM kiosk
-        WHERE branch_code = #{branchCode}
-          AND status = 'NORMAL'
-        ORDER BY kiosk_id ASC
-    </select>
-    
-    <!-- orders INSERT -->
-    <insert id="insertOrder" parameterType="orders">
-        INSERT INTO orders (order_id,branch_code, kiosk_id, order_type, total_amount)
-        VALUES (#{orderId}, #{branchCode}, #{kioskId}, #{orderType}, #{totalAmount})
-    </insert>
+		SELECT
+		kiosk_id,
+		branch_code,
+		status
+		FROM kiosk
+		WHERE branch_code = #{branchCode}
+		AND status = 'NORMAL'
+		ORDER BY kiosk_id ASC
+	</select>
 
-    <!-- order_menu INSERT -->
-    <insert id="insertOrderMenu" parameterType="orderMenu" useGeneratedKeys="true" keyProperty="orderMenuId">
-        INSERT INTO order_menu (order_id, recipe_code, qty, unit_price, line_total_amount)
-        VALUES (#{orderId}, #{recipeCode}, #{qty}, #{unit_price}, #{lineTotalAmount})
-    </insert>
-
-    <!-- order_option INSERT -->
-    <insert id="insertOrderOption" parameterType="orderOption">
-    	INSERT INTO order_option (order_menu_id, material_code, extra_price)
-    	SELECT #{orderMenuId}, #{materialCode}, COALESCE(m.price, 0)
-   		FROM material m
-    	WHERE m.material_code = #{materialCode}
+	<!-- orders INSERT -->
+	<insert id="insertOrder" parameterType="orders">
+		INSERT INTO orders
+		(order_id,branch_code, kiosk_id, order_type,
+		total_amount)
+		VALUES
+		(#{orderId}, #{branchCode}, #{kioskId}, #{orderType}, #{totalAmount})
 	</insert>
 
-    <!-- 주문 조회 -->
-    <select id="selectOrder" parameterType="String" resultType="orders">
-        SELECT
-            order_id        AS orderId,
-            branch_code     AS branchCode,
-            kiosk_id        AS kioskId,
-            order_type      AS orderType,
-            total_amount    AS totalAmount
-        FROM orders
-        WHERE order_id = #{orderId}
-    </select>
-    
-    <!-- 주문 상태 업데이트 -->
-    <update id="updateOrder" parameterType="orders">
-		update orders set status = #{status}	  
-	    where order_id = #{orderId}
-	</update>
-    
-    <!-- recipe 가격 조회 -->
-	<select id="selectRecipePrice" parameterType="String" resultType="int">
-    	SELECT price FROM recipe
-    	WHERE recipe_code = #{recipeCode}
+	<!-- order_menu INSERT -->
+	<insert id="insertOrderMenu" parameterType="orderMenu"
+		useGeneratedKeys="true" keyProperty="orderMenuId">
+		INSERT INTO order_menu (order_id,
+		recipe_code, qty, unit_price, line_total_amount, multiplier)
+		VALUES (#{orderId}, #{recipeCode}, #{qty}, #{unit_price},
+		#{lineTotalAmount}, #{multiplier})
+	</insert>
+
+	<!-- order_option INSERT -->
+	<insert id="insertOrderOption" parameterType="orderOption">
+		INSERT INTO
+		order_option (order_menu_id, material_code, extra_price)
+		VALUES
+		(#{orderMenuId}, #{materialCode}, 0)
+	</insert>
+
+	<!-- 주문 조회 -->
+	<select id="selectOrder" parameterType="String"
+		resultType="orders">
+		SELECT
+		order_id AS orderId,
+		branch_code AS branchCode,
+		kiosk_id AS kioskId,
+		order_type AS orderType,
+		total_amount AS
+		totalAmount
+		FROM orders
+		WHERE order_id = #{orderId}
 	</select>
 
-<!-- material 가격 조회 (NULL이면 0) -->
-	<select id="selectMaterialPrice" parameterType="String" resultType="int">
-    	SELECT COALESCE(price, 0)
-    	FROM material
-    	WHERE material_code = #{materialCode}
+	<!-- 주문 상태 업데이트 -->
+	<update id="updateOrder" parameterType="orders">
+		update orders set status
+		= #{status}
+		where order_id = #{orderId}
+	</update>
+
+	<!-- recipe 가격 조회 -->
+	<select id="selectRecipePrice" parameterType="String"
+		resultType="int">
+		SELECT price FROM recipe
+		WHERE recipe_code = #{recipeCode}
 	</select>
-	
+
+	<!-- material 가격 조회 (NULL이면 0) -->
+	<select id="selectMaterialPrice" parameterType="String"
+		resultType="int">
+		SELECT COALESCE(price, 0)
+		FROM material
+		WHERE material_code =
+		#{materialCode}
+	</select>
+
 </mapper>

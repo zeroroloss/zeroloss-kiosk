@@ -1,13 +1,14 @@
 package service.order;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import dao.order.OrdersDao;
 import dao.order.OrdersDaoImpl;
 import dao.order.StockDao;
 import dao.order.StockDaoImple;
-import dto.OrderMenuDto;
-import dto.OrderOptionDto;
 import dto.StockDeductDto;
 
 public class StockServiceImpl implements StockService {
@@ -97,8 +98,54 @@ public class StockServiceImpl implements StockService {
     }
 
     private void deductOne(int branchCode, StockDeductDto dto) throws Exception {
-        dto.setBranchCode(branchCode);
-        stockDao.deductStock(dto);
+
+        BigDecimal remainingQty =
+            new BigDecimal(String.valueOf(dto.getDeductQty()));
+
+        Map<String, Object> param = new HashMap<>();
+        param.put("branchCode", branchCode);
+        param.put("materialCode", dto.getMaterialCode());
+
+        List<Map<String, Object>> stocks =
+            stockDao.selectBranchStockLotsForDeduct(param);
+
+        if (stocks == null || stocks.isEmpty()) {
+            throw new RuntimeException("재고 없음: materialCode=" + dto.getMaterialCode());
+        }
+
+        for (Map<String, Object> stock : stocks) {
+
+            if (remainingQty.compareTo(BigDecimal.ZERO) <= 0) {
+                break;
+            }
+
+            String branchStockCode = String.valueOf(stock.get("branchStockCode"));
+
+            BigDecimal currentQty =
+                new BigDecimal(String.valueOf(stock.get("currentQty")));
+
+            if (currentQty.compareTo(BigDecimal.ZERO) <= 0) {
+                continue;
+            }
+
+            BigDecimal deductQty = currentQty.min(remainingQty);
+            BigDecimal afterQty = currentQty.subtract(deductQty);
+
+            Map<String, Object> updateParam = new HashMap<>();
+            updateParam.put("branchStockCode", branchStockCode);
+            updateParam.put("currentQty", afterQty.max(BigDecimal.ZERO));
+
+            stockDao.updateBranchStockQty(updateParam);
+
+            remainingQty = remainingQty.subtract(deductQty);
+        }
+
+        if (remainingQty.compareTo(BigDecimal.ZERO) > 0) {
+            throw new RuntimeException(
+                "재고 부족: materialCode=" + dto.getMaterialCode()
+                + ", 부족수량=" + remainingQty
+            );
+        }
     }
 
     private boolean isCheeseMaterial(String materialCode) {

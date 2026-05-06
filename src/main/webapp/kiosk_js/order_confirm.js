@@ -45,6 +45,26 @@ function formatPrice(v) {
 	return Number(v || 0).toLocaleString() + "원";
 }
 
+function getStockCode(optionOrMaterial) {
+	if (!optionOrMaterial) return "";
+
+	return String(
+		optionOrMaterial.materialCode || ""
+	);
+}
+
+function getDbQty(code) {
+	const stock = stockMap[String(code)] || stockMap[Number(code)];
+
+	if (!stock) return 0;
+
+	if (typeof stock === "object") {
+		return Number(stock.currentQty || stock.qty || stock.stockQty || 0);
+	}
+
+	return Number(stock || 0);
+}
+
 function makeRows(item) {
 	const rows = [];
 
@@ -100,7 +120,7 @@ function isCartStockAvailable(cart) {
 		});
 
 		(item.options || []).forEach(option => {
-			const code = String(option.materialCode);
+			const code = String(option.realMaterialCode || option.materialCode);
 			const needQty = Number(option.deductQty || 0) * qty;
 
 			if (needQty <= 0) return;
@@ -110,7 +130,7 @@ function isCartStockAvailable(cart) {
 	});
 
 	return Object.keys(used).every(code => {
-		const dbQty = Number(stockMap[code] || 0);
+		const dbQty = getDbQty(code);
 		const usedQty = Number(used[code] || 0);
 
 		return dbQty - usedQty >= 0;
@@ -251,7 +271,10 @@ window.goPay = async function() {
 			params.append(`optionCount${i}`, options.length);
 
 			options.forEach((option, j) => {
-				params.append(`materialCode${i}_${j}`, option.materialCode);
+				params.append(
+					`materialCode${i}_${j}`,
+					option.optionMaterialCode || option.materialCode
+				);
 			});
 		});
 

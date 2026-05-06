@@ -100,46 +100,52 @@
 		rd.material_code AS
 		materialCode,
 		m.material_name AS materialName,
-			( rd.required_qty * IFNULL(m.deduct_qty, 1) * CASE
-				WHEN EXISTS (
-					SELECT 1
-					FROM recipe r
-					WHERE r.recipe_code = rd.recipe_code
-					AND r.category_id = 2
-				)
-			THEN 2
-			ELSE 1
-			END
-			) AS requiredQty
+		( rd.required_qty *
+		IFNULL(m.deduct_qty, 1) * CASE
+		WHEN EXISTS (
+		SELECT 1
+		FROM recipe r
+		WHERE
+		r.recipe_code = rd.recipe_code
+		AND r.category_id = 2
+		)
+		THEN 2
+		ELSE 1
+		END
+		)
+		AS requiredQty
 		FROM recipe_detail rd JOIN material m
 		ON
-		rd.material_code = m.material_code
+		rd.material_code
+		= m.material_code
 		WHERE rd.recipe_code = #{recipeCode}
 	</select>
 
 	<select id="baseStock" parameterType="string"
 		resultType="dto.StockDeductDto">
 		SELECT
-		om.order_menu_id AS orderMenuId,
-		rd.material_code AS
-		materialCode,
-		(m.deduct_qty * om.qty *
-		CASE
-		WHEN r.category_id = 2 THEN 2
-		ELSE 1
-		END
-		) AS deductQty
-		FROM order_menu om
-		JOIN recipe_detail rd
-		ON
-		om.recipe_code = rd.recipe_code
-		JOIN material m
-		ON rd.material_code =
-		m.material_code
-		JOIN recipe r
-		ON om.recipe_code = r.recipe_code
-		WHERE
-		om.order_id = #{orderId}
+			om.order_menu_id AS orderMenuId,
+			rd.material_code AS materialCode, 
+			( m.deduct_qty * om.qty *
+				CASE
+				WHEN r.category_id = 2
+				OR EXISTS (
+					SELECT 1
+					FROM order_option oo2
+					WHERE oo2.order_menu_id = om.order_menu_id
+					AND oo2.material_code BETWEEN 107 AND 112 )
+				THEN 2
+				ELSE 1
+				END) 
+			AS deductQty
+			FROM order_menu om
+			JOIN recipe_detail rd
+			ON om.recipe_code = rd.recipe_code
+			JOIN material m
+			ON rd.material_code = m.material_code
+			JOIN recipe r
+			ON om.recipe_code = r.recipe_code
+			WHERE om.order_id = #{orderId}
 	</select>
 
 	<select id="optionStock" parameterType="string"
@@ -167,12 +173,31 @@
 		om.order_id = #{orderId}
 	</select>
 
-	<update id="deductStock" parameterType="dto.StockDeductDto"> <!-- 재료 차감 -->
-		UPDATE branch_stock
-		SET current_qty = current_qty - #{deductQty}
-		WHERE
-		branch_code = #{branchCode}
+	<select id="selectBranchStockLotsForDeduct" parameterType="map"
+		resultType="map">
+
+		SELECT
+		branch_stock_code AS branchStockCode,
+		branch_code AS
+		branchCode,
+		material_code AS materialCode,
+		expire_date AS expireDate,
+		received_at AS receivedAt,
+		current_qty AS currentQty
+		FROM branch_stock
+		WHERE branch_code = #{branchCode}
 		AND material_code = #{materialCode}
+		AND current_qty > 0
+		ORDER BY expire_date ASC, received_at ASC
+
+	</select>
+
+	<update id="updateBranchStockQty" parameterType="map">
+		UPDATE
+		branch_stock
+		SET current_qty = #{currentQty}
+		WHERE branch_stock_code =
+		#{branchStockCode}
 	</update>
 
 	<select id="selectBranchCode" parameterType="string"
@@ -184,21 +209,31 @@
 
 	<select id="selectUnavailableRecipeCodes" parameterType="int"
 		resultType="int">
-    	<![CDATA[
-			SELECT DISTINCT r.recipe_code
-			FROM recipe r
-			JOIN recipe_detail rd ON r.recipe_code = rd.recipe_code
-			JOIN material m ON rd.material_code = m.material_code
-			LEFT JOIN branch_stock bs
-            ON bs.branch_code = #{branchCode}
-			AND bs.material_code = rd.material_code
-			WHERE IFNULL(bs.current_qty, 0) <
-              (
-                  rd.required_qty
-                  * IFNULL(m.deduct_qty, 1)
-                  * CASE WHEN r.category_id = 2 THEN 2 ELSE 1 END
-              )
-    ]]>
+<![CDATA[
+    SELECT DISTINCT r.recipe_code
+    FROM recipe r
+    JOIN recipe_detail rd
+        ON r.recipe_code = rd.recipe_code
+    JOIN material m
+        ON rd.material_code = m.material_code
+    LEFT JOIN (
+        SELECT
+            branch_code,
+            material_code,
+            SUM(current_qty) AS current_qty
+        FROM branch_stock
+        WHERE branch_code = #{branchCode}
+        AND current_qty > 0
+        GROUP BY branch_code, material_code
+    ) bs
+        ON bs.material_code = rd.material_code
+    WHERE IFNULL(bs.current_qty, 0) <
+        (
+            rd.required_qty
+            * IFNULL(m.deduct_qty, 1)
+            * CASE WHEN r.category_id = 2 THEN 2 ELSE 1 END
+        )
+]]>
 	</select>
 
 	<!-- 옵션 재료별 재고 정보 조회 -->
@@ -229,7 +264,8 @@
     FROM material m
     LEFT JOIN branch_stock bs
         ON bs.material_code = m.material_code
-       AND bs.branch_code = #{branchCode}
+       	AND bs.branch_code = #{branchCode}
+       	AND bs.current_qty > 0
 
     GROUP BY
         m.material_code,
@@ -244,12 +280,14 @@
 		resultType="dto.RecipeMaterialDto">
 		SELECT
 		rd.recipe_code AS recipeCode,
-		rd.material_code AS materialCode,
+		rd.material_code AS
+		materialCode,
 		(rd.required_qty * IFNULL(m.deduct_qty, 1)) AS deductQty
 		FROM recipe_detail rd
 		JOIN
 		material m
-		ON rd.material_code = m.material_code
+		ON rd.material_code =
+		m.material_code
 	</select>
 
 	<select id="selectCurrentStockList" parameterType="int"
@@ -260,8 +298,9 @@
 		currentQty
 		FROM branch_stock
 		WHERE branch_code = #{branchCode}
-		GROUP BY
-		material_code
+		AND
+		current_qty > 0
+		GROUP BY material_code
 	</select>
 
 	<select id="selectCategoryIdByRecipeCode" parameterType="string"

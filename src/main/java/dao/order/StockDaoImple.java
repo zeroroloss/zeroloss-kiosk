@@ -1,6 +1,7 @@
 package dao.order;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.session.SqlSession;
 
@@ -62,6 +63,33 @@ public class StockDaoImple implements StockDao {
 			e.printStackTrace();
 		}
 		return list;
+	}
+	
+	@Override
+	public List<Map<String, Object>> selectBranchStockLotsForDeduct(Map<String, Object> param) {
+	    SqlSession sqlSession = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession();
+
+	    try {
+	        return sqlSession.selectList("mapper.kiosk1.selectBranchStockLotsForDeduct", param);
+	    } finally {
+	        sqlSession.close();
+	    }
+	}
+
+	@Override
+	public int updateBranchStockQty(Map<String, Object> param) {
+	    SqlSession sqlSession = MyBatisSqlSessionFactory.getSqlSessionFactory().openSession();
+
+	    try {
+	        int result = sqlSession.update("mapper.kiosk1.updateBranchStockQty", param);
+	        sqlSession.commit();
+	        return result;
+	    } catch (Exception e) {
+	        sqlSession.rollback();
+	        throw e;
+	    } finally {
+	        sqlSession.close();
+	    }
 	}
 
 }

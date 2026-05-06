@@ -130,7 +130,7 @@ function isCartStockAvailable(cart) {
 	});
 
 	return Object.keys(used).every(code => {
-		const dbQty = Number(stockMap[code] || 0);
+		const dbQty = getDbQty(code);
 		const usedQty = Number(used[code] || 0);
 
 		return dbQty - usedQty >= 0;
@@ -146,7 +146,7 @@ function canAddRecipe(recipeCode, addQty = 1) {
 	return recipeMaterials.every(material => {
 		const code = String(material.materialCode);
 
-		const dbQty = Number(stockMap[code] || 0);
+		const dbQty = getDbQty(code);
 		const usedQty = Number(used[code] || 0);
 		const needQty =
 			getRecipeMaterialNeedQty(recipeCode, material) * Number(addQty || 1);
@@ -206,8 +206,8 @@ function renderMenus() {
 			});
 		});
 	});
-	
-	
+
+
 }
 
 // ================== 메뉴 클릭 ==================
@@ -456,6 +456,26 @@ function getRecipeMaterialNeedQty(recipeCode, material) {
 	}
 
 	return baseQty;
+}
+
+function getStockCode(optionOrMaterial) {
+	if (!optionOrMaterial) return "";
+
+	return String(
+		optionOrMaterial.materialCode || ""
+	);
+}
+
+function getDbQty(code) {
+	const stock = stockMap[String(code)] || stockMap[Number(code)];
+
+	if (!stock) return 0;
+
+	if (typeof stock === "object") {
+		return Number(stock.currentQty || stock.qty || stock.stockQty || 0);
+	}
+
+	return Number(stock || 0);
 }
 
 // ================== 이동 ==================

@@ -266,6 +266,14 @@ function addItemToCart() {
 	return true;
 }
 
+function getStockCode(optionOrMaterial) {
+	if (!optionOrMaterial) return "";
+
+	return String(
+		optionOrMaterial.materialCode || ""
+	);
+}
+
 function getDbQty(code) {
 	const stock = stockMap[String(code)] || stockMap[Number(code)];
 

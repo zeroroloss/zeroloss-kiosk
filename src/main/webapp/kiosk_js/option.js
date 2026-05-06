@@ -242,11 +242,8 @@ function getSelectedOptions() {
 						materialGroupId: group.materialGroupId,
 						groupName: group.title,
 
-						materialCode:
-							realMaterialCode || option.materialCode,
-
-						optionMaterialCode:
-							option.materialCode,
+						materialCode: realMaterialCode || option.materialCode,
+						optionMaterialCode: option.materialCode,
 
 						materialName: option.label,
 
@@ -671,8 +668,14 @@ function canSelectByStock(option) {
 	const cartUsed = calculateUsedMaterialsFromCart();
 
 	// 현재 item에서 자기 자신 제외한 사용량
+	const isAddOption =
+		Number(option.materialCode) === 401 ||
+		Number(option.materialCode) === 407;
+
 	const itemUsed =
-		calculateUsedMaterialsFromCurrentItem(realCode);
+		isAddOption
+			? calculateUsedMaterialsFromCurrentItem()
+			: calculateUsedMaterialsFromCurrentItem(realCode);
 
 	const alreadyUsed =
 		Number(cartUsed[realCode] || 0) +
@@ -681,7 +684,9 @@ function canSelectByStock(option) {
 	// 지금 선택하려는 옵션 추가 사용량
 	let nextUse = 0;
 
-	if (!isExclusiveOption(option)) {
+	// 이미 선택된 옵션을 다시 검사하는 경우에는
+	// 현재 사용량에 이미 포함되어 있으므로 nextUse를 또 더하면 안 됨
+	if (!option.selected && !isExclusiveOption(option)) {
 		nextUse =
 			getOptionDeductQty(realCode) *
 			Number(item.qty || 1) *
@@ -717,6 +722,26 @@ function removeInvalidSelectedOptions() {
 			});
 		});
 	});
+}
+
+function getStockCode(optionOrMaterial) {
+	if (!optionOrMaterial) return "";
+
+	return String(
+		optionOrMaterial.materialCode || ""
+	);
+}
+
+function getDbQty(code) {
+	const stock = stockMap[String(code)] || stockMap[Number(code)];
+
+	if (!stock) return 0;
+
+	if (typeof stock === "object") {
+		return Number(stock.currentQty || stock.qty || stock.stockQty || 0);
+	}
+
+	return Number(stock || 0);
 }
 
 /* ===== 이동 함수 ===== */

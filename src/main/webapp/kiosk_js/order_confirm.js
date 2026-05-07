@@ -255,7 +255,7 @@ window.goPay = async function() {
 	}
 
 	try {
-		// ✅ FormData 빌드 (기존 주석 코드 재활용)
+		// 주문 저장 요청 파라미터 생성
 		const params = new URLSearchParams();
 		params.append("totalAmount", cart.totalAmount || 0);
 		params.append("menuCount", items.length);
@@ -278,8 +278,6 @@ window.goPay = async function() {
 				params.append(`materialName${i}_${j}`, option.materialName || "");
 			});
 			
-			console.log("ORDER ITEM", item);
-console.log("MULTIPLIER", item.multiplier);
 		});
 
 		const res = await fetch(contextPath + "/kiosk/order", {
@@ -333,13 +331,5 @@ console.log("MULTIPLIER", item.multiplier);
 		alert("결제 중 오류가 발생했습니다: " + e.message);
 	}
 };
-
-function addInput(form, name, value) {
-	const input = document.createElement("input");
-	input.type = "hidden";
-	input.name = name;
-	input.value = value;
-	form.appendChild(input);
-}
 
 renderOrders();

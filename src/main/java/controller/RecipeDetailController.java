@@ -38,11 +38,8 @@ public class RecipeDetailController extends HttpServlet {
 		
 		try {
 			String recipeCode = request.getParameter("recipeCode");
-			System.out.println("recipeCode = " + recipeCode);
 			
 			List<RecipeDetailDto> list = service.RecipeDetailList(recipeCode);
-			System.out.println("recipeDetail list size = " + list.size());
-	        System.out.println("recipeDetail list = " + list);
 			
 			response.setContentType("application/json;charset=UTF-8");
 

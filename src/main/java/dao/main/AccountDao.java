@@ -1,7 +1,5 @@
 package dao.main;
 
-import java.util.Map;
-
 import dto.AccountDto;
 
 public interface AccountDao {

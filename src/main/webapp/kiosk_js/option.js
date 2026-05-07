@@ -42,7 +42,6 @@ function getOptionMultiplier() {
 }
 
 if (!item) {
-	console.error("item 없음");
 	moveToMenu();
 	throw new Error("item 없음");
 }
@@ -56,19 +55,25 @@ fetch(url)
 		return res.json();
 	})
 	.then(data => {
-		item.defaultMaterials = data.map(material => ({
-			...material,
-			baseRequiredQty: Number(material.requiredQty || material.deductQty || 1),
-			requiredQty: Number(material.requiredQty || material.deductQty || 1),
-			deductQty: Number(material.deductQty || material.requiredQty || 1)
-		}));
+		item.defaultMaterials = data.map(material => {
+			return {
+				materialCode: material.materialCode,
+				materialName: material.materialName,
+				requiredQty: Number(material.requiredQty || material.deductQty || 1),
+				deductQty: Number(material.deductQty || material.requiredQty || 1),
+				baseRequiredQty: Number(material.requiredQty || material.deductQty || 1)
+			};
+		});
 
 		recalculateDefaultMaterials();
 
 		renderSections();
 		renderSummary();
 	})
-	.catch(err => console.error("fetch 에러:", err));
+	.catch(() => {
+		alert("옵션 정보를 불러오지 못했습니다.");
+		moveToMenu();
+	});
 
 /* ===== 공통 함수 ===== */
 
@@ -98,10 +103,6 @@ const ACTION_CODE = {
 	SIZE_REGULAR: "SIZE_REGULAR",
 	SIZE_LARGE: "SIZE_LARGE"
 };
-
-function isActionCode(code) {
-	return Object.values(ACTION_CODE).includes(String(code));
-}
 
 function createDefaultOptionConfig() {
 	const sections = materialGroupList.map(group => {
@@ -273,7 +274,6 @@ function loadOptionState() {
 		const config = createDefaultOptionConfig();
 		return restoreSelectedOptions(config);
 	} catch (e) {
-		console.error("옵션 상태 로드 실패:", e);
 		return createDefaultOptionConfig();
 	}
 }
@@ -420,34 +420,13 @@ function recalculateDefaultMaterials() {
 			Number(material.baseRequiredQty || material.requiredQty || 1);
 
 		return {
-			...material,
+			materialCode: material.materialCode,
+			materialName: material.materialName,
 			baseRequiredQty: baseQty,
 			requiredQty: baseQty * multiplier,
 			deductQty: baseQty * multiplier
 		};
 	});
-
-	console.log("===== 기본재료 재계산 =====");
-
-	console.log({
-		menuName: item.menuName,
-		menuType: item.menuType,
-		isLargeSizeSelected: isLargeSizeSelected(),
-		multiplier
-	});
-
-	item.defaultMaterials.forEach(material => {
-		console.log({
-			materialCode: material.materialCode,
-			materialName: material.materialName,
-			baseRequiredQty: material.baseRequiredQty,
-			requiredQty: material.requiredQty,
-			deductQty: material.deductQty
-		});
-	});
-
-	console.log("========================");
-
 	sessionStorage.setItem(ITEM_KEY, JSON.stringify(item));
 }
 
@@ -543,7 +522,7 @@ function renderSections() {
 		}
 
 		return true;
-	});;
+	});
 
 	optionScroll.innerHTML = visibleSections.map(section => {
 		return `
@@ -559,14 +538,18 @@ function renderSections() {
 				const isDisabled =
 					stock && Number(stock.unavailableYn) === 1;
 
-				const isActionOption =
-					String(option.materialCode) === ACTION_CODE.CHEESE_ADD ||
-					String(option.materialCode) === ACTION_CODE.MEAT_ADD;
+				const largeSizeBlock =
+					isLargeSizeOption(option) &&
+					!option.selected &&
+					!canSelectLargeSize();
 
-				const isAddDisabled = false;
+				const stockBlock =
+					!isLargeSizeOption(option) &&
+					!isExclusiveOption(option) &&
+					!option.selected &&
+					!canSelectByStock(option);
 
-				const stockBlock = !isExclusiveOption(option) && !option.selected && !canSelectByStock(option);
-				const finalDisabled = isDisabled || isAddDisabled || stockBlock;
+				const finalDisabled = isDisabled || stockBlock || largeSizeBlock;
 
 				return `
 										<button
@@ -603,19 +586,15 @@ function renderSections() {
 
 			const stock = stockMap[Number(option.materialCode)];
 
-			const isActionOption =
-				String(option.materialCode) === ACTION_CODE.CHEESE_ADD ||
-				String(option.materialCode) === ACTION_CODE.MEAT_ADD;
-
 			if (stock && Number(stock.unavailableYn) === 1) {
 				alert("재고 부족으로 선택할 수 없습니다.");
 				return;
 			}
 
-			/*if (isActionOption && stock && Number(stock.addUnavailableYn) === 1) {
-				alert("추가할 재고가 부족합니다.");
+			if (isLargeSizeOption(option) && !canSelectLargeSize()) {
+				alert("재고 부족으로 30cm를 선택할 수 없습니다.");
 				return;
-			} */
+			}
 
 			if (!isExclusiveOption(option) && !canSelectByStock(option)) {
 				alert("재고 부족으로 선택할 수 없습니다.");
@@ -818,6 +797,25 @@ function getRealMaterialCodeForStock(option) {
 	return String(option.materialCode);
 }
 
+function isLargeSizeOption(option) {
+	return String(option.materialCode) === ACTION_CODE.SIZE_LARGE;
+}
+
+function canSelectLargeSize() {
+	const cartUsed = calculateUsedMaterialsFromCart();
+
+	return (item.defaultMaterials || []).every(m => {
+		const code = String(m.materialCode);
+		const dbQty = getDbQty(code);
+		const cartQty = Number(cartUsed[code] || 0);
+
+		const baseQty = Number(m.baseRequiredQty || m.requiredQty || m.deductQty || 1);
+		const needQty = baseQty * 2 * Number(item.qty || 1);
+
+		return dbQty - cartQty - needQty >= 0;
+	});
+}
+
 function canSelectByStock(option) {
 
 	const realCode = getRealMaterialCodeForStock(option);
@@ -860,15 +858,6 @@ function canSelectByStock(option) {
 			getOptionMultiplier();
 	}
 
-	console.log("canSelectByStock", {
-		option: option.label,
-		realCode,
-		dbQty,
-		alreadyUsed,
-		nextUse,
-		remain: dbQty - alreadyUsed - nextUse
-	});
-
 	return dbQty - alreadyUsed - nextUse >= 0;
 }
 
@@ -889,14 +878,6 @@ function removeInvalidSelectedOptions() {
 			});
 		});
 	});
-}
-
-function getStockCode(optionOrMaterial) {
-	if (!optionOrMaterial) return "";
-
-	return String(
-		optionOrMaterial.materialCode || ""
-	);
 }
 
 function getDbQty(code) {
@@ -923,14 +904,12 @@ window.goNext = function() {
 	if (!validateBeforeNext()) return;
 
 	item.multiplier = getDefaultMultiplier();
-		
+
 	item.options = getSelectedOptions();
 	item.totalPrice = Number(item.price || 0) + getExtraPrice();
 
 	sessionStorage.setItem(ITEM_KEY, JSON.stringify(item));
 	saveOptionState();
-
-	console.log("옵션 선택 item =", item);
 
 	location.href = contextPath + "/kiosk/optionCon";
 };

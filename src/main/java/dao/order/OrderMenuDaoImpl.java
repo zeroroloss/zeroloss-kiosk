@@ -3,7 +3,6 @@ package dao.order;
 import org.apache.ibatis.session.SqlSession;
 
 import dto.OrderMenuDto;
-import util.MyBatisSqlSessionFactory;
 
 public class OrderMenuDaoImpl implements OrderMenuDao {
 

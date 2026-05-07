@@ -6,10 +6,14 @@ function restartOrder() {
 
 function resetIdleTimer() {
 	clearTimeout(timer);
-	timer = setTimeout(restartOrder, 40000);
+	const IDLE_TIMEOUT = 40000;
+
+	timer = setTimeout(restartOrder, IDLE_TIMEOUT);
 }
 
-["click", "touchstart", "mousemove", "keydown"].forEach(event => {
+const RESET_EVENTS = ["click", "touchstart", "mousemove", "keydown"];
+
+RESET_EVENTS.forEach(event => {
 	document.addEventListener(event, resetIdleTimer);
 });
 

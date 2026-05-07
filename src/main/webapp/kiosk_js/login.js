@@ -63,19 +63,3 @@ kioskSelect.addEventListener('change', function () {
     confirmBtn.disabled = true;
   }
 });
-
-window.goStart = function (contextPath) {
-  const branchId = branchSelect.value;
-  const kioskId = kioskSelect.value;
-
-  if (!branchId || !kioskId) return;
-
-  sessionStorage.setItem('branchId', branchId);
-  sessionStorage.setItem('kioskId', kioskId);
-
-  location.href = contextPath + '/kiosk/start';
-};
-
-
-// 5초 후 자동으로 닫기
-setTimeout(closePopup, 5000);

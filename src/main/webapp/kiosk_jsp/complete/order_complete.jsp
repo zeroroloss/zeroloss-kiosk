@@ -32,8 +32,6 @@
 			<div class="panel-body">
 				<div class="complete-card">
 
-					<div class="panel-body">
-
 						<!-- 1. 주문번호 카드 -->
 						<div class="order-box">
 							<div class="order-box-title">주문 번호</div>
@@ -67,7 +65,6 @@
 					</div>
 
 				</div>
-			</div>
 
 		</section>
 	</div>

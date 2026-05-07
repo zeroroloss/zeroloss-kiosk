@@ -3,7 +3,6 @@ package dao.order;
 import org.apache.ibatis.session.SqlSession;
 
 import dto.OrderOptionDto;
-import util.MyBatisSqlSessionFactory;
 
 public class OrderOptionDaoImpl implements OrderOptionDao {
 

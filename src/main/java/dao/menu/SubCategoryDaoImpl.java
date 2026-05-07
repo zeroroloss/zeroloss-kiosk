@@ -4,7 +4,6 @@ import java.util.List;
 
 import org.apache.ibatis.session.SqlSession;
 
-import dto.MainCategoryDto;
 import dto.SubCategoryDto;
 import util.MyBatisSqlSessionFactory;
 

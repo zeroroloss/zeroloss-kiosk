@@ -88,9 +88,6 @@
     </c:forEach>
     ];
 
-    console.log("recipeList", recipeList);
-    console.log("mainCategoryList", mainCategoryList);
-    console.log("subCategoryList", subCategoryList);
   </script>
 
   <script>
@@ -126,7 +123,6 @@
         </c:forEach>
     ];
 
-    console.log("품절 메뉴 코드:", unavailableRecipeCodes);
 </script>
 
 <script>
@@ -149,8 +145,6 @@ const stockMap = {
 </c:forEach>
 };
 
-console.log("recipeMaterialMap", recipeMaterialMap);
-console.log("stockMap", stockMap);
 </script>
 
     <script src="<%=contextPath%>/kiosk_js/menu.js"></script>

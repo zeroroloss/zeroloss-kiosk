@@ -84,7 +84,6 @@ window.materialStockList = [
 </c:forEach>
 ];
 
-console.log("옵션 재고 상태:", window.materialStockList);
 </script>
 
 <script src="<%=contextPath%>/kiosk_js/option.js"></script>

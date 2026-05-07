@@ -111,11 +111,6 @@ public class MenuController extends HttpServlet {
             request.setAttribute("unavailableRecipeCodes", unavailableRecipeCodes);
             request.setAttribute("recipeMaterialMap", recipeMaterialMap);
 			request.setAttribute("stockList", stockList);
-			
-            System.out.println("branchCode = " + branchCode);
-            System.out.println("품절 메뉴 코드 = " + unavailableRecipeCodes);
-            System.out.println("recipeMaterialMap = " + recipeMaterialMap);
-			System.out.println("stockList = " + stockList);
 
             request.getRequestDispatcher("/kiosk_jsp/menu/menu.jsp")
                    .forward(request, response);

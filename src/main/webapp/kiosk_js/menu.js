@@ -151,15 +151,6 @@ function canAddRecipe(recipeCode, addQty = 1) {
 		const needQty =
 			getRecipeMaterialNeedQty(recipeCode, material) * Number(addQty || 1);
 
-		console.log("menu stock check", {
-			recipeCode,
-			code,
-			dbQty,
-			usedQty,
-			needQty,
-			remainAfterAdd: dbQty - usedQty - needQty
-		});
-
 		return dbQty - usedQty - needQty >= 0;
 	});
 }
@@ -456,14 +447,6 @@ function getRecipeMaterialNeedQty(recipeCode, material) {
 	}
 
 	return baseQty;
-}
-
-function getStockCode(optionOrMaterial) {
-	if (!optionOrMaterial) return "";
-
-	return String(
-		optionOrMaterial.materialCode || ""
-	);
 }
 
 function getDbQty(code) {

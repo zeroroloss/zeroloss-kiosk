@@ -38,7 +38,7 @@ public class PaymentController extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
 		String pathInfo = request.getPathInfo();
-		OrderService orderservice = new OrderServiceImpl();
+		OrderService orderService = new OrderServiceImpl();
 
 		String paymentKey = request.getParameter("paymentKey");
 		String orderId = request.getParameter("orderId");
@@ -60,7 +60,7 @@ public class PaymentController extends HttpServlet {
 				OrdersDto ordersDto = new OrdersDto();
 				ordersDto.setOrderId(orderId);
 				ordersDto.setStatus("PAID");
-				orderservice.updateOrders(ordersDto);
+				orderService.updateOrders(ordersDto);
 
 				// 주문 완료시 재고 차감
 				StockService stockService = new StockServiceImpl();
@@ -72,7 +72,6 @@ public class PaymentController extends HttpServlet {
 
 				// 완료 화면으로
 				request.getRequestDispatcher("/kiosk_jsp/complete/order_complete.jsp").forward(request, response);
-				System.out.println(receiptUrl);
 
 			} catch (Exception e) {
 				e.printStackTrace();
@@ -92,7 +91,7 @@ public class PaymentController extends HttpServlet {
 		        OrdersDto failDto = new OrdersDto();
 		        failDto.setOrderId(orderId);
 		        failDto.setStatus("FAIL");
-		        orderservice.updateOrders(failDto);
+		        orderService.updateOrders(failDto);
 		    } catch (Exception e) {
 		        e.printStackTrace(); // 로그만 남기고 계속 진행
 		    }

@@ -5,6 +5,17 @@
 %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>옵션 확인</title>
+
+<link rel="stylesheet" href="<%=contextPath%>/kiosk_css/common.css">
+<link rel="stylesheet" href="<%=contextPath%>/kiosk_css/option_confirm.css">
+
 <script>
 const recipeMaterialMap = {
 <c:forEach var="entry" items="${recipeMaterialMap}" varStatus="st">
@@ -25,20 +36,8 @@ const stockMap = {
 </c:forEach>
 };
 
-console.log("option_confirm recipeMaterialMap", recipeMaterialMap);
-console.log("option_confirm stockMap", stockMap);
-
 </script>
 
-<!DOCTYPE html>
-<html lang="ko">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>옵션 확인</title>
-
-<link rel="stylesheet" href="<%=contextPath%>/kiosk_css/common.css">
-<link rel="stylesheet" href="<%=contextPath%>/kiosk_css/option_confirm.css">
 </head>
 
 <body>

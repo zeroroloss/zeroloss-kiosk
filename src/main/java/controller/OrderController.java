@@ -105,14 +105,6 @@ public class OrderController extends HttpServlet {
 					String deductQty = request.getParameter("deductQty" + i + "_" + j);
 					String materialName = request.getParameter("materialName" + i + "_" + j);
 
-					System.out.println("===== ORDER OPTION PARAM =====");
-					System.out.println("i=" + i + ", j=" + j);
-					System.out.println("materialCode=" + materialCode);
-					System.out.println("optionMaterialCode=" + optionMaterialCode);
-					System.out.println("deductQty=" + deductQty);
-					System.out.println("materialName=" + materialName);
-					System.out.println("==============================");
-
 					if (
 						"SIZE_REGULAR".equals(materialCode) ||
 						"SIZE_LARGE".equals(materialCode) ||

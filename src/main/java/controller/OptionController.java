@@ -36,7 +36,6 @@ public class OptionController extends HttpServlet {
 	 */
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	System.out.println("=== OptionController 새 코드 실행됨 ===");
         try {
             request.setCharacterEncoding("utf-8");
 
@@ -48,7 +47,7 @@ public class OptionController extends HttpServlet {
             Integer branchCode = (Integer) session.getAttribute("branchCode");
 
             if (branchCode == null) {
-                response.sendRedirect(request.getContextPath() + "/kiosk/test");
+                response.sendRedirect(request.getContextPath() + "/kiosk/login");
                 return;
             }
 
@@ -65,13 +64,6 @@ public class OptionController extends HttpServlet {
             // 3. 옵션 재고 상태 리스트
             List<OptionMaterialStockDto> materialStockList =
                     optionService.selectOptionMaterialStockList(branchCode, multiplier);
-
-            System.out.println("categoryId = " + categoryId);
-            System.out.println("branchCode = " + branchCode);
-            System.out.println("multiplier = " + multiplier);
-            System.out.println("materialGroupList size = " + groupList.size());
-            System.out.println("materialList size = " + materialList.size());
-            System.out.println("materialStockList size = " + materialStockList.size());
 
             request.setAttribute("materialGroupList", groupList);
             request.setAttribute("materialList", materialList);

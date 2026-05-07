@@ -211,9 +211,6 @@ if (plusBtn) {
 
 		const canIncrease = isOptionConfirmStockAvailable(nextQty);
 
-		console.log("nextQty", nextQty);
-		console.log("stock check", canIncrease);
-
 		if (!canIncrease) {
 			alert("재고가 부족해서 수량을 더 늘릴 수 없습니다.");
 			return;
@@ -352,14 +349,6 @@ function isCartStockAvailable(cart) {
 	return Object.keys(used).every(code => {
 		const dbQty = getDbQty(code);
 		const usedQty = Number(used[code] || 0);
-		
-		console.log("cart final stock check", {
-		code,
-		rawStock: stockMap[String(code)] || stockMap[Number(code)],
-		dbQty,
-		usedQty,
-		remain: dbQty - usedQty
-		});
 
 		return dbQty - usedQty >= 0;
 	});

@@ -70,12 +70,17 @@ const stockMap = {
 		</section>
 	</div>
 
+	<jsp:include page="/kiosk_jsp/common/popup.jsp" />
+
 	<script>
 	const contextPath = "${contextPath}";
 
 	<c:if test="${not empty errorMessage}">
-	alert("결제 실패: ${errorMessage}");
-</c:if>
+		showKioskPopup({
+			title: "결제 실패",
+			message: "${errorMessage}"
+		});
+	</c:if>
 </script>
 
 	<!-- ✅ 토스 SDK 먼저, order_confirm.js는 한 번만 -->

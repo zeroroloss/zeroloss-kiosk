@@ -8,9 +8,14 @@ function moveToMenu() {
 }
 
 if (!item) {
-	alert("주문 정보 없음");
-	moveToMenu();
-	throw new Error("item not found in sessionStorage");
+	showKioskPopup({
+		title: "오류",
+		message: "주문 정보가 없습니다.",
+		onConfirm: function() {
+			moveToMenu();
+		}
+	});
+	throw new Error("주문 정보 없음");
 }
 
 let qty = Number(item.qty || 1);
@@ -123,18 +128,9 @@ function isOptionConfirmStockAvailable(nextQty) {
 		used[code] = (used[code] || 0) + needQty;
 	});
 
-	console.log("option_confirm used", used);
-
 	return Object.keys(used).every(code => {
 		const dbQty = getDbQty(code);
 		const usedQty = Number(used[code] || 0);
-
-		console.log("stock check detail", {
-			code,
-			dbQty,
-			usedQty,
-			remain: dbQty - usedQty
-		});
 
 		return dbQty - usedQty >= 0;
 	});
@@ -212,7 +208,10 @@ if (plusBtn) {
 		const canIncrease = isOptionConfirmStockAvailable(nextQty);
 
 		if (!canIncrease) {
-			alert("재고가 부족해서 수량을 더 늘릴 수 없습니다.");
+			showKioskPopup({
+				title: "재고 부족",
+				message: "재고가 부족해서 수량을 더 늘릴 수 없습니다."
+			});
 			return;
 		}
 
@@ -245,7 +244,10 @@ function addItemToCart() {
 
 		if (!isCartStockAvailable(cart)) {
 			sameItem.qty = originalQty;
-			alert("재고가 부족해서 장바구니에 담을 수 없습니다.");
+			showKioskPopup({
+				title: "재고 부족",
+				message: "재고가 부족해서 장바구니에 담을 수 없습니다."
+			});
 			return false;
 		}
 	} else {
@@ -253,7 +255,10 @@ function addItemToCart() {
 
 		if (!isCartStockAvailable(cart)) {
 			cart.items = cart.items.filter(savedItem => savedItem.id !== cartItem.id);
-			alert("재고가 부족해서 장바구니에 담을 수 없습니다.");
+			showKioskPopup({
+				title: "재고 부족",
+				message: "재고가 부족해서 장바구니에 담을 수 없습니다."
+			});
 			return false;
 		}
 	}
@@ -284,9 +289,12 @@ function getDbQty(code) {
 }
 
 /* 버튼 함수 */
-window.addCart = function () {
+window.addCart = function() {
 	if (!isOptionConfirmStockAvailable(qty)) {
-		alert("재고가 부족해서 장바구니에 담을 수 없습니다.");
+		showKioskPopup({
+			title: "재고 부족",
+			message: "재고가 부족해서 장바구니에 담을 수 없습니다."
+		});
 		return;
 	}
 
@@ -297,9 +305,12 @@ window.addCart = function () {
 	location.href = contextPath + "/kiosk/menu";
 };
 
-window.goPay = function () {
+window.goPay = function() {
 	if (!isOptionConfirmStockAvailable(qty)) {
-		alert("재고가 부족해서 결제할 수 없습니다.");
+		showKioskPopup({
+			title: "재고 부족",
+			message: "재고가 부족해서 결제할 수 없습니다."
+		});
 		return;
 	}
 
@@ -310,7 +321,7 @@ window.goPay = function () {
 	location.href = contextPath + "/kiosk/orderCon";
 };
 
-window.goBack = function () {
+window.goBack = function() {
 	item.qty = qty;
 	sessionStorage.setItem(ITEM_KEY, JSON.stringify(item));
 	location.href = contextPath + "/kiosk/option?categoryId=" + item.categoryId;

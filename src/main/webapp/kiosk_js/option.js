@@ -71,8 +71,13 @@ fetch(url)
 		renderSummary();
 	})
 	.catch(() => {
-		alert("옵션 정보를 불러오지 못했습니다.");
-		moveToMenu();
+		showKioskPopup({
+			title: "오류",
+			message: "옵션 정보를 불러오지 못했습니다.",
+			onConfirm: function() {
+				moveToMenu();
+			}
+		});
 	});
 
 /* ===== 공통 함수 ===== */
@@ -446,7 +451,10 @@ function toggleOption(groupKey, optionIndex) {
 			target.selected = false;
 		} else {
 			if (selectedCount >= Number(group.max || Infinity)) {
-				alert("최대 " + group.max + "개까지 선택할 수 있습니다.");
+				showKioskPopup({
+					title: "옵션 선택",
+					message: "최대 " + group.max + "개까지 선택할 수 있습니다."
+				});
 				return;
 			}
 
@@ -587,17 +595,26 @@ function renderSections() {
 			const stock = stockMap[Number(option.materialCode)];
 
 			if (stock && Number(stock.unavailableYn) === 1) {
-				alert("재고 부족으로 선택할 수 없습니다.");
+				showKioskPopup({
+					title: "재고 부족",
+					message: "재고 부족으로 선택할 수 없습니다."
+				});
 				return;
 			}
 
 			if (isLargeSizeOption(option) && !canSelectLargeSize()) {
-				alert("재고 부족으로 30cm를 선택할 수 없습니다.");
+				showKioskPopup({
+					title: "재고 부족",
+					message: "재고 부족으로 30cm를 선택할 수 없습니다."
+				});
 				return;
 			}
 
 			if (!isExclusiveOption(option) && !canSelectByStock(option)) {
-				alert("재고 부족으로 선택할 수 없습니다.");
+				showKioskPopup({
+					title: "재고 부족",
+					message: "재고 부족으로 선택할 수 없습니다."
+				});
 				return;
 			}
 
@@ -660,10 +677,17 @@ function scrollToSection(stepName) {
 function validateBeforeNext() {
 	for (const step of optionConfig.steps) {
 		if (!isStepComplete(step)) {
-			alert(step + " 옵션을 선택해주세요.");
-			optionConfig.activeStep = step;
-			renderSteps();
-			scrollToSection(step);
+			showKioskPopup({
+				title: "옵션 선택",
+				message: step + " 옵션을 선택해주세요.",
+				onConfirm: function() {
+					optionConfig.activeStep = step;
+					renderSteps();
+					scrollToSection(step);
+					saveOptionState();
+				}
+			});
+
 			return false;
 		}
 	}

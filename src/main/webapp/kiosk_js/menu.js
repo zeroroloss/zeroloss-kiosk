@@ -232,7 +232,10 @@ function handleMenuClick(menu) {
 		unavailableRecipeCodes.includes(Number(menu.recipeCode)) ||
 		!canAddRecipe(menu.recipeCode, 1)
 	) {
-		alert("현재 재고 부족으로 선택할 수 없는 메뉴입니다.");
+		showKioskPopup({
+			title: "재고 부족",
+			message: "현재 재고 부족으로 선택할 수 없는 메뉴입니다."
+		});
 		renderMenus();
 		return;
 	}
@@ -301,7 +304,10 @@ function addCartItem(item) {
 	}
 
 	if (!isCartStockAvailable(cart)) {
-		alert("재고가 부족해서 장바구니에 담을 수 없습니다.");
+		showKioskPopup({
+			title: "재고 부족",
+			message: "재고가 부족해서 장바구니에 담을 수 없습니다."
+		});
 		return;
 	}
 
@@ -328,7 +334,10 @@ function increaseQty(id) {
 
 	if (!isCartStockAvailable(cart)) {
 		item.qty -= 1;
-		alert("재고가 부족해서 수량을 더 늘릴 수 없습니다.");
+		showKioskPopup({
+			title: "재고 부족",
+			message: "재고가 부족해서 수량을 더 늘릴 수 없습니다."
+		});
 		renderCart();
 		renderMenus();
 		return;

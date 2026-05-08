@@ -78,6 +78,8 @@ const stockMap = {
   </section>
 </div>
 
+<jsp:include page="/kiosk_jsp/common/popup.jsp" />
+
 <script>
   const contextPath = "<%=contextPath%>";
 </script>

@@ -42,6 +42,8 @@ String contextPath = request.getContextPath();
 
 		</section>
 	</div>
+	
+<jsp:include page="/kiosk_jsp/common/popup.jsp" />
 
 <script>
   const contextPath = "<%=contextPath%>";

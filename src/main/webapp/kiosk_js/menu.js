@@ -262,6 +262,16 @@ function getCart() {
 	return JSON.parse(sessionStorage.getItem(cartStorageKey) || "null") || createEmptyCart();
 }
 
+function getItemUnitPrice(item) {
+	// totalPrice는 옵션 포함 1개 가격
+	return Number(item.totalPrice || item.price || 0);
+}
+
+function getItemTotalPrice(item) {
+	// 화면 표시/총액 계산용
+	return getItemUnitPrice(item) * Number(item.qty || 1);
+}
+
 function saveCart(cart) {
 	cart.totalAmount = calculateTotalAmount(cart.items);
 	sessionStorage.setItem(cartStorageKey, JSON.stringify(cart));
@@ -269,7 +279,7 @@ function saveCart(cart) {
 
 function calculateTotalAmount(items = []) {
 	return items.reduce((total, item) => {
-		return total + Number(item.price || 0) * Number(item.qty || 1);
+		return total + getItemTotalPrice(item);
 	}, 0);
 }
 
@@ -287,9 +297,11 @@ function addCartItem(item) {
 
 	if (sameItem) {
 		sameItem.qty += Number(item.qty || 1);
-		sameItem.totalPrice = Number(sameItem.price) * Number(sameItem.qty);
+
+		// totalPrice는 옵션 포함 1개 가격으로 유지
+		sameItem.totalPrice = getItemUnitPrice(sameItem);
 	} else {
-		cart.items.push({
+		const newItem = {
 			id: item.id || createId(),
 			recipeCode: item.recipeCode,
 			menuName: item.menuName,
@@ -297,10 +309,16 @@ function addCartItem(item) {
 			categoryId: item.categoryId,
 			qty: Number(item.qty || 1),
 			price: Number(item.price || 0),
-			totalPrice: Number(item.price || 0) * Number(item.qty || 1),
+
+			// option.js에서 넘어온 옵션 포함 1개 가격 유지
+			totalPrice: getItemUnitPrice(item),
+
 			defaultMaterials: item.defaultMaterials || [],
-			options: item.options || []
-		});
+			options: item.options || [],
+			multiplier: item.multiplier || 1
+		};
+
+		cart.items.push(newItem);
 	}
 
 	if (!isCartStockAvailable(cart)) {
@@ -343,8 +361,6 @@ function increaseQty(id) {
 		return;
 	}
 
-	item.totalPrice = Number(item.price) * Number(item.qty);
-
 	saveCart(cart);
 	renderCart();
 	renderMenus();
@@ -357,7 +373,6 @@ function decreaseQty(id) {
 
 	if (item.qty > 1) {
 		item.qty -= 1;
-		item.totalPrice = Number(item.price) * Number(item.qty);
 	} else {
 		cart.items = cart.items.filter(item => item.id != id);
 	}
@@ -399,6 +414,9 @@ function renderOptionRows(options = []) {
 function renderCart() {
 	const cart = getCart();
 	const items = cart.items || [];
+	
+	cart.totalAmount = calculateTotalAmount(items);
+	sessionStorage.setItem(cartStorageKey, JSON.stringify(cart));
 
 	if (!items.length) {
 		cartEmpty.style.display = "flex";
@@ -431,7 +449,7 @@ function renderCart() {
 				</div>
 
 				<div class="cart-price">
-					${formatPrice(Number(item.price || 0) * Number(item.qty || 1))}
+					${formatPrice(getItemTotalPrice(item))}
 				</div>
 
 				<button type="button" class="cart-remove" onclick="removeItem('${item.id}')">×</button>

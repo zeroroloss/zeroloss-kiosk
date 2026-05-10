@@ -137,19 +137,19 @@
 
 	<select id="selectBranchStockLotsForDeduct" parameterType="map"
 		resultType="map">
-
 		SELECT
-		branch_stock_code AS branchStockCode,
-		branch_code AS
-		branchCode,
-		material_code AS materialCode,
-		expire_date AS expireDate,
-		received_at AS receivedAt,
-		current_qty AS currentQty
+			branch_stock_code AS branchStockCode,
+			branch_code AS
+			branchCode,
+			material_code AS materialCode,
+			expire_date AS expireDate,
+			received_at AS receivedAt,
+			current_qty AS currentQty
 		FROM branch_stock
 		WHERE branch_code = #{branchCode}
-		AND material_code = #{materialCode}
-		AND current_qty > 0
+			AND material_code = #{materialCode}
+			AND current_qty > 0
+			AND expire_date >= CURDATE()
 		ORDER BY expire_date ASC, received_at ASC
 
 	</select>
@@ -186,6 +186,7 @@
         FROM branch_stock
         WHERE branch_code = #{branchCode}
         AND current_qty > 0
+        AND expire_date >= CURDATE()
         GROUP BY branch_code, material_code
     ) bs
         ON bs.material_code = rd.material_code
@@ -199,8 +200,8 @@
 	</select>
 
 	<!-- 옵션 재료별 재고 정보 조회 -->
-	<select id="selectOptionMaterialStockList" parameterType="map"
-		resultType="dto.OptionMaterialStockDto">
+<select id="selectOptionMaterialStockList" parameterType="map"
+    resultType="dto.OptionMaterialStockDto">
 <![CDATA[
     SELECT
         m.material_code AS materialCode,
@@ -226,8 +227,9 @@
     FROM material m
     LEFT JOIN branch_stock bs
         ON bs.material_code = m.material_code
-       	AND bs.branch_code = #{branchCode}
-       	AND bs.current_qty > 0
+       AND bs.branch_code = #{branchCode}
+       AND bs.current_qty > 0
+       AND bs.expire_date >= CURDATE()
 
     GROUP BY
         m.material_code,
@@ -236,7 +238,7 @@
 
     ORDER BY m.material_group_id, m.material_code
 ]]>
-	</select>
+</select>
 
 	<select id="selectRecipeMaterialList"
 		resultType="dto.RecipeMaterialDto">
@@ -253,17 +255,16 @@
 	</select>
 
 	<select id="selectCurrentStockList" parameterType="int"
-		resultType="dto.MaterialStockDto">
-		SELECT
-		material_code AS materialCode,
-		SUM(current_qty) AS
-		currentQty
-		FROM branch_stock
-		WHERE branch_code = #{branchCode}
-		AND
-		current_qty > 0
-		GROUP BY material_code
-	</select>
+    resultType="dto.MaterialStockDto">
+    SELECT
+        material_code AS materialCode,
+        SUM(current_qty) AS currentQty
+    FROM branch_stock
+    WHERE branch_code = #{branchCode}
+      AND current_qty > 0
+      AND expire_date >= CURDATE()
+    GROUP BY material_code
+</select>
 
 	<select id="selectCategoryIdByRecipeCode" parameterType="string"
 		resultType="int">
@@ -284,13 +285,13 @@
 	</select>
 
 	<select id="selectCurrentQtyForStockCheck" parameterType="map"
-		resultType="double">
-		SELECT IFNULL(SUM(current_qty), 0)
-		FROM branch_stock
-		WHERE
-		branch_code = #{branchCode}
-		AND material_code = #{materialCode}
-	</select>
+    resultType="double">
+    SELECT IFNULL(SUM(current_qty), 0)
+    FROM branch_stock
+    WHERE branch_code = #{branchCode}
+      AND material_code = #{materialCode}
+      AND expire_date >= CURDATE()
+</select>
 
 	<select id="selectOptionDeductQty" parameterType="map"
 		resultType="double">

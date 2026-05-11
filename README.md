@@ -211,61 +211,77 @@ Toss Payments API를 통해 결제를 진행합니다.
 
 # 📂 프로젝트 구조
 
-```bash
-ZEROLOSS-KIOSK
-├── src/main/java
-│   └── com/zeroloss/kiosk
-│       ├── controller          # 요청 처리
-│       ├── dao                 # DB 접근
-│       ├── dto                 # 데이터 전송 객체
-│       └── service             # 비즈니스 로직
-│
-└── src/main/webapp
-    ├── kiosk_css/
-    │   ├── common.css          # 공통 스타일 (변수, 폰트, 버튼 등)
-    │   ├── login.css           # 로그인 화면
-    │   ├── menu.css            # 메뉴 목록 화면
-    │   ├── option_confirm.css  # 옵션 확인 화면
-    │   ├── optioncss           # 옵션 선택 화면
-    │   ├── order_complete.css  # 결제 완료 및 주문번호 출력 화면
-    │   ├── order_confirm.css   # 주문 목록 확인 화면
-    │   └── start.css           # 매장/포장 선택 화면
-    │
-    ├── kiosk_js/
-    │   ├── login.js            # 로그인 이벤트
-    │   ├── menu.js             # 메뉴 탭 전환, 장바구니 추가
-    │   ├── option_confirm.js   # 옵션 확인 및 수량 조절
-    │   ├── option.js           # 옵션 선택 (빵/치즈/야채/소스)
-    │   ├── order_complete.js   # 주문번호 표시 및 자동 홈 이동
-    │   ├── order_confirm.js    # 주문 목록 확인 및 수량 변경/삭제
-    │   ├── start.js            # 매장/포장 선택 이벤트
-    │   └── timer.js            # 자동 홈 이동 타이머
-    │
-    ├── kiosk_jsp/
-    │   ├── common/
-    │   │   ├── error.jsp       # 에러 메세지 표시 
-    │   │   └── popup.jsp       # 공통 키오스크 팝업창
-    │   ├── complete/           # 결제 완료 화면
-    │   │   └── order_complete.jsp  # 결제 완료 및 주문번호 출력
-    │   ├── main/               # 시작/대기 화면
-    │   │   ├── login.jsp
-    │   │   └── start.jsp       # 매장/포장 선택
-    │   └── menu/               # 메뉴 선택 화면
-    │       ├── menu.jsp        # 카테고리별 메뉴 목록
-    │       ├── option_confirm.jsp  # 선택 옵션 확인
-    │       ├── option.jsp          # 옵션 선택 (빵/치즈/야채/소스)
-    │       └── order_confirm.jsp   # 주문 목록 확인 및 수량 조절
-    │
-    ├── META-INF/
-    ├── recipe/                 # 메뉴 상품 이미지
-    │   ├── drink/              # 음료/수프 메뉴 이미지
-    │   ├── salad/              # 샐러드 메뉴 이미지
-    │   ├── sandwich/           # 샌드위치 메뉴 이미지
-    │   └── side/               # 사이드 메뉴 이미지
-    ├── upload/
-    │   └── images/             # 키오스크 UI 이미지 (배너, 매장, 포장, 로고)
-    └── WEB-INF/
+## 📁 프로젝트 구조
+
+<details>
+<summary>📂 src/main/java</summary>
+
 ```
+src/main/java
+└── com/zeroloss/kiosk
+    ├── controller/
+    │   ├── LoginController.java          # 지점장 로그인 서블릿
+    │   ├── MenuController.java           # 메뉴 목록 조회 서블릿
+    │   ├── OptionConfirmController.java  # 옵션 확인 서블릿
+    │   ├── OptionController.java         # 옵션 선택 서블릿
+    │   ├── OrderConfirmController.java   # 주문 목록 확인 서블릿
+    │   ├── OrderController.java          # 주문 처리 서블릿
+    │   ├── PaymentController.java        # 토스 API 호출 서블릿
+    │   ├── RecipeDetailController.java   # 메뉴 재료 조회 서블릿
+    │   └── StartController.java          # 매장/포장 선택 서블릿
+    ├── dao/                              # DB 접근
+    ├── dto/                              # 데이터 전송 객체
+    └── service/                          # 비즈니스 로직
+```
+
+</details>
+
+<details>
+<summary>📂 src/main/webapp</summary>
+    
+```
+📂webapp
+ ┃ ┣ 📂kiosk_css
+ ┃ ┃ ┣ 📜common.css
+ ┃ ┃ ┣ 📜login.css
+ ┃ ┃ ┣ 📜menu.css
+ ┃ ┃ ┣ 📜option.css
+ ┃ ┃ ┣ 📜option_confirm.css
+ ┃ ┃ ┣ 📜order_complete.css
+ ┃ ┃ ┣ 📜order_confirm.css
+ ┃ ┃ ┗ 📜start.css
+ ┃ ┣ 📂kiosk_js
+ ┃ ┃ ┣ 📜login.js
+ ┃ ┃ ┣ 📜menu.js
+ ┃ ┃ ┣ 📜option.js
+ ┃ ┃ ┣ 📜option_confirm.js
+ ┃ ┃ ┣ 📜order_complete.js
+ ┃ ┃ ┣ 📜order_confirm.js
+ ┃ ┃ ┣ 📜start.js
+ ┃ ┃ ┗ 📜timer.js
+ ┃ ┣ 📂kiosk_jsp
+ ┃ ┃ ┣ 📂common
+ ┃ ┃ ┃ ┣ 📜error.jsp
+ ┃ ┃ ┃ ┗ 📜popup.jsp
+ ┃ ┃ ┣ 📂complete
+ ┃ ┃ ┃ ┗ 📜order_complete.jsp
+ ┃ ┃ ┣ 📂main
+ ┃ ┃ ┃ ┣ 📜login.jsp
+ ┃ ┃ ┃ ┗ 📜start.jsp
+ ┃ ┃ ┗ 📂menu
+ ┃ ┃ ┃ ┣ 📜menu.jsp
+ ┃ ┃ ┃ ┣ 📜option.jsp
+ ┃ ┃ ┃ ┣ 📜option_confirm.jsp
+ ┃ ┃ ┃ ┗ 📜order_confirm.jsp
+ ┃ ┣ 📂upload
+ ┃ ┃ ┣ 📂images
+ ┃ ┃ ┗ 📂recipe
+ ┃ ┃ ┃ ┣ 📂drink
+ ┃ ┃ ┃ ┣ 📂salad
+ ┃ ┃ ┃ ┣ 📂sandwich
+ ┃ ┃ ┃ ┗ 📂side
+```
+</details>
 
 ---
 

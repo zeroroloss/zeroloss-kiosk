@@ -23,6 +23,7 @@ body {
   padding: 0;
   width: 100%;
   height: 100%;
+  overflow: hidden; /* ← 추가 */
   font-family: Arial, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
   background: #e9e9e9;
   color: var(--black);
@@ -88,6 +89,7 @@ button {
 
   .app {
     width: 100vw;
-    min-height: 100vh;
+    height: 100vh;
+    overflow: hidden;
   }
 }

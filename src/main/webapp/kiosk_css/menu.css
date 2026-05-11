@@ -104,7 +104,8 @@
 ========================= */
 .menu-area {
   position: relative;
-  height: 975px;
+  flex: 1 1 0;          /* ← 남은 공간 전부 차지 */
+  min-height: 0;        /* ← flex 자식에서 overflow 동작하려면 필수 */
   padding: 14px 54px 0;
   overflow: hidden;
   background: var(--panel);

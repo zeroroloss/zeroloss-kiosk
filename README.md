@@ -38,11 +38,13 @@
 
 ---
 
-# 🖥 메인 화면
+# 🖥 UI Preview
 
 <div align="center">
 
-<img src="./docs/images/kiosk-main.png" width="300"/>
+| 초기 화면 | 메뉴 화면 |
+|---|---|
+| <img width="260" src="여기에_초기화면_issue_이미지_URL"> | <img width="260" src="여기에_메뉴화면_issue_이미지_URL"> |
 
 </div>
 

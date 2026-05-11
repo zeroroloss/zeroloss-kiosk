@@ -7,9 +7,6 @@
 
 <div align="center">
 
-<img width="539" height="951" alt="Image" src="https://github.com/user-attachments/assets/b056e74f-eac8-4d7e-954b-00ff9b11e629" />
-
-<br>
 
 ![Java](https://img.shields.io/badge/Java_11-007396?style=for-the-badge&logo=openjdk&logoColor=white)
 ![JSP](https://img.shields.io/badge/JSP-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)

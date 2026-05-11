@@ -212,7 +212,8 @@ Toss Payments API를 통해 결제를 진행합니다.
 # 📂 프로젝트 구조
 
 <details>
-<summary>📂 src/main/webapp</summary>
+ <summary>📂 src/main/java</summary>
+ 
 ```    
 📂java
  ┃ ┣ 📂controller
@@ -309,6 +310,11 @@ Toss Payments API를 통해 결제를 진행합니다.
  ┃ ┗ 📂util
  ┃ ┃ ┗ 📜MyBatisSqlSessionFactory.java    
 ```
+</details>
+
+<details>
+ <summary>📂 src/main/webapp</summary>
+ ```
 📂webapp
  ┃ ┣ 📂kiosk_css
  ┃ ┃ ┣ 📜common.css          # 공통 스타일 (변수, 폰트, 버튼 등)

@@ -223,92 +223,81 @@ Toss Payments API를 통해 결제를 진행합니다.
  ┃ ┃ ┣ 📜OptionController.java              # 옵션 선택 서블릿
  ┃ ┃ ┣ 📜OrderConfirmController.java        # 주문 목록 확인 서블릿
  ┃ ┃ ┣ 📜OrderController.java               # 주문 처리 서블릿
- ┃ ┃ ┣ 📜PaymentController.java             # 토스 결제 승인 API 호출
+ ┃ ┃ ┣ 📜PaymentController.java             # 토스 결제 승인 API 호출 서블릿
  ┃ ┃ ┣ 📜RecipeDetailController.java        # 메뉴 재료 조회 서블릿
  ┃ ┃ ┗ 📜StartConroller.java                # 매장/포장 선택 서블릿
  ┃ ┣ 📂dao
  ┃ ┃ ┣ 📂main
- ┃ ┃ ┃ ┣ 📜AccountDao.java                  # 로그인
+ ┃ ┃ ┃ ┣ 📜AccountDao.java                  # 로그인 DAO
  ┃ ┃ ┃ ┣ 📜AccountDaoImpl.java              
- ┃ ┃ ┃ ┣ 📜BranchDao.java                   # 지점 조회
+ ┃ ┃ ┃ ┣ 📜BranchDao.java                   # 지점 조회 DAO
  ┃ ┃ ┃ ┣ 📜BranchDaoImpl.java
- ┃ ┃ ┃ ┣ 📜KioskDao.java                    # 키오스크 조회
+ ┃ ┃ ┃ ┣ 📜KioskDao.java                    # 키오스크 조회 DAO
  ┃ ┃ ┃ ┗ 📜KioskDaoImpl.java
  ┃ ┃ ┣ 📂menu
- ┃ ┃ ┃ ┣ 📜CategoryMaterialDao.java         # 옵션 그룹 조회
+ ┃ ┃ ┃ ┣ 📜CategoryMaterialDao.java         # 옵션 그룹 조회 DAO
  ┃ ┃ ┃ ┣ 📜CategoryMaterialDaoImpl.java
- ┃ ┃ ┃ ┣ 📜MainCategoryDao.java             # 메뉴 
+ ┃ ┃ ┃ ┣ 📜MainCategoryDao.java             # 메뉴 메인 카테고리 조회 DAO
  ┃ ┃ ┃ ┣ 📜MainCategoryDaoImpl.java
- ┃ ┃ ┃ ┣ 📜MaterialDao.java
+ ┃ ┃ ┃ ┣ 📜MaterialDao.java                 # 재고 조회 DAO
  ┃ ┃ ┃ ┣ 📜MaterialDaoImpl.java
- ┃ ┃ ┃ ┣ 📜RecipeDao.java
+ ┃ ┃ ┃ ┣ 📜RecipeDao.java                   # 메뉴 조회 DAO
  ┃ ┃ ┃ ┣ 📜RecipeDaoImpl.java
- ┃ ┃ ┃ ┣ 📜RecipeDetailDao.java
+ ┃ ┃ ┃ ┣ 📜RecipeDetailDao.java             # 메뉴에 들어갈 필수 재고 조회 DAO
  ┃ ┃ ┃ ┣ 📜RecipeDetailDaoImpl.java
- ┃ ┃ ┃ ┣ 📜SubCategoryDao.java
+ ┃ ┃ ┃ ┣ 📜SubCategoryDao.java              # 메뉴 서브 카테고리 조회 DAO
  ┃ ┃ ┃ ┗ 📜SubCategoryDaoImpl.java
  ┃ ┃ ┗ 📂order
- ┃ ┃ ┃ ┣ 📜OrderMenuDao.java
- ┃ ┃ ┃ ┣ 📜OrderMenuDaoImpl.java
- ┃ ┃ ┃ ┣ 📜OrderOptionDao.java
+ ┃ ┃ ┃ ┣ 📜OrderMenuDao.java               # 한 주문에 대한 메뉴 INSERT DAO
+ ┃ ┃ ┃ ┣ 📜OrderMenuDaoImpl.java        
+ ┃ ┃ ┃ ┣ 📜OrderOptionDao.java             # 한 메뉴에 대한 메뉴 옵션 INSERT DAO      
  ┃ ┃ ┃ ┣ 📜OrderOptionDaoImpl.java
- ┃ ┃ ┃ ┣ 📜OrdersDao.java
+ ┃ ┃ ┃ ┣ 📜OrdersDao.java                  # 주문 INSERT DAO
  ┃ ┃ ┃ ┣ 📜OrdersDaoImpl.java
- ┃ ┃ ┃ ┣ 📜RecipePriceDao.java
- ┃ ┃ ┃ ┣ 📜RecipePriceDaoImpl.java
- ┃ ┃ ┃ ┣ 📜StockDao.java
- ┃ ┃ ┃ ┗ 📜StockDaoImple.java
+ ┃ ┃ ┃ ┣ 📜StockDao.java                   # 실시간 재고 조회, 차감 DAO
+ ┃ ┃ ┃ ┗ 📜StockDaoImpl.java
  ┃ ┣ 📂dto
- ┃ ┃ ┣ 📜AccountDto.java
- ┃ ┃ ┣ 📜BranchDto.java
- ┃ ┃ ┣ 📜CategoryMaterialDto.java
- ┃ ┃ ┣ 📜KioskBannerDto.java
- ┃ ┃ ┣ 📜KioskDto.java
- ┃ ┃ ┣ 📜MainCategoryDto.java
- ┃ ┃ ┣ 📜MaterialDto.java
- ┃ ┃ ┣ 📜MaterialGroupDto.java
- ┃ ┃ ┣ 📜MaterialStockDto.java
- ┃ ┃ ┣ 📜OptionMaterialStockDto.java
- ┃ ┃ ┣ 📜OrderMenuDto.java
- ┃ ┃ ┣ 📜OrderOptionDto.java
- ┃ ┃ ┣ 📜OrdersDto.java
- ┃ ┃ ┣ 📜RecipeDetailDto.java
- ┃ ┃ ┣ 📜RecipeDto.java
- ┃ ┃ ┣ 📜RecipeMaterialDto.java
- ┃ ┃ ┣ 📜StockDeductDto.java
- ┃ ┃ ┗ 📜SubCategoryDto.java
- ┃ ┣ 📂mapper
- ┃ ┃ ┣ 📜kiosk1.xml
- ┃ ┃ ┗ 📜kiosk2.xml
- ┃ ┣ 📂resource
- ┃ ┃ ┗ 📜mybatis-config.xml
- ┃ ┣ 📂service
- ┃ ┃ ┣ 📂main
- ┃ ┃ ┃ ┣ 📜AccountService.java
+ ┃ ┃ ┣ 📜AccountDto.java                   # 로그인 DTO
+ ┃ ┃ ┣ 📜BranchDto.java                    # 지점 DTO
+ ┃ ┃ ┣ 📜CategoryMaterialDto.java          # 옵션 그룹 DTO
+ ┃ ┃ ┣ 📜KioskBannerDto.java               # 키오스크 배너 DTO
+ ┃ ┃ ┣ 📜KioskDto.java                     # 키오스크 DTO
+ ┃ ┃ ┣ 📜MainCategoryDto.java              # 메인 카테고리 DTO
+ ┃ ┃ ┣ 📜MaterialDto.java                  # 재고 DTO
+ ┃ ┃ ┣ 📜MaterialStockDto.java             # 실시간 재고 DTO
+ ┃ ┃ ┣ 📜OptionMaterialStockDto.java       # 재고 수량 비교 DTO
+ ┃ ┃ ┣ 📜OrderMenuDto.java                 # 주문 메뉴 DTO
+ ┃ ┃ ┣ 📜OrderOptionDto.java               # 주문 메뉴 옵션 DTO
+ ┃ ┃ ┣ 📜OrdersDto.java                    # 주문 DTO
+ ┃ ┃ ┣ 📜RecipeDetailDto.java              # 메뉴 필수 재고 DTO
+ ┃ ┃ ┣ 📜RecipeDto.java                    # 메뉴 DTO
+ ┃ ┃ ┣ 📜RecipeMaterialDto.java            # 메뉴에 대한 재고 DTO
+ ┃ ┃ ┣ 📜StockDeductDto.java               # 재고 차감 DTO
+ ┃ ┃ ┗ 📜SubCategoryDto.java               # 서브 카테고리 DTO
+ ┃ ┣ 📂mapper                              # MyBatis SQL 쿼리 매퍼
+ ┃ ┣ 📂service     
+ ┃ ┃ ┣ 📂main                            
+ ┃ ┃ ┃ ┣ 📜AccountService.java             # 로그인 서비스
  ┃ ┃ ┃ ┣ 📜AccountServiceImpl.java
- ┃ ┃ ┃ ┣ 📜BranchService.java
+ ┃ ┃ ┃ ┣ 📜BranchService.java              # 지점 조회 서비스
  ┃ ┃ ┃ ┣ 📜BranchServiceImpl.java
- ┃ ┃ ┃ ┣ 📜KioskService.java
+ ┃ ┃ ┃ ┣ 📜KioskService.java               # 키오스크 조회 서비스
  ┃ ┃ ┃ ┗ 📜KioskServiceImpl.java
  ┃ ┃ ┣ 📂menu
- ┃ ┃ ┃ ┣ 📜MenuSelectService.java
+ ┃ ┃ ┃ ┣ 📜MenuSelectService.java          # 메뉴 조회 서비스
  ┃ ┃ ┃ ┣ 📜MenuSelectServiceImpl.java
- ┃ ┃ ┃ ┣ 📜OptionSelectService.java
+ ┃ ┃ ┃ ┣ 📜OptionSelectService.java        # 옵션 선택 서비스
  ┃ ┃ ┃ ┣ 📜OptionSelectServiceImpl.java
- ┃ ┃ ┃ ┣ 📜RecipeDetailService.java
+ ┃ ┃ ┃ ┣ 📜RecipeDetailService.java        # 필수 재료 조회 서비스
  ┃ ┃ ┃ ┗ 📜RecipeDetailServiceImpl.java
  ┃ ┃ ┣ 📂order
- ┃ ┃ ┃ ┣ 📜OrderService.java
+ ┃ ┃ ┃ ┣ 📜OrderService.java               # 주문 서비스
  ┃ ┃ ┃ ┣ 📜OrderServiceImpl.java
- ┃ ┃ ┃ ┣ 📜StockService.java
+ ┃ ┃ ┃ ┣ 📜StockService.java               # 실시간 재고 조회 서비스
  ┃ ┃ ┃ ┗ 📜StockServiceImpl.java
  ┃ ┃ ┗ 📂payment
- ┃ ┃ ┃ ┣ 📜PaymentValidationService.java
- ┃ ┃ ┃ ┣ 📜PaymentValidationServiceImpl.java
- ┃ ┃ ┃ ┣ 📜TossPaymentService.java
+ ┃ ┃ ┃ ┣ 📜TossPaymentService.java         # 토스 API 호출 서비스
  ┃ ┃ ┃ ┗ 📜TossPaymentServiceImpl.java
- ┃ ┗ 📂util
- ┃ ┃ ┗ 📜MyBatisSqlSessionFactory.java    
 ```
 </details>
 
@@ -364,6 +353,6 @@ Toss Payments API를 통해 결제를 진행합니다.
 <div align="center">
 
 ## ZEROLOSS  
-### Franchise Integrated ERP
+### 프랜차이즈 통합 ERP 시스템
 
 </div>

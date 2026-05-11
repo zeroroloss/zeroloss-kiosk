@@ -353,6 +353,6 @@ Toss Payments API를 통해 결제를 진행합니다.
 <div align="center">
 
 ## ZEROLOSS  
-### 프랜차이즈 통합 ERP 시스템
+### 직영점 통합 ERP 시스템
 
 </div>

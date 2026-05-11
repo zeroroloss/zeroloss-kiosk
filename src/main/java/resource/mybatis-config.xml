@@ -11,7 +11,6 @@
       <typeAlias type="dto.BranchDto"  alias="branch"/>
       <typeAlias type="dto.KioskDto"   alias="kiosk"/>
       <typeAlias type="dto.MaterialDto" alias="material"/>
-      <typeAlias type="dto.MaterialGroupDto"  alias="materialGroup"/>
       <typeAlias type="dto.CategoryMaterialDto"   alias="CategoryMaterial"/> 
       <typeAlias type="dto.OrdersDto"   alias="orders"/>
       <typeAlias type="dto.OrderMenuDto"   alias="orderMenu"/>

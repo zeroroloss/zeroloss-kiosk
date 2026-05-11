@@ -242,45 +242,45 @@ src/main/java
 ```
 📂webapp
  ┃ ┣ 📂kiosk_css
- ┃ ┃ ┣ 📜common.css
- ┃ ┃ ┣ 📜login.css
- ┃ ┃ ┣ 📜menu.css
- ┃ ┃ ┣ 📜option.css
- ┃ ┃ ┣ 📜option_confirm.css
- ┃ ┃ ┣ 📜order_complete.css
- ┃ ┃ ┣ 📜order_confirm.css
- ┃ ┃ ┗ 📜start.css
+ ┃ ┃ ┣ 📜common.css          # 공통 스타일 (변수, 폰트, 버튼 등)
+ ┃ ┃ ┣ 📜login.css           # 로그인  
+ ┃ ┃ ┣ 📜menu.css            # 메뉴 목록 
+ ┃ ┃ ┣ 📜option.css          # 옵션 선택 
+ ┃ ┃ ┣ 📜option_confirm.css    # 옵션 확인 
+ ┃ ┃ ┣ 📜order_complete.css    # 결제 완료 및 주문번호 출력 
+ ┃ ┃ ┣ 📜order_confirm.css     # 주문 목록 확인    
+ ┃ ┃ ┗ 📜start.css             # 매장/포장 선택 
  ┃ ┣ 📂kiosk_js
- ┃ ┃ ┣ 📜login.js
- ┃ ┃ ┣ 📜menu.js
- ┃ ┃ ┣ 📜option.js
- ┃ ┃ ┣ 📜option_confirm.js
- ┃ ┃ ┣ 📜order_complete.js
- ┃ ┃ ┣ 📜order_confirm.js
- ┃ ┃ ┣ 📜start.js
- ┃ ┃ ┗ 📜timer.js
+ ┃ ┃ ┣ 📜login.js              # 로그인
+ ┃ ┃ ┣ 📜menu.js               # 메뉴 탭 전환, 장바구니 추가
+ ┃ ┃ ┣ 📜option.js             # 옵션 선택 (빵/치즈/야채/소스)
+ ┃ ┃ ┣ 📜option_confirm.js     # 옵션 확인 및 수량 조절
+ ┃ ┃ ┣ 📜order_complete.js     # 주문번호 표시 및 자동 홈 이동
+ ┃ ┃ ┣ 📜order_confirm.js      # 주문 목록 확인 및 수량 변경/삭제
+ ┃ ┃ ┣ 📜start.js              # 매장/포장 선택
+ ┃ ┃ ┗ 📜timer.js              # 자동 홈 이동 타이머
  ┃ ┣ 📂kiosk_jsp
  ┃ ┃ ┣ 📂common
- ┃ ┃ ┃ ┣ 📜error.jsp
- ┃ ┃ ┃ ┗ 📜popup.jsp
+ ┃ ┃ ┃ ┣ 📜error.jsp          # 에러 메세지 표시
+ ┃ ┃ ┃ ┗ 📜popup.jsp          # 공통 키오스크 팝업창
  ┃ ┃ ┣ 📂complete
- ┃ ┃ ┃ ┗ 📜order_complete.jsp
+ ┃ ┃ ┃ ┗ 📜order_complete.jsp  # 결제 완료 및 주문번호 출력
  ┃ ┃ ┣ 📂main
- ┃ ┃ ┃ ┣ 📜login.jsp
- ┃ ┃ ┃ ┗ 📜start.jsp
+ ┃ ┃ ┃ ┣ 📜login.jsp          # 로그인
+ ┃ ┃ ┃ ┗ 📜start.jsp          # 매장/포장 선택
  ┃ ┃ ┗ 📂menu
- ┃ ┃ ┃ ┣ 📜menu.jsp
- ┃ ┃ ┃ ┣ 📜option.jsp
- ┃ ┃ ┃ ┣ 📜option_confirm.jsp
- ┃ ┃ ┃ ┗ 📜order_confirm.jsp
+ ┃ ┃ ┃ ┣ 📜menu.jsp           # 카테고리별 메뉴 목록
+ ┃ ┃ ┃ ┣ 📜option.jsp         # 옵션 선택 (빵/치즈/야채/소스)
+ ┃ ┃ ┃ ┣ 📜option_confirm.jsp  # 선택 옵션 확인
+ ┃ ┃ ┃ ┗ 📜order_confirm.jsp   # 주문 목록 확인 및 수량 조절
  ┃ ┣ 📂upload
- ┃ ┃ ┣ 📂images
- ┃ ┃ ┗ 📂recipe
- ┃ ┃ ┃ ┣ 📂drink
- ┃ ┃ ┃ ┣ 📂salad
- ┃ ┃ ┃ ┣ 📂sandwich
- ┃ ┃ ┃ ┗ 📂side
-```
+ ┃ ┃ ┣ 📂images               # 키오스크 UI 이미지 (배너, 매장, 포장, 로고)
+ ┃ ┃ ┗ 📂recipe               # 메뉴 상품 이미지
+ ┃ ┃ ┃ ┣ 📂drink              # 음료/수프 메뉴 이미지
+ ┃ ┃ ┃ ┣ 📂salad              # 샐러드 메뉴 이미지
+ ┃ ┃ ┃ ┣ 📂sandwich           # 샌드위치 메뉴 이미지
+ ┃ ┃ ┃ ┗ 📂side               # 사이드 메뉴 이미지
+```    
 </details>
 
 ---

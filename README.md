@@ -38,13 +38,31 @@
 
 ---
 
-# 🖥 UI Preview
+# 🖥 화면 미리보기
 
 <div align="center">
 
-| 초기 화면 | 메뉴 화면 |
-|---|---|
-| <img width="200" height="300" alt="초기 화면" src="https://github.com/user-attachments/assets/fb737af0-d86a-464c-a0d0-dc3ab5859f43" /> | <img width="200" height="300" alt="메뉴 화면" src="https://github.com/user-attachments/assets/29ccc0e2-560b-4cbd-ac79-2c7a2d8d1d5a" /> |
+<table>
+<tr>
+<td align="center">
+
+### 초기 화면
+
+<img width="200" height="300" alt="초기 화면" src="https://github.com/user-attachments/assets/fb737af0-d86a-464c-a0d0-dc3ab5859f43" />
+
+</td>
+
+<td width="40"></td>
+
+<td align="center">
+
+### 메뉴 화면
+
+<img width="200" height="300" alt="메뉴 화면" src="https://github.com/user-attachments/assets/29ccc0e2-560b-4cbd-ac79-2c7a2d8d1d5a" />
+
+</td>
+</tr>
+</table>
 
 </div>
 

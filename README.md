@@ -7,7 +7,7 @@
 
 <div align="center">
 
-<img src="https://github.com/zeroroloss/zeroloss-kiosk/issues/1#issue-4418252843" width="320"/>
+<img width="539" height="951" alt="Image" src="https://github.com/user-attachments/assets/b056e74f-eac8-4d7e-954b-00ff9b11e629" />
 
 <br>
 

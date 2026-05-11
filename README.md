@@ -211,33 +211,9 @@ Toss Payments API를 통해 결제를 진행합니다.
 
 # 📂 프로젝트 구조
 
-## 📁 프로젝트 구조
-
-<details>
-<summary>📂 src/main/java</summary>
-
-```
-src/main/java
-└── com/zeroloss/kiosk
-    ├── controller/
-    │   ├── LoginController.java          # 지점장 로그인 서블릿
-    │   ├── MenuController.java           # 메뉴 목록 조회 서블릿
-    │   ├── OptionConfirmController.java  # 옵션 확인 서블릿
-    │   ├── OptionController.java         # 옵션 선택 서블릿
-    │   ├── OrderConfirmController.java   # 주문 목록 확인 서블릿
-    │   ├── OrderController.java          # 주문 처리 서블릿
-    │   ├── PaymentController.java        # 토스 API 호출 서블릿
-    │   ├── RecipeDetailController.java   # 메뉴 재료 조회 서블릿
-    │   └── StartController.java          # 매장/포장 선택 서블릿
-    ├── dao/                              # DB 접근
-    ├── dto/                              # 데이터 전송 객체
-    └── service/                          # 비즈니스 로직
-```
-
-</details>
-
 <details>
 <summary>📂 src/main/webapp</summary>
+```    
 📂java
  ┃ ┣ 📂controller
  ┃ ┃ ┣ 📜LoginController.java               # 로그인 서블릿

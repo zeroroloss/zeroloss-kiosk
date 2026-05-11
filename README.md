@@ -314,6 +314,7 @@ Toss Payments API를 통해 결제를 진행합니다.
 
 <details>
  <summary>📂 src/main/webapp</summary>
+ 
  ```
 📂webapp
  ┃ ┣ 📂kiosk_css
@@ -355,7 +356,6 @@ Toss Payments API를 통해 결제를 진행합니다.
  ┃ ┃ ┃ ┣ 📂salad              # 샐러드 메뉴 이미지
  ┃ ┃ ┃ ┣ 📂sandwich           # 샌드위치 메뉴 이미지
  ┃ ┃ ┃ ┗ 📂side               # 사이드 메뉴 이미지
- 
 ```    
 </details>
 

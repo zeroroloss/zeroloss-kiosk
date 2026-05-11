@@ -238,7 +238,100 @@ src/main/java
 
 <details>
 <summary>📂 src/main/webapp</summary>
-    
+📂java
+ ┃ ┣ 📂controller
+ ┃ ┃ ┣ 📜LoginController.java               # 로그인 서블릿
+ ┃ ┃ ┣ 📜MenuController.java                # 메뉴 목록 조회 서블릿
+ ┃ ┃ ┣ 📜OptionConfirmContriller.java       # 옵션 확인 서블릿
+ ┃ ┃ ┣ 📜OptionController.java              # 옵션 선택 서블릿
+ ┃ ┃ ┣ 📜OrderConfirmController.java        # 주문 목록 확인 서블릿
+ ┃ ┃ ┣ 📜OrderController.java               # 주문 처리 서블릿
+ ┃ ┃ ┣ 📜PaymentController.java             # 토스 결제 승인 API 호출
+ ┃ ┃ ┣ 📜RecipeDetailController.java        # 메뉴 재료 조회 서블릿
+ ┃ ┃ ┗ 📜StartConroller.java                # 매장/포장 선택 서블릿
+ ┃ ┣ 📂dao
+ ┃ ┃ ┣ 📂main
+ ┃ ┃ ┃ ┣ 📜AccountDao.java                  # 로그인
+ ┃ ┃ ┃ ┣ 📜AccountDaoImpl.java              
+ ┃ ┃ ┃ ┣ 📜BranchDao.java                   # 지점 조회
+ ┃ ┃ ┃ ┣ 📜BranchDaoImpl.java
+ ┃ ┃ ┃ ┣ 📜KioskDao.java                    # 키오스크 조회
+ ┃ ┃ ┃ ┗ 📜KioskDaoImpl.java
+ ┃ ┃ ┣ 📂menu
+ ┃ ┃ ┃ ┣ 📜CategoryMaterialDao.java         # 옵션 그룹 조회
+ ┃ ┃ ┃ ┣ 📜CategoryMaterialDaoImpl.java
+ ┃ ┃ ┃ ┣ 📜MainCategoryDao.java             # 메뉴 
+ ┃ ┃ ┃ ┣ 📜MainCategoryDaoImpl.java
+ ┃ ┃ ┃ ┣ 📜MaterialDao.java
+ ┃ ┃ ┃ ┣ 📜MaterialDaoImpl.java
+ ┃ ┃ ┃ ┣ 📜RecipeDao.java
+ ┃ ┃ ┃ ┣ 📜RecipeDaoImpl.java
+ ┃ ┃ ┃ ┣ 📜RecipeDetailDao.java
+ ┃ ┃ ┃ ┣ 📜RecipeDetailDaoImpl.java
+ ┃ ┃ ┃ ┣ 📜SubCategoryDao.java
+ ┃ ┃ ┃ ┗ 📜SubCategoryDaoImpl.java
+ ┃ ┃ ┗ 📂order
+ ┃ ┃ ┃ ┣ 📜OrderMenuDao.java
+ ┃ ┃ ┃ ┣ 📜OrderMenuDaoImpl.java
+ ┃ ┃ ┃ ┣ 📜OrderOptionDao.java
+ ┃ ┃ ┃ ┣ 📜OrderOptionDaoImpl.java
+ ┃ ┃ ┃ ┣ 📜OrdersDao.java
+ ┃ ┃ ┃ ┣ 📜OrdersDaoImpl.java
+ ┃ ┃ ┃ ┣ 📜RecipePriceDao.java
+ ┃ ┃ ┃ ┣ 📜RecipePriceDaoImpl.java
+ ┃ ┃ ┃ ┣ 📜StockDao.java
+ ┃ ┃ ┃ ┗ 📜StockDaoImple.java
+ ┃ ┣ 📂dto
+ ┃ ┃ ┣ 📜AccountDto.java
+ ┃ ┃ ┣ 📜BranchDto.java
+ ┃ ┃ ┣ 📜CategoryMaterialDto.java
+ ┃ ┃ ┣ 📜KioskBannerDto.java
+ ┃ ┃ ┣ 📜KioskDto.java
+ ┃ ┃ ┣ 📜MainCategoryDto.java
+ ┃ ┃ ┣ 📜MaterialDto.java
+ ┃ ┃ ┣ 📜MaterialGroupDto.java
+ ┃ ┃ ┣ 📜MaterialStockDto.java
+ ┃ ┃ ┣ 📜OptionMaterialStockDto.java
+ ┃ ┃ ┣ 📜OrderMenuDto.java
+ ┃ ┃ ┣ 📜OrderOptionDto.java
+ ┃ ┃ ┣ 📜OrdersDto.java
+ ┃ ┃ ┣ 📜RecipeDetailDto.java
+ ┃ ┃ ┣ 📜RecipeDto.java
+ ┃ ┃ ┣ 📜RecipeMaterialDto.java
+ ┃ ┃ ┣ 📜StockDeductDto.java
+ ┃ ┃ ┗ 📜SubCategoryDto.java
+ ┃ ┣ 📂mapper
+ ┃ ┃ ┣ 📜kiosk1.xml
+ ┃ ┃ ┗ 📜kiosk2.xml
+ ┃ ┣ 📂resource
+ ┃ ┃ ┗ 📜mybatis-config.xml
+ ┃ ┣ 📂service
+ ┃ ┃ ┣ 📂main
+ ┃ ┃ ┃ ┣ 📜AccountService.java
+ ┃ ┃ ┃ ┣ 📜AccountServiceImpl.java
+ ┃ ┃ ┃ ┣ 📜BranchService.java
+ ┃ ┃ ┃ ┣ 📜BranchServiceImpl.java
+ ┃ ┃ ┃ ┣ 📜KioskService.java
+ ┃ ┃ ┃ ┗ 📜KioskServiceImpl.java
+ ┃ ┃ ┣ 📂menu
+ ┃ ┃ ┃ ┣ 📜MenuSelectService.java
+ ┃ ┃ ┃ ┣ 📜MenuSelectServiceImpl.java
+ ┃ ┃ ┃ ┣ 📜OptionSelectService.java
+ ┃ ┃ ┃ ┣ 📜OptionSelectServiceImpl.java
+ ┃ ┃ ┃ ┣ 📜RecipeDetailService.java
+ ┃ ┃ ┃ ┗ 📜RecipeDetailServiceImpl.java
+ ┃ ┃ ┣ 📂order
+ ┃ ┃ ┃ ┣ 📜OrderService.java
+ ┃ ┃ ┃ ┣ 📜OrderServiceImpl.java
+ ┃ ┃ ┃ ┣ 📜StockService.java
+ ┃ ┃ ┃ ┗ 📜StockServiceImpl.java
+ ┃ ┃ ┗ 📂payment
+ ┃ ┃ ┃ ┣ 📜PaymentValidationService.java
+ ┃ ┃ ┃ ┣ 📜PaymentValidationServiceImpl.java
+ ┃ ┃ ┃ ┣ 📜TossPaymentService.java
+ ┃ ┃ ┃ ┗ 📜TossPaymentServiceImpl.java
+ ┃ ┗ 📂util
+ ┃ ┃ ┗ 📜MyBatisSqlSessionFactory.java    
 ```
 📂webapp
  ┃ ┣ 📂kiosk_css

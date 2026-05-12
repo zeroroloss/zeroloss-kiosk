@@ -14,6 +14,7 @@
 ![MyBatis](https://img.shields.io/badge/MyBatis-000000?style=for-the-badge)
 ![MariaDB](https://img.shields.io/badge/MariaDB-003545?style=for-the-badge&logo=mariadb&logoColor=white)
 ![Tomcat](https://img.shields.io/badge/Tomcat-F8DC75?style=for-the-badge&logo=apachetomcat&logoColor=black)
+![Toss](https://img.shields.io/badge/Toss-0050FF?style=flat&logo=toss&logoColor=white)
 
 </div>
 

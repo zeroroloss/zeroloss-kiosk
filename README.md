@@ -35,7 +35,7 @@
 
 > 클릭하면 영상으로 이동합니다.
 
-[![ZEROLOSS 키오스크 시연 영상](https://img.youtube.com/vi/영상ID/maxresdefault.jpg)](https://youtu.be/영상ID)
+[![ZEROLOSS](https://github.com/user-attachments/assets/ad979695-ce80-407a-b667-6d50144a4f07)](https://www.youtube.com/watch?v=4lr9RNzK9lc)
 
 ---
 

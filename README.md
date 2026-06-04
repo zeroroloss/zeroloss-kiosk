@@ -359,7 +359,4 @@ Toss Payments API를 통해 결제를 진행합니다.
 
 <div align="center">
 <img width="352" height="192" alt="로고" src="https://github.com/user-attachments/assets/60d20497-9bb6-4622-83b0-94d95a969728" />
- 
-### 직영점 통합 ERP 시스템
-
 </div>

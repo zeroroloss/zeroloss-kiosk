@@ -39,6 +39,12 @@
 
 ---
 
+# 💾 DB ERD
+
+<img width="2044" height="1594" alt="Image" src="https://github.com/user-attachments/assets/fa8e2443-89d5-4ae7-bde3-ede0600df921" />
+
+---
+
 # 🖥 화면 미리보기
 
 <div align="center">

@@ -1,6 +1,7 @@
 <div align="center">
-<img width="1056" height="576" alt="로고" src="https://github.com/user-attachments/assets/60d20497-9bb6-4622-83b0-94d95a969728" />
+<img width="352" height="192" alt="로고" src="https://github.com/user-attachments/assets/60d20497-9bb6-4622-83b0-94d95a969728" />
 <div/>
+
 # 🥖 ZEROLOSS 직영점 ERP - 키오스크
 
 > 서브웨이 스타일 샌드위치/샐러드 주문 키오스크 시스템
